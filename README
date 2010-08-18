@@ -1,15 +1,15 @@
 plugin services:
   - index:
-    - accounts_page_<page>_func
-	- accounts_page_<page>.tpl
+    - content_section_<section>_func
+	- content_section_<section>.tpl
   - admin
-    - accounts_admin_func
+    - content_admin_func
 
 htaccess rewrites:
   - rewrite account/<name> to account/index.php?account_name=<name> 
   - rewrite account/id/<id> to account/index.php?account_id=<id>
   - rewrite account/cid/<cid> to account/index.php?account_content_id=<cid>
-  - rewrite account/<name>/<page>/ to account/index.php?account_name=<name>&page=<page>
-  - rewrite account/id/<id>/<page>/ to account/index.php?account_id=<id>&page=<page>
-  - rewrite account/cid/<cid>/<page>/ to account/index.php?account_content_id=<cid>&page=<page>
+  - rewrite account/<name>/<section>/ to account/index.php?account_name=<name>&section=<section>
+  - rewrite account/id/<id>/<section>/ to account/index.php?account_id=<id>&section=<section>
+  - rewrite account/cid/<cid>/<section>/ to account/index.php?account_content_id=<cid>&section=<section>
 
