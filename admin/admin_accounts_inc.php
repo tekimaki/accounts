@@ -74,7 +74,7 @@ if( !empty( $_REQUEST['accounts_settings'] ) ){
 }
 
 // Process plugin settings
-$gLibertySystem->invokeService( 'accounts_admin_func', $_REQUEST );
+$gLibertySystem->invokeService( 'content_admin_func', $_REQUEST );
 
 
 

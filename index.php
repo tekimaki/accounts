@@ -80,10 +80,10 @@ if( !empty( $_REQUEST[$requestType.'name'] ) ||
 	// If package plugin page is specified invoke it - it is responsible for displaying the page
 	if( !empty( $_REQUEST['page'] ) ){
 
-		$gLibertySystem->invokeService( 'accounts_page_'.$_REQUEST['page'].'_func', $_REQUEST );
+		$gLibertySystem->invokeService( 'content_page_'.$_REQUEST['page'].'_func', $_REQUEST );
 
 		// Display the plugin template
-		$gBitSystem->display( 'bitpackage:accounts/plugins/templates/accounts_page_'.$_REQUEST['page'].'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($_REQUEST['page']))) , array( 'display_mode' => 'display' ));
+		$gBitSystem->display( 'bitpackage:accounts/plugins/templates/content_page_'.$_REQUEST['page'].'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($_REQUEST['page']))) , array( 'display_mode' => 'display' ));
 
 	// Display the default content page
 	}else{

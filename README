@@ -1,9 +1,9 @@
 plugin services:
   - index:
-    - accounts_page_<page>_func
-	- accounts_page_<page>.tpl
+    - content_page_<page>_func
+	- content_page_<page>.tpl
   - admin
-    - accounts_admin_func
+    - content_admin_func
 
 htaccess rewrites:
   - rewrite account/<name> to account/index.php?account_name=<name> 
