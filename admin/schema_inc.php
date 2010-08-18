@@ -123,3 +123,7 @@ $gBitInstaller->registerRequirements( ACCOUNTS_PKG_NAME, array(
 	'libertygraph' => array( 'min' => '0.0.0', ),
 
 ));
+
+// Process plugin settings
+$gBitInstaller->invokeService( ACCOUNTS_PKG_NAME, 'content_schema_inc_func' );
+
