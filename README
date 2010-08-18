@@ -4,6 +4,7 @@ plugin services:
 	- content_page_<page>.tpl
   - admin
     - content_admin_func
+    - admin_services_inc.tpl
 
 htaccess rewrites:
   - rewrite account/<name> to account/index.php?account_name=<name> 
