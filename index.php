@@ -77,15 +77,19 @@ if( !empty( $_REQUEST[$requestType.'name'] ) ||
 	// Now check permissions to access this content
 	$gContent->verifyViewPermission();
 
-	// If package plugin page is specified invoke it - it is responsible for displaying the page
-	if( !empty( $_REQUEST['page'] ) ){
+	// If package plugin section is specified invoke the related service - it is responsible for displaying the section
+	if( !empty( $_REQUEST['section'] ) ){
+		// Someone is trying an attack - piss off
+		if (preg_match("/[a-z_]/", $_REQUEST['section']) != 1) { 
+			$BitSystem->fatalError( tra('nice try') );
+			die;
+		}else{
+			$gLibertySystem->invokeService( 'content_section_'.$_REQUEST['section'].'_func', $_REQUEST );
 
-		$gLibertySystem->invokeService( 'content_page_'.$_REQUEST['page'].'_func', $_REQUEST );
-
-		// Display the plugin template
-		$gBitSystem->display( 'bitpackage:accounts/plugins/templates/content_page_'.$_REQUEST['page'].'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($_REQUEST['page']))) , array( 'display_mode' => 'display' ));
-
-	// Display the default content page
+			// Display the plugin template
+			$gBitSystem->display( 'bitpackage:config/accounts/plugins/templates/accounts_section_'.$_REQUEST['section'].'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($_REQUEST['section']))) , array( 'display_mode' => 'display' ));
+		}
+	// Display the default content section
 	}else{
 
 		// Call display services

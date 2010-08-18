@@ -73,8 +73,7 @@ if( !empty( $_REQUEST['accounts_settings'] ) ){
 	}
 }
 
-// Process plugin settings
-$gLibertySystem->invokeService( 'content_admin_func', $_REQUEST );
-
-
+// Process plugin settings for each content type in the package
+$Account = new BitAccount();
+$Account->invokeService( 'content_admin_func', $_REQUEST );
 
