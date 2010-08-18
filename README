@@ -4,6 +4,8 @@ plugin services:
 	- content_section_<section>.tpl
   - admin
     - content_admin_func
+  - schema
+    - content_schema_inc_func
 
 htaccess rewrites:
   - rewrite account/<name> to account/index.php?account_name=<name> 
