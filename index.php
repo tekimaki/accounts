@@ -29,6 +29,15 @@ require_once( '../kernel/setup_inc.php' );
 // Is package installed and enabled
 $gBitSystem->verifyPackage( 'accounts' );
 
+// if a content type key id is requested load it up
+$requestType = NULL;
+foreach( $_REQUEST as $key => $val ) {
+	if (in_array($key, $typeIds)) {
+		$requestType = substr($key, 0, -3);
+		break;
+	}
+}
+
 // Define content lookup keys
 $typeNames = array(
 		"account_name"	);
@@ -41,27 +50,28 @@ $typeContentIds = array(
 $requestType = NULL;
 $requestKeyType = NULL;
 foreach( $_REQUEST as $key => $val ) {
-	if (in_array($key, $typeNames)) {
-		$requestType = substr($key, 0, -5);
-		$requestKeyType = 'name';
-		break;
-	}
-	elseif (in_array($key, $typeIds)) {
-		$requestType = substr($key, 0, -3);
-		$requestKeyType = 'id';
-		break;
-	}
-	elseif (in_array($key, $typeContentIds)) {
-		$requestType = substr($key, 0, -10);
-		$requestKeyType = 'content_id';
-		break;
-	}
+    if (in_array($key, $typeNames)) {
+        $requestType = substr($key, 0, -5);
+        $requestKeyType = 'name';
+        break;
+    }
+    elseif (in_array($key, $typeIds)) {
+        $requestType = substr($key, 0, -3);
+        $requestKeyType = 'id';
+        break;
+    }
+    elseif (in_array($key, $typeContentIds)) {
+        $requestType = substr($key, 0, -10);
+        $requestKeyType = 'content_id';
+        break;
+    }
 }
 
+
 // If there is an id to get, specified or default, then attempt to get it and display
-if( !empty( $_REQUEST[$requestType.'name'] ) ||  
-	!empty( $_REQUEST[$requestType.'_id'] ) || 
-	!empty( $_REQUEST[$requestType.'_content_id'] ) ) {
+if( !empty( $_REQUEST[$requestType.'_name'] ) ||
+    !empty( $_REQUEST[$requestType.'_id'] ) ||
+    !empty( $_REQUEST[$requestType.'_content_id'] ) ) {
 	// Look up the content
 	require_once( ACCOUNTS_PKG_PATH.'lookup_'.$requestType.'_inc.php' );
 
@@ -71,40 +81,41 @@ if( !empty( $_REQUEST[$requestType.'name'] ) ||
 
 		// They are allowed to see that this does not exist.
 		$gBitSystem->setHttpStatus( 404 );
-		$gBitSystem->fatalError( tra( "The requested ".$gContent->getContentTypeName()." (".$requestKeyType."=".$_REQUEST[$requestType.'_'.$requestKeyType].") could not be found." ) );
+		$gBitSystem->fatalError( tra( "The requested ".$gContent->getContentTypeName()." (id=".$_REQUEST[$requestType.'_id'].") could not be found." ) );
 	}
 
 	// Now check permissions to access this content
 	$gContent->verifyViewPermission();
 
-	// If package plugin section is specified invoke the related service - it is responsible for displaying the section
+		// If package plugin section is specified invoke the related service - it is responsible for displaying the section
 	if( !empty( $_REQUEST['section'] ) ){
 		// Someone is trying an attack - piss off
 		if (preg_match("/[a-z_]/", $_REQUEST['section']) != 1) { 
-			$BitSystem->fatalError( tra('nice try') );
-			die;
+			$gBitSystem->fatalError( tra('nice try') );
+		}elseif( !function_exists( 'content_section_'.$_REQUEST['section'].'_func' ) ){
+			$gBitSystem->fatalError( tra('unknown section' ) );
 		}else{
 			$gLibertySystem->invokeService( 'content_section_'.$_REQUEST['section'].'_func', $_REQUEST );
 
 			// Display the plugin template
-			$gBitSystem->display( 'bitpackage:config/accounts/plugins/templates/accounts_section_'.$_REQUEST['section'].'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($_REQUEST['section']))) , array( 'display_mode' => 'display' ));
+			$gBitSystem->display( 'bitpackage:config/accounts/plugins/templates/content_display_section_'.$_REQUEST['section'].'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($_REQUEST['section']))) , array( 'display_mode' => 'display' ));
+			die;
 		}
-	// Display the default content section
-	}else{
-
-		// Call display services
-		$displayHash = array( 'perm_name' => $gContent->mViewContentPerm );
-		$gContent->invokeServices( 'content_display_function', $displayHash );
-
-		// Add a hit to the counter
-		$gContent->addHit();
-
-		/* =-=- CUSTOM BEGIN: indexload -=-= */
-		/* =-=- CUSTOM END: indexload -=-= */
-
-		// Display the template
-		$gBitSystem->display( 'bitpackage:accounts/display_'.$requestType.'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($requestType))) , array( 'display_mode' => 'display' ));
 	}
+	
+	// Call display services
+	$displayHash = array( 'perm_name' => $gContent->mViewContentPerm );
+	$gContent->invokeServices( 'content_display_function', $displayHash );
+
+	// Add a hit to the counter
+	$gContent->addHit();
+
+	/* =-=- CUSTOM BEGIN: indexload -=-= */
+	
+	/* =-=- CUSTOM END: indexload -=-= */
+
+	// Display the template
+	$gBitSystem->display( 'bitpackage:accounts/display_'.$requestType.'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($requestType))) , array( 'display_mode' => 'display' ));
 
 }else{
 

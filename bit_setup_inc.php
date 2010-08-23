@@ -28,7 +28,7 @@ global $gBitSystem;
 $registerHash = array(
 	'package_name' => 'accounts',
 	'package_path' => dirname( __FILE__ ).'/',
-	'homeable' => FALSE,
+	'homeable' => TRUE,
 );
 $gBitSystem->registerPackage( $registerHash );
 
@@ -40,8 +40,8 @@ if( $gBitSystem->isPackageActive( 'accounts' ) && $gBitUser->hasPermission( 'p_a
 		'menu_template' => 'bitpackage:accounts/menu_accounts.tpl',
 	);
 	$gBitSystem->registerAppMenu( $menuHash );
-	
-	// register plugins  
-	require_once( ACCOUNTS_PKG_PATH.'BitAccount.php' );
-	BitAccount::registerPlugins();
+
+
+$gLibertySystem->loadPackagePlugins( ACCOUNTS_PKG_NAME );
+
 }

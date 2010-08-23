@@ -34,24 +34,12 @@ $formaccountLists = array(
 		'note' => 'Display the account id.',
 	),
 	"account_list_title" => array(
-		'label' => 'Title',
-		'note' => 'Display the title.',
+		'label' => 'Account Name',
+		'note' => 'Display the account name.',
 	),
 	"account_list_data" => array(
 		'label' => 'About',
-		'note' => 'Display the body text.',
-	),
-        "account_list_title" => array(
-		'label' => 'Account Name',
-		'note' => 'Display the title',
-	),
-        "account_list_press" => array(
-		'label' => 'Press',
-		'note' => 'Display the press',
-	),
-        "account_list_message" => array(
-		'label' => 'Mayor/CSO Message',
-		'note' => 'Display the message',
+		'note' => 'Display the about text.',
 	),
 );
 $gBitSmarty->assign( 'formaccountLists', $formaccountLists );
@@ -65,7 +53,6 @@ if( !empty( $_REQUEST['accounts_settings'] ) ){
 
 
 
-
 	$accountsToggles = array_merge( 
 		$formaccountLists	);
 	foreach( $accountsToggles as $item => $data ) {
@@ -73,7 +60,10 @@ if( !empty( $_REQUEST['accounts_settings'] ) ){
 	}
 }
 
-// Process plugin settings for each content type in the package
-$Account = new BitAccount();
-$Account->invokeService( 'content_admin_func', $_REQUEST );
 
+
+
+
+// invoke content admin services
+$BitAccount = new BitAccount();
+$BitAccount->invokeService( 'content_admin_function', $_REQUEST );

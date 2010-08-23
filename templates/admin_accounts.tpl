@@ -12,18 +12,19 @@
  * @subpackage templates
  *}
 {form}
+<input type="hidden" name="page" value="{$page}" />
 	{jstabs}
-{* Are there homeable settings? *}
 
+	{* Are there homeable settings? *}
 
-	{jstab title="Account Settings"}
-		{jstabs}
+	
+		{jstab title="Account Settings"}
+	{jstabs}
 
 
 
 			{jstab title="Account List Settings"}
 				{legend legend="Account List Settings"}
-					<input type="hidden" name="page" value="{$page}" />
 					{foreach from=$formaccountLists key=item item=output}
 						<div class="row">
 							{formlabel label=`$output.label` for=$item}
@@ -43,7 +44,6 @@
 		{/jstabs}
 	{/jstab}
 
-	{include file="bitpackage:liberty/admin_services_inc.tpl" ipackage=$smarty.const.ACCOUNT_PKG_NAME}
 	{/jstabs}
 {/form}
 {/strip}

@@ -1,0 +1,38 @@
+---
+package:
+  package: accounts
+  description: Estabilishes accounts for clustering users and managing access control 
+  copyright:
+    - {year: 2010, name: Tekimaki LLC, contact: http://tekimaki.com}
+    - {year: 2010, name: Will James, contact: will@tekimaki.com}
+  license:
+    name: LGPL
+    description: Licensed under the GNU LESSER GENERAL PUBLIC LICENSE.
+    url: http://www.gnu.org/copyleft/lesser.html 
+  version: 0.1
+  requirements:
+    liberty: {min: 2.1.5}
+    libertygraph: {min: 0.0.0}
+  maintainer_url: http://www.tekimaki.com
+  homeable: false
+  pluggable: true
+  types:
+    account:
+      content_name: Account
+      content_name_plural: Accounts
+      description: A class which represents an account.
+      base_class: LibertyMime
+      class_name: BitAccount
+      base_package: liberty
+      maintainer_url: http://www.tekimaki.com
+      attachments: true
+      rewrite_path: account
+      lookup_by: [title]
+      permissions:
+        default: {create: admin, update: admin} 
+      fields:
+        title:
+          name: Account Name
+        data:
+          name: About
+          help: A statement about the account.

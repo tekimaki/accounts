@@ -1,12 +1,12 @@
 plugin services:
   - index:
-    - content_section_<section>_func
-	- content_section_<section>.tpl
+    - content_section_<section>_function  or maybe content_section_display ( pass a section value in hash )
+ 	- content_section_<section>.tpl
   - admin
-    - content_admin_func
+    - content_admin_function
     - admin_services_inc.tpl
   - schema
-    - content_schema_inc_func
+    - content_schema_inc_function
 
 htaccess rewrites:
   - rewrite account/<name> to account/index.php?account_name=<name> 

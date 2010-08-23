@@ -1,0 +1,33 @@
+ # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ # $Header: $
+ #
+ # Copyright (c) 2010 Tekimaki LLC http://tekimaki.com
+ # Copyright (c) 2010 Will James will@tekimaki.com
+ #
+ # All Rights Reserved. See below for details and a complete list of authors.
+ # Licensed under the GNU LESSER GENERAL PUBLIC LICENSE. See http://www.gnu.org/copyleft/lesser.html for details #
+ # $Id: $
+ # @package accounts
+ # @subpackage htaccess
+ # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+<IfModule mod_rewrite.c>
+    RewriteEngine  on
+    # Uncomment this if mod_rewrites are not working for you. some hosting services have cranky mod_rewrite
+    #RewriteBase /accounts/
+
+    RewriteCond %{SCRIPT_FILENAME}              -f [OR]
+    RewriteCond %{SCRIPT_FILENAME}/index.php    -f
+
+
+    # Rules for the type account
+    RewriteRule    ^account$ list_account.php [L,QSA]
+    RewriteRule    ^account/([0-9]+)$  index.php?account_id=$1  [L]
+    RewriteRule    ^account/edit/([0-9]+)$  edit_account.php?account_id=$1  [L]
+    RewriteRule    ^account/delete/([0-9]+)$  remove_account.php?account_id=$1  [L]
+
+    # =-=- CUSTOM BEGIN: htaccess -=-= #
+
+    # =-=- CUSTOM END: htaccess -=-= #
+
+
+</IfModule>
