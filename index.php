@@ -29,15 +29,6 @@ require_once( '../kernel/setup_inc.php' );
 // Is package installed and enabled
 $gBitSystem->verifyPackage( 'accounts' );
 
-// if a content type key id is requested load it up
-$requestType = NULL;
-foreach( $_REQUEST as $key => $val ) {
-	if (in_array($key, $typeIds)) {
-		$requestType = substr($key, 0, -3);
-		break;
-	}
-}
-
 // Define content lookup keys
 $typeNames = array(
 		"account_name"	);

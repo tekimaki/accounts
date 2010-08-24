@@ -67,11 +67,6 @@
 						{* any simple service edit options *}
 						{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_mini_tpl"}
 
-						<div class="row submit">
-							<input type="submit" name="preview" value="{tr}Preview{/tr}" />
-							<input type="submit" name="save_account" value="{tr}Save{/tr}" />
-						</div>
-
 
 						{if $gBitUser->hasPermission('p_liberty_attach_attachments') }
 							<div class=row>
@@ -82,6 +77,10 @@
 						{/if}
 
 
+						<div class="row submit">
+							<input type="submit" name="preview" value="{tr}Preview{/tr}" />
+							<input type="submit" name="save_account" value="{tr}Save{/tr}" />
+						</div>
 					{/legend}
 				{/jstab}
 			{/jstabs}

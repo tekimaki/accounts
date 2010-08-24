@@ -87,6 +87,11 @@ $gBitInstaller->registerPreferences( ACCOUNTS_PKG_NAME, array(
 	array ( ACCOUNTS_PKG_NAME , 'account_list_title'            , 'y'              ),
 ));
 
+// ### Register content types
+$gBitInstaller->registerContentObjects( ACCOUNTS_PKG_NAME, array(
+    'BitAccount'=>ACCOUNTS_PKG_PATH.'BitAccount.php',
+));
+
 // Process plugin settings
 $gBitInstaller->loadPackagePluginSchemas( ACCOUNTS_PKG_NAME );
 
