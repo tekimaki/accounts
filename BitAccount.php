@@ -208,8 +208,10 @@ class BitAccount extends LibertyMime {
 			$this->mDb->StartTrans();
 			$table = BIT_DB_PREFIX."account_data";
 			if( $this->mAccountId ) {
-				$locId = array( "account_id" => $pParamHash['account']['account_id'] );
-				$result = $this->mDb->associateUpdate( $table, $pParamHash['account_store'], $locId );
+				if( !empty( $pParamHash['account_store'] ) ){
+					$locId = array( "account_id" => $pParamHash['account']['account_id'] );
+					$result = $this->mDb->associateUpdate( $table, $pParamHash['account_store'], $locId );
+				}
 			} else {
 				$pParamHash['account_store']['content_id'] = $pParamHash['account']['content_id'];
 				if( @$this->verifyId( $pParamHash['account_id'] ) ) {

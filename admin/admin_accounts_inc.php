@@ -66,4 +66,4 @@ if( !empty( $_REQUEST['accounts_settings'] ) ){
 
 // invoke content admin services
 $BitAccount = new BitAccount();
-$BitAccount->invokeService( 'content_admin_function', $_REQUEST );
+$BitAccount->invokeServices( 'content_admin_function', $_REQUEST );
