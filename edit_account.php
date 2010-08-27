@@ -60,17 +60,14 @@ if( isset( $_REQUEST["preview"] ) ) {
 	$gContent->verify( $_REQUEST );
 	// Put all the variables into the object
 	$gContent->preparePreview( $_REQUEST );
-	$gContent->invokeServices( 'content_preview_function' );
+	$gContent->invokeServices( 'content_preview_function', $_REQUEST );
 	$gBitSmarty->assign( 'preview', TRUE );
 } else {
-	$gContent->invokeServices( 'content_edit_function' );
+	$gContent->invokeServices( 'content_edit_function', $_REQUEST );
 }
 
 
 // Prep any data we may need for the form
-
-
-$gContent->invokeServices( 'content_edit_function' );
 
 
 /* =-=- CUSTOM BEGIN: edit -=-= */
