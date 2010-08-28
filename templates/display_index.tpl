@@ -23,7 +23,8 @@
 
 	<div class="body">
 {* =-=- CUSTOM BEGIN: display_index_body -=-= *}
-Enter custom home page html here{* =-=- CUSTOM END: display_index_body -=-= *}
+Enter custom home page html here
+{* =-=- CUSTOM END: display_index_body -=-= *}
 	</div><!-- end .body -->
 </div><!-- end .display .index .accounts -->
 {/strip}

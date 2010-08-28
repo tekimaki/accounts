@@ -18,6 +18,7 @@ package:
   pluggable: true
   types:
     account:
+      templates: {list_type.tpl: ulli}
       content_name: Account
       content_name_plural: Accounts
       description: A class which represents an account.
