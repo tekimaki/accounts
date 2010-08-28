@@ -91,7 +91,6 @@ if( !empty( $_REQUEST[$requestType.'_name'] ) ||
 			}
 
 			// Display the plugin template
-			// $gBitSystem->display( 'bitpackage:config/accounts/plugins/templates/content_display_section_'.$_REQUEST['section'].'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($_REQUEST['section']))) , array( 'display_mode' => 'display' ));
 			$gBitSystem->display( 'bitpackage:liberty/service_content_display_section.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($_REQUEST['section']))) , array( 'display_mode' => 'display' ));
 			die;
 		}
