@@ -58,11 +58,35 @@ if( !empty( $_REQUEST['accounts_settings'] ) ){
 	foreach( $accountsToggles as $item => $data ) {
 		simple_set_toggle( $item, ACCOUNTS_PKG_NAME );
 	}
+	simple_set_int( 'accounts_account_home_id', ACCOUNTS_PKG_NAME );
+	simple_set_value( 'accounts_home_type', ACCOUNTS_PKG_NAME );
+	simple_set_value( 'accounts_home_format', ACCOUNTS_PKG_NAME );
 }
 
 
 
 
+// We require all records for home selection menu
+// TODO: These should be selected with ajax magic instead
+$_REQUEST['max_records'] = 0;
+
+
+$obj = new BitAccount();
+$obj_data = $obj->getList( $_REQUEST );
+$gBitSmarty->assign_by_ref( 'account_data', $obj_data);
+
+$gBitSmarty->assign( 'homeFormatOptions', array( 'list'=>tra('List Content'), 'item'=>tra('Content Item') ));
+
+$gBitSmarty->assign( 'accounts_account_home_id', 
+	$gBitSystem->getConfig( "accounts_account_home_id" ));
+
+
+$gBitSmarty->assign( 'accounts_home_format', 
+	$gBitSystem->getConfig( "accounts_home_format" ));
+$gBitSmarty->assign( 'accounts_home_type', 
+	$gBitSystem->getConfig( "accounts_home_type" ));
+$gBitSmarty->assign( 'homeTypes', array(
+		'account'	));
 
 // invoke content admin services
 $BitAccount = new BitAccount();

@@ -58,6 +58,16 @@ foreach( $_REQUEST as $key => $val ) {
     }
 }
 
+if (empty($requestType)) {
+	// Use the home type and home content
+	$requestType = $gBitSystem->getConfig("accounts_home_type", "account");
+    if( $gBitSystem->getConfig( 'accounts_home_format', 'list' ) == 'list' ){
+        include_once( ACCOUNTS_PKG_PATH.'list_'.$requestType.'.php' );
+        die;
+    }else{
+		$_REQUEST[$requestType.'_id'] = $gBitSystem->getConfig( "accounts_".$requestType."_home_id" );
+	}
+}
 
 // If there is an id to get, specified or default, then attempt to get it and display
 if( !empty( $_REQUEST[$requestType.'_name'] ) ||
@@ -110,12 +120,11 @@ if( !empty( $_REQUEST[$requestType.'_name'] ) ||
 	// Display the template
 	$gBitSystem->display( 'bitpackage:accounts/display_'.$requestType.'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($requestType))) , array( 'display_mode' => 'display' ));
 
-}else{
+} else if ( $gBitUser->hasPermission( 'p_accounts_admin' ) ) {
+    // Redirect to set up the default accounts data to display
+	header( "Location: ".KERNEL_PKG_URL.'admin/index.php?page='.ACCOUNTS_PKG_NAME );
 
-	/* =-=- CUSTOM BEGIN: index -=-= */
-		$indexTitle = tra('Accounts');
-		$gBitSmarty->assign( 'indexTitle', $indexTitle );
-		$gBitSystem->display( 'bitpackage:accounts/display_index.tpl', $indexTitle, array( 'display_mode' => 'display' ));
-	/* =-=- CUSTOM END: index -=-= */
-
+} else {
+	$gBitSystem->setHttpStatus( 404 );
+	$gBitSystem->fatalError( tra( "The default accounts page has not been configured." ) );
 }
