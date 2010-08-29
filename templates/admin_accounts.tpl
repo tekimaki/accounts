@@ -83,6 +83,8 @@
 		{/jstabs}
 	{/jstab}
 
+			{include file="bitpackage:liberty/service_package_admin_inc.tpl" package=$smarty.const.ACCOUNTS_PKG_NAME }
+	
 	{/jstabs}
 {/form}
 {/strip}

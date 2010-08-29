@@ -89,5 +89,5 @@ $gBitSmarty->assign( 'homeTypes', array(
 		'account'	));
 
 // invoke content admin services
-$BitAccount = new BitAccount();
-$BitAccount->invokeServices( 'content_admin_function', $_REQUEST );
+global $gLibertySystem;
+$gLibertySystem->invokePackageServices( ACCOUNTS_PKG_NAME, 'package_admin_function', $_REQUEST );
