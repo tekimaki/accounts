@@ -85,6 +85,8 @@ $gBitInstaller->registerUserPermissions( ACCOUNTS_PKG_NAME, array(
 $gBitInstaller->registerPreferences( ACCOUNTS_PKG_NAME, array(
 	array ( ACCOUNTS_PKG_NAME , 'account_default_ordering'      , 'account_id_desc' ),
 	array ( ACCOUNTS_PKG_NAME , 'account_list_title'            , 'y'              ),
+	array ( ACCOUNTS_PKG_NAME , 'accounts_account_home_id'               , 0                ),
+	array ( ACCOUNTS_PKG_NAME , 'accounts_home_type'                    , 'bitaccount'      ),
 ));
 
 // ### Register content types
