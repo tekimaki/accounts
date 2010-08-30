@@ -43,7 +43,7 @@ if( is_object( $gBitInstaller ) ){
 $tables = array(
     'account_data' => "
 		account_id I4 PRIMARY,
-		content_id I4 NOTNULL 
+		content_id I4 NOTNULL, 
         CONSTRAINT '
         , CONSTRAINT `account_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
 		'
@@ -73,7 +73,7 @@ if (count($defaults) > 0) {
 // User Permissions
 $gBitInstaller->registerUserPermissions( ACCOUNTS_PKG_NAME, array(
 	array ( 'p_accounts_admin'  , 'Can admin the accounts package', 'admin'      , ACCOUNTS_PKG_NAME ),
-	array ( 'p_accounts_view'  , 'Can view the accounts package', 'admin'      , ACCOUNTS_PKG_NAME ),
+	array ( 'p_accounts_view'  , 'Can view the accounts package', 'basic'      , ACCOUNTS_PKG_NAME ),
 	array ( 'p_account_create' , 'Can create a account entry'   , 'admin' , ACCOUNTS_PKG_NAME ),
 	array ( 'p_account_view'   , 'Can view account entries'     , 'basic'      , ACCOUNTS_PKG_NAME ),
 	array ( 'p_account_update' , 'Can update any account entry' , 'admin'    , ACCOUNTS_PKG_NAME ),
