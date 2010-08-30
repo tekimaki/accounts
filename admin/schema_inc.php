@@ -43,7 +43,7 @@ if( is_object( $gBitInstaller ) ){
 $tables = array(
     'account_data' => "
 		account_id I4 PRIMARY,
-		content_id I4 NOTNULL, 
+		content_id I4 NOTNULL 
         CONSTRAINT '
         , CONSTRAINT `account_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
 		'
