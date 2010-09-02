@@ -31,7 +31,7 @@ $gBitSystem->verifyPackage( 'accounts' );
 
 // fork from pkgmkr be careful do not delete on regenerate
 // If $gAccount is set run with it
-if( !empty( $gAccount ) ){
+if( !empty( $gAccount ) && $gAccount->isValid() ){
 	$_REQUEST['account_content_id'] = $gAccount->mContentId;
 	// this will prevent a double content load
 	$gContent = &$gAccount;
