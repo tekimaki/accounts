@@ -35,6 +35,8 @@ if( !empty( $gAccount ) && $gAccount->isValid() ){
 	$_REQUEST['account_content_id'] = $gAccount->mContentId;
 	// this will prevent a double content load
 	$gContent = &$gAccount;
+	// for now we call load again here - gAccount calls load in dns pluging but everything is not loeaded at that point
+	$gContent->load();
 	$gBitSmarty->assign_by_ref( "gContent", $gContent );
 }
 
