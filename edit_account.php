@@ -29,6 +29,20 @@ require_once( '../kernel/setup_inc.php' );
 // Is package installed and enabled
 $gBitSystem->verifyPackage( 'accounts' );
 
+/* =-=- CUSTOM BEGIN: security -=-= */
+
+// If $gAccount is set run with it
+if( !empty( $gAccount ) && $gAccount->isValid() ){
+	$_REQUEST['account_content_id'] = $gAccount->mContentId;
+	// this will prevent a double content load
+	$gContent = &$gAccount;
+	// for now we call load again here - gAccount calls load in dns pluging but everything is not loeaded at that point
+	$gContent->load();
+	$gBitSmarty->assign_by_ref( "gContent", $gContent );
+}
+
+/* =-=- CUSTOM END: security -=-= */
+
 require_once( ACCOUNTS_PKG_PATH.'lookup_account_inc.php' );
 
 // Now check permissions to access this page

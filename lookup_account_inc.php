@@ -42,7 +42,9 @@ if( empty( $gContent ) || !is_object( $gContent ) || !$gContent->isValid() ) {
 
 	// otherwise create new object
 	} else {
+/* =-=- CUSTOM BEGIN: create -=-= */
 		$gContent = new BitAccount();
+/* =-=- CUSTOM END: create -=-= */
 	}
 
 	$gContent->load();

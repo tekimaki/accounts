@@ -29,7 +29,8 @@ require_once( '../kernel/setup_inc.php' );
 // Is package installed and enabled
 $gBitSystem->verifyPackage( 'accounts' );
 
-// fork from pkgmkr be careful do not delete on regenerate
+/* =-=- CUSTOM BEGIN: security -=-= */
+
 // If $gAccount is set run with it
 if( !empty( $gAccount ) && $gAccount->isValid() ){
 	$_REQUEST['account_content_id'] = $gAccount->mContentId;
@@ -39,6 +40,8 @@ if( !empty( $gAccount ) && $gAccount->isValid() ){
 	$gContent->load();
 	$gBitSmarty->assign_by_ref( "gContent", $gContent );
 }
+
+/* =-=- CUSTOM END: security -=-= */
 
 // Define content lookup keys
 $typeNames = array(
@@ -125,7 +128,6 @@ if( !empty( $_REQUEST[$requestType.'_name'] ) ||
 	$gContent->addHit();
 
 	/* =-=- CUSTOM BEGIN: indexload -=-= */
-	
 	/* =-=- CUSTOM END: indexload -=-= */
 
 	// Display the template

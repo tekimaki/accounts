@@ -369,6 +369,11 @@ class BitAccount extends LibertyMime {
 
 		/* =-=- CUSTOM BEGIN: getList -=-= */
 
+		if (!empty($pParamHash['account_content_id'])) {
+			$whereSql .= " AND lc.`content_id` = ? ";
+			$bindVars[] = $pParamHash['account_content_id'];
+		}
+
 		/* =-=- CUSTOM END: getList -=-= */
 
 
