@@ -30,8 +30,9 @@ $gBitSystem->verifyPackage( 'accounts' );
 
 /* =-=- CUSTOM BEGIN: security -=-= */
 
+/* DEPRECATED jailed at DNS plugin - may still want to use this anyway, but dont need to right now
 // If $gAccount is set run with it
-if( !empty( $gAccount ) && $gAccount->isValid() ){
+if( is_object( $gAccount ) && $gAccount->isValid() ){
 	$_REQUEST['account_content_id'] = $gAccount->mContentId;
 	// this will prevent a double content load
 	$gContent = &$gAccount;
@@ -39,6 +40,7 @@ if( !empty( $gAccount ) && $gAccount->isValid() ){
 	$gContent->load();
 	$gBitSmarty->assign_by_ref( "gContent", $gContent );
 }
+*/
 
 /* =-=- CUSTOM END: security -=-= */
 
@@ -46,7 +48,8 @@ if( !empty( $gAccount ) && $gAccount->isValid() ){
 require_once( ACCOUNTS_PKG_PATH.'lookup_account_inc.php' );
 
 // Now check permissions to access this page
-$gContent->verifyViewPermission();
+$gContent->verifyListViewPermission();
+
 
 // Remove account data if we don't want them anymore
 if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQUEST["submit_mult"] == "remove_account_data" ) {

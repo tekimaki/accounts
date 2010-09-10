@@ -369,10 +369,13 @@ class BitAccount extends LibertyMime {
 
 		/* =-=- CUSTOM BEGIN: getList -=-= */
 
+		// @TODO this seems strange to limit to a list of one.
+		/*
 		if (!empty($pParamHash['account_content_id'])) {
 			$whereSql .= " AND lc.`content_id` = ? ";
 			$bindVars[] = $pParamHash['account_content_id'];
 		}
+		*/
 
 		/* =-=- CUSTOM END: getList -=-= */
 
@@ -529,6 +532,45 @@ class BitAccount extends LibertyMime {
 
 	/* This section is for any helper methods you wish to create */
 	/* =-=- CUSTOM BEGIN: methods -=-= */
+
+	/**
+	 * @TODO may want to support a list permission more broadly
+	 */
+	function verifyListViewPermission() {
+		global $gBitSystem;
+		if( $this->hasUserPermission( 'p_account_list' ) ){
+			return TRUE;
+		} else {
+			$gBitSystem->setHttpStatus( 404 );
+			$gBitSystem->fatalError(tra('The page you requested could not be found'));
+		}
+	}
+
+	/**
+	 * override parent permission verification so we can terminate with 404
+	 */
+	function verifyViewPermission(){
+		global $gBitSystem;
+		if( $this->hasViewPermission() ) {
+			return TRUE;
+		} else {
+			$gBitSystem->setHttpStatus( 404 );
+			$gBitSystem->fatalError(tra('The account you requested could not be found'));
+		}
+	}	
+
+	/**
+	 * override parent permission verification so we can terminate with 404
+	 */
+	function verifyUpdatePermission(){
+		global $gBitSystem;
+		if( $this->hasUpdatePermission() ) {
+			return TRUE;
+		} else {
+			$gBitSystem->setHttpStatus( 404 );
+			$gBitSystem->fatalError(tra('The account you requested could not be found'));
+		}
+	}	
 
 	/* =-=- CUSTOM END: methods -=-= */
 

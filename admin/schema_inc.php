@@ -79,6 +79,7 @@ $gBitInstaller->registerUserPermissions( ACCOUNTS_PKG_NAME, array(
 	array ( 'p_account_update' , 'Can update any account entry' , 'admin'    , ACCOUNTS_PKG_NAME ),
 	array ( 'p_account_expunge', 'Can delete any account entry' , 'admin'      , ACCOUNTS_PKG_NAME ),
 	array ( 'p_account_admin'  , 'Can admin any account entry'  , 'admin'      , ACCOUNTS_PKG_NAME ),
+	array ( 'p_account_list'   , 'Can view account lists'     , 'basic'      , ACCOUNTS_PKG_NAME ),
 ));
 
 // Default Preferences
