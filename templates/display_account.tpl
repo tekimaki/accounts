@@ -46,9 +46,6 @@
 			{* =-=- CUSTOM END: body -=-= *}
 
 
-			<div class="row title">
-				<label>Account Name:</label>&nbsp;{$gContent->getField('title')|escape}
-			</div>
 
 			{$gContent->mInfo.parsed_data}
 
