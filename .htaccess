@@ -21,12 +21,18 @@
 
     # Rules for the type account
     RewriteRule    ^account$ list_account.php [L,QSA]
-    RewriteRule    ^account/([0-9]+)$  index.php?account_id=$1  [L]
-    RewriteRule    ^account/edit/([0-9]+)$  edit_account.php?account_id=$1  [L]
-    RewriteRule    ^account/delete/([0-9]+)$  remove_account.php?account_id=$1  [L]
+    RewriteRule    ^account/([0-9]+)$  index.php?account_id=$1  [L,QSA]
+    RewriteRule    ^account/([0-9]+)/([a-zA-Z0-9_-]+)$  index.php?account_id=$1&section=$2  [L,QSA]
+    RewriteRule    ^account/edit/([0-9]+)$  edit_account.php?account_id=$1  [L,QSA]
+    RewriteRule    ^account/delete/([0-9]+)$  remove_account.php?account_id=$1  [L,QSA]
 
     # =-=- CUSTOM BEGIN: htaccess -=-= #
+    # Only one content type so allow without type specifier
 
+    RewriteRule    ^([0-9]+)$  index.php?account_id=$1  [L,QSA]
+    RewriteRule    ^([0-9]+)/([a-zA-Z0-9_-]+)$  index.php?account_id=$1&section=$2  [L,QSA]
+    RewriteRule    ^edit/([0-9]+)$  edit_account.php?account_id=$1  [L,QSA]
+    RewriteRule    ^delete/([0-9]+)$  remove_account.php?account_id=$1  [L,QSA]
     # =-=- CUSTOM END: htaccess -=-= #
 
 

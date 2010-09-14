@@ -447,16 +447,52 @@ class BitAccount extends LibertyMime {
 	 * @access public
 	 * @return string URL to the account page
 	 */
-	function getDisplayUrl() {
+	function getDisplayUrl($pSection = NULL) {
 		global $gBitSystem;
 		$ret = NULL;
-		if( @$this->isValid() ) {
+
+		/* =-=- CUSTOM BEGIN: getDisplayUrl -=-= */
+		global $gAccount;
+		if ($gAccount == $this) {
+			$ret = '/';
+		} else {
 			if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
-				$ret = ACCOUNTS_PKG_URL.'account/'.$this->mAccountId;
+				$ret = ACCOUNTS_PKG_URL.$this->mAccountId;
 			} else {
 				$ret = ACCOUNTS_PKG_URL."index.php?account_id=".$this->mAccountId;
 			}
 		}
+
+		/* =-=- CUSTOM END: getDisplayUrl -=-= */		
+
+		// Did the custom code block give us a URL?
+		if ($ret == NULL) {
+			if( @$this->isValid() ) {
+				if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
+					$ret = ACCOUNTS_PKG_URL.'account/'.$this->mAccountId;
+				} else {
+					$ret = ACCOUNTS_PKG_URL."index.php?account_id=".$this->mAccountId;
+				}
+			}
+		}
+
+		// Do we have a section request
+		if (!empty($pSection)) {
+			if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
+				if ( substr($ret, -1, 1) != "/" ) {
+					$ret .= "/";
+				}
+				$ret .= $pSection;
+			} else {
+				if (preg_match('|\?|', $ret)) {
+					$ret .= '&';
+				} else {
+					$ret .= '?';
+				}
+				$ret .= "section=".$pSection;
+			}
+		}
+
 		return $ret;
 	}
 
