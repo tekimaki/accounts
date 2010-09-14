@@ -16,3 +16,23 @@ htaccess rewrites:
   - rewrite account/id/<id>/<section>/ to account/index.php?account_id=<id>&section=<section>
   - rewrite account/cid/<cid>/<section>/ to account/index.php?account_content_id=<cid>&section=<section>
 
+access control:
+create account
+update account
+view account
+view list account
+expunge account
+
+setups:
+conventional site setup with multiple accounts
+  - single account per user association
+    - list - 404 unless admin permission to view list
+	- view - 404 on no access
+	- update - 404 on no access
+  - multi account per user
+  	- list - list users accounts only
+	- view - 404 on no access
+	- update - 404 on no access
+custom domain per account with conventional site for administration
+
+
