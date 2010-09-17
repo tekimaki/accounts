@@ -115,7 +115,8 @@ if( !empty( $_REQUEST[$requestType.'_name'] ) ||
 			}
 
 			// Display the plugin template
-			$gBitSystem->display( 'bitpackage:liberty/service_content_display_section.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($_REQUEST['section']))) , array( 'display_mode' => 'display' ));
+			$pageTitleBase = $gContent->getField('title','Accounts') == $gBitSystem->getConfig('site_title')?'':$gContent->getField('title','Accounts').' ';
+			$gBitSystem->display( 'bitpackage:liberty/service_content_display_section.tpl', htmlentities($pageTitleBase.ucfirst($_REQUEST['section'])) , array( 'display_mode' => 'display' ));
 			die;
 		}
 	}
@@ -131,7 +132,8 @@ if( !empty( $_REQUEST[$requestType.'_name'] ) ||
 	/* =-=- CUSTOM END: indexload -=-= */
 
 	// Display the template
-	$gBitSystem->display( 'bitpackage:accounts/display_'.$requestType.'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($requestType))) , array( 'display_mode' => 'display' ));
+	$pageTitle = $gContent->getField('title','Accounts') == $gBitSystem->getConfig('site_title')?'Home Page':$gContent->getField('title','Accounts').' '.ucfirst($requestType);
+	$gBitSystem->display( 'bitpackage:accounts/display_'.$requestType.'.tpl', htmlentities($pageTitle) , array( 'display_mode' => 'display' ));
 
 } else if ( $gBitUser->hasPermission( 'p_accounts_admin' ) ) {
     // Redirect to set up the default accounts data to display
