@@ -407,3 +407,5 @@ accounts:
     account_list_title: 'y'
     accounts_account_home_id: 0
     accounts_home_type: account
+  contenttypes:
+    BitAccount: BitAccount.php
