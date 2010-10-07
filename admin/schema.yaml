@@ -1,0 +1,59 @@
+---
+accounts: 
+  version: 0.0.0
+  requirements: 
+    liberty: 
+      min: 2.1.5
+    libertygraph: 
+      min: 0.0.0
+  homeable: true
+  required: false
+  tables: 
+    account_data: |
+      
+      account_id I4 PRIMARY,
+      content_id I4 NOTNULL
+      CONSTRAINT '
+      , CONSTRAINT `account_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
+      '
+      
+  sequences: 
+    account_data_id_seq: 
+      start: 1
+  permissions: 
+    p_accounts_admin: 
+      description: Can admin the accounts package
+      level: admin
+    p_accounts_view: 
+      description: Can view the accounts package
+      level: basic
+    p_account_create: 
+      description: Can create a account entry
+      level: admin
+    p_account_view: 
+      description: Can view account entries
+      level: basic
+    p_account_update: 
+      description: Can update any account entry
+      level: admin
+    p_account_expunge: 
+      description: Can delete any account entry
+      level: admin
+    p_account_admin: 
+      description: Can admin any account entry
+      level: admin
+    p_account_list: 
+      description: Can view account lists
+      level: basic
+  preferences: 
+    account_default_ordering: account_id_desc
+    account_list_title: 'y'
+    accounts_account_home_id: 0
+    accounts_home_type: account
+  description: Estabilishes accounts for clustering users and managing access control
+  license: 
+    name: LGPL
+    description: Licensed under the GNU LESSER GENERAL PUBLIC LICENSE.
+    url: http://www.gnu.org/copyleft/lesser.html
+  contenttypes: 
+    BitAccount: BitAccount.php
