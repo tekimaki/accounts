@@ -1,0 +1,187 @@
+user
+  |				\				\		
+user_acct	--	user_org	--	user_section
+  |				 |					|
+accout		--	org			--	section			-- content
+
+
+
+------------------------- TABLES ------------------------------
+
+accts
+-----
+acct_id
+
+orgs
+-----
+acct_id
+org_id
+
+sections
+-----
+acct_id
+section_id
+org_id
+
+
+user_acct
+---------
+user_id
+acct_id
+
+user_org
+--------
+user_id
+org_id
+
+user_section
+------------
+user_id
+section_id
+
+
+section_content
+-----
+acct_id
+section_id
+content_id
+
+
+roles
+-----
+acct_id
+role_id
+role_desc
+
+roles_perms
+-----
+acct_id
+role_id
+perm
+
+
+
+------------------------- SAMPLE ------------------------------
+
+users:
+------
+abe
+billy
+chris
+dave
+ernie
+fred
+greg
+harry
+
+
+roles:
+-----
+guest (anony, not-registered)
+registered
+system_admins (superadmin)
+account_admins
+account_managers
+account_members
+org_admins
+org_managers
+section_admins
+section_managers
+section_members
+site_managers
+
+
+roles_perms:
+------------							  (all users)									  (all account users)							  (all org users)
+					site_admin   guest    registered    account_admin    account_manager    account_member    org_admins    org_managers    org_members    section_admins    section_members    site_managers
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+account_create			x																																											  x
+account_read			x									  									  x																									  x
+account_update			x									  x					x				   																									  x
+account_delete			x
+account_add_user		x					  x																																						  x
+account_assign_role		x									  x																																		  x
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+org_create				x		   x						  x																																		  x
+org_read				x									  x					x																 x													  x
+org_update				x									  x					x								  x				 x																	  x
+org_delete				x									  x																																		  x
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+section_create			x									  x													  x																					  x
+section_read			x									  x					x								  x				 x													x				  x
+section_update			x									  x					x								  x				 x								x									  x
+section_delete			x									  x																																		  x
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+blog_create				x									  x					x																													  x
+blog_read				x		   x          x																																						  x
+blog_upate				x									  x					x																													  x
+blog_delete				x									  x					x
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+photo_create			x									  x					x								  x				 x								x					x				  x
+photo_read				x									  x					x								  x				 x								x					x				  x
+photo_upated			x									  x					x								  x				 x								x					x				  x
+photo_delete			x									  x					x								  x				 x								x					x				  x
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+page_create				x									  x					x								  x				 x								x					x				  x
+page_read				x									  x					x								  x				 x								x					x				  x
+page_upated				x									  x					x								  x				 x								x					x				  x
+page_delete				x									  x					x								  x				 x								x					x				  x
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+users_ban				x																																											  x
+users_delete			x
+
+( unless things were needed to get crazy, a section member must also be an org member and an account member, and an org member must be an account member )
+
+Q: how would account admin gain section CRUD over only its decendant sections and section content if account admin is never an org admin or section admin (e.g. they are already the account admin)
+
+
+
+accts:
+------
+nyc
+boston
+chicago
+detroit
+
+
+orgs:
+-----
+default,	nyc
+greenpeace,	nyc
+peta,		nyc
+transalt,	nyc
+default,	boston
+savewhales,	boston
+foo,		boston
+default,	chicago
+saveferris, chicago
+bar, 		chicago
+default,	detroit
+saveus,		detroit
+
+
+sections:
+---------
+default,	default		[nyc]
+default,	greenpeace	[nyc]
+osha, 		greenpeace	[nyc]
+default,	peta		[nyc]
+default,	transalt	[nyc]
+default,	default		[boston]
+default,	savewhales	[boston]
+default,	foo			[boston]
+default,	default		[chicago]
+default,	saveferris	[chicago]
+default,	bar			[chicago]
+default,	default		[detroit]
+default,	saveus		[detroit]
+money,		saveus		[detroit]
+food,		saveus		[detroit]
+brains,		saveus		[detroit]
+
+
+content:
+--------
+
+<@todo fill in content to section mappping example>
+
