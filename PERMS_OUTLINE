@@ -1,12 +1,12 @@
 user
-  |				\				\		
-user_acct	--	user_org	--	user_section
-  |				 |					|
+  |									
+user_roles
+  |				 \				\
 accout		--	org			--	section			-- content
 
 
 
-------------------------- TABLES ------------------------------
+------------------------- NEW TABLES ---------------------------
 
 accts
 -----
@@ -19,46 +19,37 @@ org_id
 
 sections
 -----
-acct_id
+acct_id (copy from orgs for speed)
 section_id
 org_id
-
-
-user_acct
----------
-user_id
-acct_id
-
-user_org
---------
-user_id
-org_id
-
-user_section
-------------
-user_id
-section_id
-
 
 section_content
 -----
-acct_id
 section_id
 content_id
 
-
-roles
+users_roles
 -----
-acct_id
-role_id
-role_desc
+role_guid (contraint to users_groups group_guid)
+user_id (contraint to users_users users_id)
+content_id (acct, org, section)							#all things are content, so here we can use the universal content_id of accounts, orgs, secs
 
-roles_perms
------
-acct_id
-role_id
-perm
+# users get default role of 'member' in users_roles for an account
+# this lets us drop tables like users_acct - the user to a/o/s association comes from the roles directly
 
+
+--------------------- EXISTING TABLES -------------------------
+
+# these are 'role' management tables - the cms uses 'groups' to mean 'role'
+users_groups
+----
+group_guid
+group_id
+
+users_groups_perms
+----
+group_id
+perm_name
 
 
 ------------------------- SAMPLE ------------------------------
