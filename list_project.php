@@ -30,39 +30,27 @@ $gBitSystem->verifyPackage( 'accounts' );
 
 /* =-=- CUSTOM BEGIN: security -=-= */
 
-/* DEPRECATED jailed at DNS plugin - may still want to use this anyway, but dont need to right now
-// If $gAccount is set run with it
-if( is_object( $gAccount ) && $gAccount->isValid() ){
-	$_REQUEST['account_content_id'] = $gAccount->mContentId;
-	// this will prevent a double content load
-	$gContent = &$gAccount;
-	// for now we call load again here - gAccount calls load in dns pluging but everything is not loeaded at that point
-	$gContent->load();
-	$gBitSmarty->assign_by_ref( "gContent", $gContent );
-}
-*/
-
 /* =-=- CUSTOM END: security -=-= */
 
 // Look up the content
-require_once( ACCOUNTS_PKG_PATH.'lookup_account_inc.php' );
+require_once( ACCOUNTS_PKG_PATH.'lookup_project_inc.php' );
 
 // Now check permissions to access this page
 $gContent->verifyViewPermission();
 
-// Remove account data if we don't want them anymore
-if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQUEST["submit_mult"] == "remove_account_data" ) {
+// Remove project data if we don't want them anymore
+if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQUEST["submit_mult"] == "remove_project_data" ) {
 
 	// Now check permissions to remove the selected accounts data
-	$gContent->verifyUserPermission( 'p_account_expunge' );
+	$gContent->verifyUserPermission( 'p_project_expunge' );
 
 	if( !empty( $_REQUEST['cancel'] ) ) {
 		// user cancelled - just continue on, doing nothing
 	} elseif( empty( $_REQUEST['confirm'] ) ) {
 		$formHash['delete'] = TRUE;
-		$formHash['submit_mult'] = 'remove_account_data';
+		$formHash['submit_mult'] = 'remove_project_data';
 		foreach( $_REQUEST["checked"] as $del ) {
-			$tmpInst = new BitAccount($del);
+			$tmpInst = new BitProject($del);
 			if ( $tmpInst->load() && !empty( $tmpInst->mInfo['title'] )) {
 				$info = $tmpInst->mInfo['title'];
 			} else {
@@ -79,7 +67,7 @@ if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQU
 		);
 	} else {
 		foreach( $_REQUEST["checked"] as $deleteId ) {
-			$tmpInst = new BitAccount( $deleteId );
+			$tmpInst = new BitProject( $deleteId );
 			if( !$tmpInst->load() || !$tmpInst->expunge() ) {
 				array_merge( $errors, array_values( $tmpInst->mErrors ) );
 			}
@@ -90,10 +78,10 @@ if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQU
 	}
 }
 
-// Create new BitAccount object
-$obj = new BitAccount();
+// Create new BitProject object
+$obj = new BitProject();
 $list = $obj->getList( $_REQUEST );
-$gBitSmarty->assign_by_ref( 'accountList', $list );
+$gBitSmarty->assign_by_ref( 'projectList', $list );
 
 // getList() has now placed all the pagination information in $_REQUEST['listInfo']
 $gBitSmarty->assign_by_ref( 'listInfo', $_REQUEST['listInfo'] );
@@ -104,5 +92,5 @@ $gBitSmarty->assign_by_ref( 'listInfo', $_REQUEST['listInfo'] );
 
 
 // Display the template
-$gBitSystem->display( 'bitpackage:accounts/list_account.tpl', tra( $gContent->getContentTypeName( TRUE ) ) , array( 'display_mode' => 'list' ));
+$gBitSystem->display( 'bitpackage:accounts/list_project.tpl', tra( $gContent->getContentTypeName( TRUE ) ) , array( 'display_mode' => 'list' ));
 

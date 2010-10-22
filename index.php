@@ -45,12 +45,16 @@ if( !empty( $gAccount ) && $gAccount->isValid() ){
 
 // Define content lookup keys
 $typeNames = array(
-		"account_name"	);
+		"account_name",		"project_name",		"subproject_name"	);
 $typeIds = array(
-		"account_id"	);
+		"account_id",		"project_id",		"subproject_id"	);
 $typeContentIds = array(
-		"account_content_id"	);
+		"account_content_id",		"project_content_id",		"subproject_content_id"	);
+$typeFields = array(
+	);	
 
+	
+	
 // If a content type key id is requested load it up
 $requestType = NULL;
 $requestKeyType = NULL;
@@ -70,6 +74,11 @@ foreach( $_REQUEST as $key => $val ) {
         $requestKeyType = 'content_id';
         break;
     }
+	elseif (in_array($key, $typeFields)) {
+        $requestType = substr($key, 0, strpos($key, "_"));
+        $requestKeyType = 'field';
+        break;
+    }
 }
 
 if (empty($requestType)) {
@@ -84,7 +93,7 @@ if (empty($requestType)) {
 }
 
 // If there is an id to get, specified or default, then attempt to get it and display
-if( !empty( $_REQUEST[$requestType.'_name'] ) ||
+if( 	!empty( $_REQUEST[$requestType.'_name'] ) ||
     !empty( $_REQUEST[$requestType.'_id'] ) ||
     !empty( $_REQUEST[$requestType.'_content_id'] ) ) {
 	// Look up the content
@@ -115,8 +124,7 @@ if( !empty( $_REQUEST[$requestType.'_name'] ) ||
 			}
 
 			// Display the plugin template
-			$pageTitleBase = $gContent->getField('title','Accounts') == $gBitSystem->getConfig('site_title')?'':$gContent->getField('title','Accounts').' ';
-			$gBitSystem->display( 'bitpackage:liberty/service_content_display_section.tpl', htmlentities($pageTitleBase.ucfirst($_REQUEST['section'])) , array( 'display_mode' => 'display' ));
+			$gBitSystem->display( 'bitpackage:liberty/service_content_display_section.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($_REQUEST['section']))) , array( 'display_mode' => 'display' ));
 			die;
 		}
 	}
@@ -132,8 +140,7 @@ if( !empty( $_REQUEST[$requestType.'_name'] ) ||
 	/* =-=- CUSTOM END: indexload -=-= */
 
 	// Display the template
-	$pageTitle = $gContent->getField('title','Accounts') == $gBitSystem->getConfig('site_title')?'Home Page':$gContent->getField('title','Accounts').' '.ucfirst($requestType);
-	$gBitSystem->display( 'bitpackage:accounts/display_'.$requestType.'.tpl', htmlentities($pageTitle) , array( 'display_mode' => 'display' ));
+	$gBitSystem->display( 'bitpackage:accounts/display_'.$requestType.'.tpl', htmlentities($gContent->getField('title', 'Accounts '.ucfirst($requestType))) , array( 'display_mode' => 'display' ));
 
 } else if ( $gBitUser->hasPermission( 'p_accounts_admin' ) ) {
     // Redirect to set up the default accounts data to display

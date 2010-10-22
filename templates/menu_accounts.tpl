@@ -21,11 +21,31 @@
 			{/if}
 
 
+			{if $gBitUser->hasPermission( 'p_project_view')}
+				<li><a class="item" href="{$smarty.const.ACCOUNTS_PKG_URL}list_project.php">{tr}List Projects{/tr}</a></li>
+			{/if}
+
+
+			{if $gBitUser->hasPermission( 'p_subproject_view')}
+				<li><a class="item" href="{$smarty.const.ACCOUNTS_PKG_URL}list_subproject.php">{tr}List Sub-Projects{/tr}</a></li>
+			{/if}
+
+
 		{/if}
 
 
 		{if $gBitUser->hasPermission( 'p_account_create')}
 		<li><a class="item" href="{$smarty.const.ACCOUNTS_PKG_URL}edit_account.php">{tr}Create Account{/tr}</a></li>
+		{/if}
+
+
+		{if $gBitUser->hasPermission( 'p_project_create')}
+		<li><a class="item" href="{$smarty.const.ACCOUNTS_PKG_URL}edit_project.php">{tr}Create Project{/tr}</a></li>
+		{/if}
+
+
+		{if $gBitUser->hasPermission( 'p_subproject_create')}
+		<li><a class="item" href="{$smarty.const.ACCOUNTS_PKG_URL}edit_subproject.php">{tr}Create Sub-Project{/tr}</a></li>
 		{/if}
 
 

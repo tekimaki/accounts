@@ -6,7 +6,8 @@ accounts:
     liberty:
       min: 2.1.5
     libertygraph:
-      min: 0.0.0 
+      min: 0.0.0
+ 
   description: Estabilishes accounts for clustering users and managing access control
   license: 
     name: LGPL
@@ -17,19 +18,61 @@ accounts:
   tables: 
     account_data: |
         account_id I4 PRIMARY,
-        content_id I4 NOTNULL, 
+        content_id I4 NOTNULL
         CONSTRAINT '
         , CONSTRAINT `account_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
+        '
+    project_data: |
+        project_id I4 PRIMARY,
+        content_id I4 NOTNULL,
+        account_id I4 NOTNULL
+        CONSTRAINT '
+        , CONSTRAINT `project_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
+        , CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
+        '
+    subproject_data: |
+        subproject_id I4 PRIMARY,
+        content_id I4 NOTNULL,
+        account_id I4 NOTNULL,
+        project_id I4 NOTNULL
+        CONSTRAINT '
+        , CONSTRAINT `subproject_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
+        , CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
+        , CONSTRAINT `project_id_ref` FOREIGN KEY (`project_id`) REFERENCES `project_data` (`project_id`)
+        '
+    subproject_content_map: |
+		subproject_id I4 NOTNULL,
+		content_id I4 NOTNULL
+        CONSTRAINT '
+        , CONSTRAINT `scm_subproject_id_ref` FOREIGN KEY (`subproject_id`) REFERENCES `subproject_data` (`subproject_id`)
+        , CONSTRAINT `scm_contents_id_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
+        '
+    users_roles_map: |
+		group_id I4 PRIMARY,
+		user_id I4 PRIMARY,
+		content_id I4 PRIMARY
+        CONSTRAINT '
+        , CONSTRAINT `urm_group_id` FOREIGN KEY (`group_id`) REFERENCES `users_groups` (`group_id`)
+        , CONSTRAINT `urm_user_id` FOREIGN KEY (`content_id`) REFERENCES `users_users` (`user_id`)
+        , CONSTRAINT `urm_content_id_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
         '
   constraints: 
   indexes: 
   sequences: 
     account_data_id_seq: {start: 1}
+    project_data_id_seq: {start: 1}
+    subproject_data_id_seq: {start: 1}
   preferences: 
     account_default_ordering: account_id_desc
     account_list_title: 'y'
     accounts_account_home_id: 0
     accounts_home_type: account
+    project_default_ordering: project_id_desc
+    project_list_title: 'y'
+    accounts_project_home_id: 0
+    subproject_default_ordering: subproject_id_desc
+    subproject_list_title: 'y'
+    accounts_subproject_home_id: 0
   defaults: 
   permissions: 
     p_accounts_admin:
@@ -53,5 +96,37 @@ accounts:
     p_account_admin:
       description: Can admin any account entry
       level: admin
+    p_project_create:
+      description:  Can create a project entry
+      level: admin
+    p_project_view:
+      description:  Can view project entries
+      level: basic
+    p_project_update:
+      description: Can update any project entry
+      level: admin
+    p_project_expunge:
+      description: Can delete any project entry
+      level: admin
+    p_project_admin:
+      description: Can admin any project entry
+      level: admin
+    p_subproject_create:
+      description:  Can create a subproject entry
+      level: admin
+    p_subproject_view:
+      description:  Can view subproject entries
+      level: basic
+    p_subproject_update:
+      description: Can update any subproject entry
+      level: admin
+    p_subproject_expunge:
+      description: Can delete any subproject entry
+      level: admin
+    p_subproject_admin:
+      description: Can admin any subproject entry
+      level: admin
   contenttypes:
     BitAccount: BitAccount.php
+    BitProject: BitProject.php
+    BitSubProject: BitSubProject.php

@@ -24,11 +24,11 @@
 */
 
 /**
-* BitAccount class
-* A class which represents an account.
+* BitProject class
+* A class which represents a project.
 *
 * @version $Revision: $
-* @class BitAccount
+* @class BitProject
 */
 
 /**
@@ -45,48 +45,48 @@ require_once( LIBERTY_PKG_PATH . 'LibertyValidator.php' );
 /**
 * This is used to uniquely identify the object
 */
-define( 'BITACCOUNT_CONTENT_TYPE_GUID', 'bitaccount' );
+define( 'BITPROJECT_CONTENT_TYPE_GUID', 'bitproject' );
 
-class BitAccount extends LibertyMime {
+class BitProject extends LibertyMime {
 	/**
-	 * mAccountId Primary key for our Account class object & table
+	 * mProjectId Primary key for our Project class object & table
 	 *
 	 * @var array
 	 * @access public
 	 */
-	var $mAccountId;
+	var $mProjectId;
 
 	var $mVerification;
 
 	var $mSchema;
 
 	/**
-	 * BitAccount During initialisation, be sure to call our base constructors
+	 * BitProject During initialisation, be sure to call our base constructors
 	 *
-	 * @param numeric $pAccountId
+	 * @param numeric $pProjectId
 	 * @param numeric $pContentId
 	 * @access public
 	 * @return void
 	 */
-	function BitAccount( $pAccountId=NULL, $pContentId=NULL ) {
+	function BitProject( $pProjectId=NULL, $pContentId=NULL ) {
 		LibertyMime::LibertyMime();
-		$this->mAccountId = $pAccountId;
+		$this->mProjectId = $pProjectId;
 		$this->mContentId = $pContentId;
-		$this->mContentTypeGuid = BITACCOUNT_CONTENT_TYPE_GUID;
-		$this->registerContentType( BITACCOUNT_CONTENT_TYPE_GUID, array(
-			'content_type_guid'	  => BITACCOUNT_CONTENT_TYPE_GUID,
-			'content_name' => 'Account',
-			'content_name_plural' => 'Accounts',
-			'handler_class'		  => 'BitAccount',
+		$this->mContentTypeGuid = BITPROJECT_CONTENT_TYPE_GUID;
+		$this->registerContentType( BITPROJECT_CONTENT_TYPE_GUID, array(
+			'content_type_guid'	  => BITPROJECT_CONTENT_TYPE_GUID,
+			'content_name' => 'Project',
+			'content_name_plural' => 'Projects',
+			'handler_class'		  => 'BitProject',
 			'handler_package'	  => 'accounts',
-			'handler_file'		  => 'BitAccount.php',
+			'handler_file'		  => 'BitProject.php',
 			'maintainer_url'	  => 'http://www.tekimaki.com'
 		));
 		// Permission setup
-		$this->mCreateContentPerm  = 'p_account_create';
-		$this->mViewContentPerm	   = 'p_account_view';
-		$this->mUpdateContentPerm  = 'p_account_update';
-		$this->mExpungeContentPerm = 'p_account_expunge';
+		$this->mCreateContentPerm  = 'p_project_create';
+		$this->mViewContentPerm	   = 'p_project_view';
+		$this->mUpdateContentPerm  = 'p_project_update';
+		$this->mExpungeContentPerm = 'p_project_expunge';
 		$this->mAdminContentPerm   = 'p_accounts_admin';
 	}
 
@@ -97,25 +97,25 @@ class BitAccount extends LibertyMime {
 	 * @return boolean TRUE on success, FALSE on failure - mErrors will contain reason for failure
 	 */
 	function load() {
-		if( $this->verifyId( $this->mAccountId ) || $this->verifyId( $this->mContentId ) ) {
+		if( $this->verifyId( $this->mProjectId ) || $this->verifyId( $this->mContentId ) ) {
 			// LibertyContent::load()assumes you have joined already, and will not execute any sql!
 			// This is a significant performance optimization
-			$lookupColumn = $this->verifyId( $this->mAccountId ) ? 'account_id' : 'content_id';
+			$lookupColumn = $this->verifyId( $this->mProjectId ) ? 'project_id' : 'content_id';
 			$bindVars = array();
 			$selectSql = $joinSql = $whereSql = '';
-			array_push( $bindVars, $lookupId = @BitBase::verifyId( $this->mAccountId ) ? $this->mAccountId : $this->mContentId );
+			array_push( $bindVars, $lookupId = @BitBase::verifyId( $this->mProjectId ) ? $this->mProjectId : $this->mContentId );
 			$this->getServicesSql( 'content_load_sql_function', $selectSql, $joinSql, $whereSql, $bindVars );
 
 			$query = "
-				SELECT account.*, lc.*,
+				SELECT project.*, lc.*,
 				uue.`login` AS modifier_user, uue.`real_name` AS modifier_real_name,
 				uuc.`login` AS creator_user, uuc.`real_name` AS creator_real_name,
 				lch.`hits`,
 				lf.`storage_path` as avatar,
 				lfp.storage_path AS `primary_attachment_path`
 				$selectSql
-				FROM `".BIT_DB_PREFIX."account_data` account
-					INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON( lc.`content_id` = account.`content_id` ) $joinSql
+				FROM `".BIT_DB_PREFIX."project_data` project
+					INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON( lc.`content_id` = project.`content_id` ) $joinSql
 					LEFT JOIN `".BIT_DB_PREFIX."users_users` uue ON( uue.`user_id` = lc.`modifier_user_id` )
 					LEFT JOIN `".BIT_DB_PREFIX."users_users` uuc ON( uuc.`user_id` = lc.`user_id` )
 					LEFT OUTER JOIN `".BIT_DB_PREFIX."liberty_content_hits` lch ON( lch.`content_id` = lc.`content_id` )
@@ -123,13 +123,13 @@ class BitAccount extends LibertyMime {
 					LEFT OUTER JOIN `".BIT_DB_PREFIX."liberty_files` lf ON (lf.`file_id` = a.`foreign_id`)
 					LEFT OUTER JOIN `".BIT_DB_PREFIX."liberty_attachments` la ON( la.`content_id` = lc.`content_id` AND la.`is_primary` = 'y' )
 					LEFT OUTER JOIN `".BIT_DB_PREFIX."liberty_files` lfp ON( lfp.`file_id` = la.`foreign_id` )
-				WHERE account.`$lookupColumn`=? $whereSql";
+				WHERE project.`$lookupColumn`=? $whereSql";
 			$result = $this->mDb->query( $query, $bindVars );
 
 			if( $result && $result->numRows() ) {
 				$this->mInfo = $result->fields;
 				$this->mContentId = $result->fields['content_id'];
-				$this->mAccountId = $result->fields['account_id'];
+				$this->mProjectId = $result->fields['project_id'];
 
 				$this->mInfo['creator'] = ( !empty( $result->fields['creator_real_name'] ) ? $result->fields['creator_real_name'] : $result->fields['creator_user'] );
 				$this->mInfo['editor'] = ( !empty( $result->fields['modifier_real_name'] ) ? $result->fields['modifier_real_name'] : $result->fields['modifier_user'] );
@@ -173,20 +173,20 @@ class BitAccount extends LibertyMime {
 
 		// Liberty should really have a preview function that handles these
 		// But it doesn't so we handle them here.
-		if( isset( $pParamHash['account']["title"] ) ) {
-			$this->mInfo["title"] = $pParamHash['account']["title"];
+		if( isset( $pParamHash['project']["title"] ) ) {
+			$this->mInfo["title"] = $pParamHash['project']["title"];
 		}
 
-		if( isset( $pParamHash['account']["summary"] ) ) {
-			$this->mInfo["summary"] = $pParamHash['account']["summary"];
+		if( isset( $pParamHash['project']["summary"] ) ) {
+			$this->mInfo["summary"] = $pParamHash['project']["summary"];
 		}
 
-		if( isset( $pParamHash['account']["format_guid"] ) ) {
-			$this->mInfo['format_guid'] = $pParamHash['account']["format_guid"];
+		if( isset( $pParamHash['project']["format_guid"] ) ) {
+			$this->mInfo['format_guid'] = $pParamHash['project']["format_guid"];
 		}
 
-		if( isset( $pParamHash['account']["edit"] ) ) {
-			$this->mInfo["data"] = $pParamHash['account']["edit"];
+		if( isset( $pParamHash['project']["edit"] ) ) {
+			$this->mInfo["data"] = $pParamHash['project']["edit"];
 			$this->mInfo['parsed_data'] = $this->parseData();
 		}
 	}
@@ -194,7 +194,7 @@ class BitAccount extends LibertyMime {
 	/**
 	 * store Any method named Store inherently implies data will be written to the database
 	 * @param pParamHash be sure to pass by reference in case we need to make modifcations to the hash
-	 * This is the ONLY method that should be called in order to store( create or update ) an account!
+	 * This is the ONLY method that should be called in order to store( create or update ) an project!
 	 * It is very smart and will figure out what to do for you. It should be considered a black box.
 	 *
 	 * @param array $pParamHash hash of values that will be used to store the data
@@ -207,25 +207,25 @@ class BitAccount extends LibertyMime {
 		// touch the filesystem in some way.
 		$abort = ignore_user_abort(FALSE);
 		if( $this->verify( $pParamHash )
-			&& LibertyMime::store( $pParamHash['account'] ) ) {
+			&& LibertyMime::store( $pParamHash['project'] ) ) {
 			$this->mDb->StartTrans();
-			$table = BIT_DB_PREFIX."account_data";
-			if( $this->mAccountId ) {
-				if( !empty( $pParamHash['account_store'] ) ){
-					$locId = array( "account_id" => $pParamHash['account']['account_id'] );
-					$result = $this->mDb->associateUpdate( $table, $pParamHash['account_store'], $locId );
+			$table = BIT_DB_PREFIX."project_data";
+			if( $this->mProjectId ) {
+				if( !empty( $pParamHash['project_store'] ) ){
+					$locId = array( "project_id" => $pParamHash['project']['project_id'] );
+					$result = $this->mDb->associateUpdate( $table, $pParamHash['project_store'], $locId );
 				}
 			} else {
-				$pParamHash['account_store']['content_id'] = $pParamHash['account']['content_id'];
-				if( @$this->verifyId( $pParamHash['account_id'] ) ) {
-					// if pParamHash['account']['account_id'] is set, some is requesting a particular account_id. Use with caution!
-					$pParamHash['account_store']['account_id'] = $pParamHash['account']['account_id'];
+				$pParamHash['project_store']['content_id'] = $pParamHash['project']['content_id'];
+				if( @$this->verifyId( $pParamHash['project_id'] ) ) {
+					// if pParamHash['project']['project_id'] is set, some is requesting a particular project_id. Use with caution!
+					$pParamHash['project_store']['project_id'] = $pParamHash['project']['project_id'];
 				} else {
-					$pParamHash['account_store']['account_id'] = $this->mDb->GenID( 'account_data_id_seq' );
+					$pParamHash['project_store']['project_id'] = $this->mDb->GenID( 'project_data_id_seq' );
 				}
-				$this->mAccountId = $pParamHash['account_store']['account_id'];
+				$this->mProjectId = $pParamHash['project_store']['project_id'];
 
-				$result = $this->mDb->associateInsert( $table, $pParamHash['account_store'] );
+				$result = $this->mDb->associateInsert( $table, $pParamHash['project_store'] );
 			}
 
 
@@ -237,7 +237,7 @@ class BitAccount extends LibertyMime {
 			$this->mDb->CompleteTrans();
 			$this->load();
 		} else {
-			$this->mErrors['store'] = tra('Failed to save this').' account.';
+			$this->mErrors['store'] = tra('Failed to save this').' project.';
 		}
 		// Restore previous state for user abort
 		ignore_user_abort($abort);
@@ -255,42 +255,42 @@ class BitAccount extends LibertyMime {
 	 * @return boolean TRUE on success, FALSE on failure - $this->mErrors will contain reason for failure
 	 */
 	function verify( &$pParamHash ) {
-		// make sure we're all loaded up of we have a mAccountId
-		if( $this->verifyId( $this->mAccountId ) && empty( $this->mInfo ) ) {
+		// make sure we're all loaded up of we have a mProjectId
+		if( $this->verifyId( $this->mProjectId ) && empty( $this->mInfo ) ) {
 			$this->load();
 		}
 
 		if( @$this->verifyId( $this->mInfo['content_id'] ) ) {
-			$pParamHash['account']['content_id'] = $this->mInfo['content_id'];
+			$pParamHash['project']['content_id'] = $this->mInfo['content_id'];
 		}
 
 		// It is possible a derived class set this to something different
-		if( @$this->verifyId( $pParamHash['account']['content_type_guid'] ) ) {
-			$pParamHash['account']['content_type_guid'] = $this->mContentTypeGuid;
+		if( @$this->verifyId( $pParamHash['project']['content_type_guid'] ) ) {
+			$pParamHash['project']['content_type_guid'] = $this->mContentTypeGuid;
 		}
 
-		if( @$this->verifyId( $pParamHash['account']['content_id'] ) ) {
-			$pParamHash['account']['account_store']['content_id'] = $pParamHash['account']['content_id'];
+		if( @$this->verifyId( $pParamHash['project']['content_id'] ) ) {
+			$pParamHash['project']['project_store']['content_id'] = $pParamHash['project']['content_id'];
 		}
 
 		// Use $pParamHash here since it handles validation right
 		$this->validateFields($pParamHash);
 
-		if( !empty( $pParamHash['account']['data'] ) ) {
-			$pParamHash['account']['edit'] = $pParamHash['account']['data'];
+		if( !empty( $pParamHash['project']['data'] ) ) {
+			$pParamHash['project']['edit'] = $pParamHash['project']['data'];
 		}
 
 		// If title specified truncate to make sure not too long
 		// TODO: This shouldn't be required. LC should validate this.
-		if( !empty( $pParamHash['account']['title'] ) ) {
-			$pParamHash['account']['content_store']['title'] = substr( $pParamHash['account']['title'], 0, 160 );
-		} else if( empty( $pParamHash['account']['title'] ) ) { // else is error as must have title
+		if( !empty( $pParamHash['project']['title'] ) ) {
+			$pParamHash['project']['content_store']['title'] = substr( $pParamHash['project']['title'], 0, 160 );
+		} else if( empty( $pParamHash['project']['title'] ) ) { // else is error as must have title
 			$this->mErrors['title'] = tra('You must enter a title for this '.$this->getContentTypeName());
 		}
 
 		// collapse the hash that is passed to parent class so that service data is passed through properly - need to do so before verify service call below
 		$hashCopy = $pParamHash;
-		$pParamHash['account'] = array_merge( $hashCopy, $pParamHash['account'] );
+		$pParamHash['project'] = array_merge( $hashCopy, $pParamHash['project'] );
 
 
 		/* =-=- CUSTOM BEGIN: verify -=-= */
@@ -301,7 +301,7 @@ class BitAccount extends LibertyMime {
 		// if we have an error we get them all by checking parent classes for additional errors and the typeMaps if there are any
 		if( count( $this->mErrors ) > 0 ){
 			// check errors of base class so we get them all in one go
-			LibertyMime::verify( $pParamHash['account'] );
+			LibertyMime::verify( $pParamHash['project'] );
 		}
 
 		return( count( $this->mErrors )== 0 );
@@ -325,15 +325,15 @@ class BitAccount extends LibertyMime {
 			/* =-=- CUSTOM END: expunge -=-= */
 
 
-			$query = "DELETE FROM `".BIT_DB_PREFIX."account_data` WHERE `content_id` = ?";
+			$query = "DELETE FROM `".BIT_DB_PREFIX."project_data` WHERE `content_id` = ?";
 			$result = $this->mDb->query( $query, array( $this->mContentId ) );
 			if( LibertyMime::expunge() ) {
 				$ret = TRUE;
 			}
 			$this->mDb->CompleteTrans();
-			// If deleting the default/home account record then unset this.
-			if( $ret && $gBitSystem->getConfig( 'account_home_id' ) == $this->mAccountId ) {
-				$gBitSystem->storeConfig( 'account_home_id', 0, ACCOUNT_PKG_NAME );
+			// If deleting the default/home project record then unset this.
+			if( $ret && $gBitSystem->getConfig( 'project_home_id' ) == $this->mProjectId ) {
+				$gBitSystem->storeConfig( 'project_home_id', 0, PROJECT_PKG_NAME );
 			}
 		}
 		return $ret;
@@ -343,13 +343,13 @@ class BitAccount extends LibertyMime {
 
 
 	/**
-	 * isValid Make sure account is loaded and valid
+	 * isValid Make sure project is loaded and valid
 	 * 
 	 * @access public
 	 * @return boolean TRUE on success, FALSE on failure
 	 */
 	function isValid() {
-		return( @BitBase::verifyId( $this->mAccountId ) && @BitBase::verifyId( $this->mContentId ));
+		return( @BitBase::verifyId( $this->mProjectId ) && @BitBase::verifyId( $this->mContentId ));
 	}
 
 	/**
@@ -357,7 +357,7 @@ class BitAccount extends LibertyMime {
 	 *
 	 * @param array $pParamHash
 	 * @access public
-	 * @return array List of account data
+	 * @return array List of project data
 	 */
 	function getList( &$pParamHash ) {
 		global $gBitSystem;
@@ -403,24 +403,24 @@ class BitAccount extends LibertyMime {
 		}
 
 		$query = "
-			SELECT account.*, lc.`content_id`, lc.`title`, lc.`data` $selectSql, lc.`format_guid`, lc.`user_id`, lc.`modifier_user_id`,
+			SELECT project.*, lc.`content_id`, lc.`title`, lc.`data` $selectSql, lc.`format_guid`, lc.`user_id`, lc.`modifier_user_id`,
 				uu.`email`, uu.`login`, uu.`real_name`
-			FROM `".BIT_DB_PREFIX."account_data` account
-				INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON( lc.`content_id` = account.`content_id` ) $joinSql
+			FROM `".BIT_DB_PREFIX."project_data` project
+				INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON( lc.`content_id` = project.`content_id` ) $joinSql
 				INNER JOIN `".BIT_DB_PREFIX."users_users`     uu ON uu.`user_id`     = lc.`user_id`
 			WHERE lc.`content_type_guid` = ? $whereSql
 			ORDER BY ".$sort_mode_prefix.$this->mDb->convertSortmode( $sort_mode );
 		$query_cant = "
 			SELECT COUNT(*)
-			FROM `".BIT_DB_PREFIX."account_data` account
-				INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON( lc.`content_id` = account.`content_id` ) $joinSql
+			FROM `".BIT_DB_PREFIX."project_data` project
+				INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON( lc.`content_id` = project.`content_id` ) $joinSql
 				INNER JOIN `".BIT_DB_PREFIX."users_users`     uu ON uu.`user_id`     = lc.`user_id`
 			WHERE lc.`content_type_guid` = ? $whereSql";
 		$result = $this->mDb->query( $query, $bindVars, $max_records, $offset );
 		$ret = array();
 		while( $res = $result->fetchRow() ) {
 
-			if ( $gBitSystem->isFeatureActive( 'account_list_data' ) 
+			if ( $gBitSystem->isFeatureActive( 'project_list_data' ) 
 				|| !empty( $pParamHash['parse_data'] )
 			){
 				// parse data if to be displayed in lists 
@@ -445,10 +445,10 @@ class BitAccount extends LibertyMime {
 	}
 
 	/**
-	 * getDisplayUrl Generates the URL to the account page
+	 * getDisplayUrl Generates the URL to the project page
 	 * 
 	 * @access public
-	 * @return string URL to the account page
+	 * @return string URL to the project page
 	 */
 	function getDisplayUrl($pSection = NULL) {
 		global $gBitSystem;
@@ -472,9 +472,9 @@ class BitAccount extends LibertyMime {
 		if ($ret == NULL) {
 			if( @$this->isValid() ) {
 				if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
-					$ret = ACCOUNTS_PKG_URL.'account/'.$this->mAccountId;
+					$ret = ACCOUNTS_PKG_URL.'project/'.$this->mProjectId;
 				} else {
-					$ret = ACCOUNTS_PKG_URL."index.php?account_id=".$this->mAccountId;
+					$ret = ACCOUNTS_PKG_URL."index.php?project_id=".$this->mProjectId;
 				}
 			}
 		}
@@ -505,8 +505,8 @@ class BitAccount extends LibertyMime {
 	function previewFields(&$pParamHash) {
 		$this->prepVerify();
 		LibertyValidator::preview(
-		$this->mVerification['account_data'],
-			$pParamHash['account'],
+		$this->mVerification['project_data'],
+			$pParamHash['project'],
 			$this->mInfo);
 	}
 
@@ -516,25 +516,32 @@ class BitAccount extends LibertyMime {
 	function validateFields(&$pParamHash) {
 		$this->prepVerify();
 		LibertyValidator::validate(
-			$this->mVerification['account_data'],
-			$pParamHash['account'],
-			$this, $pParamHash['account_store']);
+			$this->mVerification['project_data'],
+			$pParamHash['project'],
+			$this, $pParamHash['project_store']);
 	}
 
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
 	function prepVerify() {
-		if (empty($this->mVerification['account_data'])) {
+		if (empty($this->mVerification['project_data'])) {
 
 	 		/* Validation for title */
-	$this->mVerification['account_data']['null']['title'] = array(
-		'name' => 'Account Name',
+	$this->mVerification['project_data']['null']['title'] = array(
+		'name' => 'Project Name',
 );
 	 		/* Validation for data */
-	$this->mVerification['account_data']['null']['data'] = array(
-		'name' => 'About',
+	$this->mVerification['project_data']['null']['data'] = array(
+		'name' => 'Description',
 );
+	 		/* Validation for account_id */
+			$this->mVerification['project_data']['reference']['account_id'] = array(
+				'name' => 'Account Name',
+				'table' => 'account_data',
+				'column' => 'account_id',
+				'required' => '1'
+			);
 
 		}
 	}
@@ -543,21 +550,31 @@ class BitAccount extends LibertyMime {
 	 * prepVerify prepares the object for input verification
 	 */
 	public function getSchema() {
-		if (empty($this->mSchema['account_data'])) {
+		if (empty($this->mSchema['project_data'])) {
 
 	 		/* Schema for title */
-			$this->mSchema['account_data']['title'] = array(
+			$this->mSchema['project_data']['title'] = array(
 				'name' => 'title',
 				'type' => 'null',
-				'label' => 'Account Name',
+				'label' => 'Project Name',
 				'help' => '',
 			);
 	 		/* Schema for data */
-			$this->mSchema['account_data']['data'] = array(
+			$this->mSchema['project_data']['data'] = array(
 				'name' => 'data',
 				'type' => 'null',
-				'label' => 'About',
-				'help' => 'A statement about the account.',
+				'label' => 'Description',
+				'help' => 'A description of the project',
+			);
+	 		/* Schema for account_id */
+			$this->mSchema['project_data']['account_id'] = array(
+				'name' => 'account_id',
+				'type' => 'reference',
+				'label' => 'Account Name',
+				'help' => '',
+				'table' => 'account_data',
+				'column' => 'account_id',
+				'required' => '1'
 			);
 		}
 
@@ -571,10 +588,20 @@ class BitAccount extends LibertyMime {
 	 */
 	public static function getIdByField( $pKey, $pValue ) {
 		global $gBitSystem;
-		return $gBitSystem->mDb->getOne( "SELECT account_id FROM `".BIT_DB_PREFIX."account_data` account LEFT JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (account.`content_id` = lc.`content_id`) WHERE account.`".$pKey."` = ?", $pValue );
+		return $gBitSystem->mDb->getOne( "SELECT project_id FROM `".BIT_DB_PREFIX."project_data` project LEFT JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (project.`content_id` = lc.`content_id`) WHERE project.`".$pKey."` = ?", $pValue );
 	}
 	
 	// Getters for reference column options - return associative arrays formatted for generating html select inputs
+	function getAccountNameOptions( &$pParamHash=array() ){
+		$bindVars = array();
+		$joinSql = $whereSql = "";
+		/* =-=- CUSTOM BEGIN: account_id_options -=-= */
+
+		/* =-=- CUSTOM END: account_id_options -=-= */
+		$query = "SELECT a.account_id, b.title FROM account_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
+		return $this->mDb->getAssoc( $query, $bindVars );
+	}
+
 
 
 

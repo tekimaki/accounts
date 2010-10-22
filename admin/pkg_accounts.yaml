@@ -1,4 +1,3 @@
----
 package:
   package: accounts
   description: Estabilishes accounts for clustering users and managing access control 
@@ -16,6 +15,11 @@ package:
   maintainer_url: http://www.tekimaki.com
   homeable: true 
   pluggable: true
+  settings:
+    roles:
+      account_member_role: {label: Account Member Role, type: int, note: The group_id for the account membership role.}
+      project_member_role: {label: Project Member Role, type: int, note: The group_id for the project membership role.}
+      account_member_role: {label: Account Member Role, type: int, note: The group_id for the sub-project membership role.}
   types:
     account:
       templates: {list_type.tpl: ulli}
@@ -37,3 +41,102 @@ package:
         data:
           name: About
           help: A statement about the account.
+    project:
+      content_name: Project
+      content_name_plural: Projects
+      templates: {list_type.tpl: ulli}
+      description: A class which represents a project.
+      base_class: LibertyMime
+      class_name: BitProject
+      base_package: liberty
+      maintainer_url: http://www.tekimaki.com
+      attachments: true
+      rewrite_path: project
+      lookup_by: [title]
+      permissions:
+        default: {create: admin, update: admin}
+      fields:
+        title:
+          name: Project Name
+        data:
+          name: Description
+          help: A description of the project
+        account_id:
+          name: Account Name
+          schema: {type: I4, notnull: true}
+          validator: {type: reference, table: account_data, column: account_id, required: true}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: myAccounts }
+      constraints:
+        CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
+    subproject:
+      templates: {list_type.tpl: ulli}
+      content_name: Sub-Project
+      content_name_plural: Sub-Projects
+      description: A class which represents a project.
+      base_class: LibertyMime
+      class_name: BitSubProject
+      base_package: liberty
+      maintainer_url: http://www.tekimaki.com
+      attachments: true
+      rewrite_path: project
+      lookup_by: [title]
+      permissions:
+        default: {create: admin, update: admin}
+      fields:
+        title:
+          name: Sub-Project Name
+        data:
+          name: Description
+          help: A description of the sub-project
+        account_id:
+          name: Account Name
+          schema: {type: I4, notnull: true}
+          validator: {type: reference, table: account_data, column: account_id, required: true}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: myAccounts, js: [onchange]}
+        project_id:
+          name: Project Name
+          schema: {type: I4, notnull: true}
+          validator: {type: reference, table: project_data, column: project_id, required: true}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName:myProjects}
+      constraints:
+        CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
+        CONSTRAINT `project_id_ref` FOREIGN KEY (`project_id`) REFERENCES `project_data` (`project_id`)
+  tables:
+    subproject_content_map:
+      description: A map from a subproject to the content in it
+      fields:
+        subproject_id: 
+          name: Sub-Project Id
+          schema: {type: I4, notnull: true}
+          validator: {type: reference, table: subproject_data, column: subproject_id, required: true}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableSubprojects, js: [onchange]}
+        content_id:
+          name: Content Id
+          schema: {type: I4, notnull: true}
+          validator: {type: reference, table: liberty_content, column: content_id, required: true}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableContent, js: [onchange]}
+      constraints:
+        CONSTRAINT `scm_subproject_id_ref` FOREIGN KEY (`subproject_id`) REFERENCES `subproject_data` (`subproject_id`)
+        CONSTRAINT `scm_contents_id_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
+    users_roles_map:
+      description: A map of an account project or subproject to a user and group
+      fields:
+        group_id: 
+          name: Group Id
+          schema: {type: I4, primary: true}
+          validator: {type: reference, table: users_groups, column: group_id, required: true}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableGroups, js: [onchange]}
+        user_id: 
+          name: User Id
+          schema: {type: I4, primary: true}
+          validator: {type: reference, table: users_users, column: user_id, required: true}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableUsers, js: [onchange]}
+        content_id: 
+          name: Content Id
+          schema: {type: I4, primary: true}
+          validator: {type: reference, table: users_users, column: user_id, required: true, constrain_foreign_column: content_type_guid, constrain_value: {bitaccount, bitproject, bitsubproject} }
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableContent, js: [onchange]}
+      constraints:
+        CONSTRAINT `urm_group_id` FOREIGN KEY (`group_id`) REFERENCES `users_groups` (`group_id`)
+        CONSTRAINT `urm_user_id` FOREIGN KEY (`content_id`) REFERENCES `users_users` (`user_id`)
+        CONSTRAINT `urm_content_id_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
