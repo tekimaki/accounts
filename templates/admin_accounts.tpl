@@ -51,7 +51,7 @@
 {* End foreach type *}
 			{/legend}
 			<div class="row submit">
-				<input type="submit" name="accounts_settings" value="{tr}Change preferences{/tr}" />
+				<input class="button" type="submit" name="accounts_settings" value="{tr}Change preferences{/tr}" />
 			</div>
 		{/jstab}
 {* End homeable section *}
@@ -75,7 +75,7 @@
 					{/foreach}
 				{/legend}
 				<div class="row submit">
-					<input type="submit" name="accounts_settings" value="{tr}Change preferences{/tr}" />
+					<input class="button" type="submit" name="accounts_settings" value="{tr}Change preferences{/tr}" />
 				</div>
 			{/jstab}
 {* End List Settings *}

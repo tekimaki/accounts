@@ -52,7 +52,7 @@
 					{/jstab}
 				{/if}
 				{jstab title="Edit"}
-				{legend legend=$gContent->getContentTypeName()}
+					{legend legend=$gContent->getContentTypeName()}
 						<input type="hidden" name="account[account_id]" value="{$gContent->mInfo.account_id}" />
 						{formfeedback warning=$errors.store}
 
@@ -63,13 +63,14 @@
 								<input type="text" size="50" name="account[title]" id="title" value="{$gContent->mInfo.title|escape}" />
 							{/forminput}
 						</div>
+ 
 						{textarea label="About" name="account[edit]" help="A statement about the account."}{$gContent->mInfo.data}{/textarea}
 						{* any simple service edit options *}
 						{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_mini_tpl"}
 
 
 						{if $gBitUser->hasPermission('p_liberty_attach_attachments') }
-							<div class=row>
+							<div class="row">
 							{legend legend="Attachments"}
 								{include file="bitpackage:liberty/edit_storage.tpl"}
 							{/legend}
@@ -77,9 +78,9 @@
 						{/if}
 
 
-						<div class="row submit">
-							<input type="submit" name="preview" value="{tr}Preview{/tr}" />
-							<input type="submit" name="save_account" value="{tr}Save{/tr}" />
+						<div class="buttonHolder row submit">
+							<input class="button" type="submit" name="preview" value="{tr}Preview{/tr}" />
+							<input class="button" type="submit" name="save_account" value="{tr}Save{/tr}" />
 						</div>
 					{/legend}
 				{/jstab}

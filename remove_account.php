@@ -54,7 +54,7 @@ $gContent->verifyExpungePermission();
 
 if( isset( $_REQUEST["confirm"] ) ) {
 	if( $gContent->expunge()  ) {
-		header ("location: ".BIT_ROOT_URL );
+		header ("location: ".ACCOUNTS_PKG_URL."list_account.php" );
 		die;
 	} else {
 		$gBitSystem->fatalError( "Error while deleting: " + $gContent->mErrors );

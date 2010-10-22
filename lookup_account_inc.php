@@ -29,6 +29,7 @@ require_once( ACCOUNTS_PKG_PATH.'BitAccount.php');
 
 // if we already have a gContent, we assume someone else created it for us, and has properly loaded everything up.
 if( empty( $gContent ) || !is_object( $gContent ) || !$gContent->isValid() ) {
+
 	// if account_id supplied, use that
 	if( @BitBase::verifyId( $_REQUEST['account_id'] ) ) {
 		$gContent = new BitAccount( $_REQUEST['account_id'] );

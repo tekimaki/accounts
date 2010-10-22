@@ -31,6 +31,9 @@
 * @class BitAccount
 */
 
+/**
+ * Initialize
+ */
 require_once( LIBERTY_PKG_PATH.'LibertyMime.php' );
 require_once( LIBERTY_PKG_PATH . 'LibertyValidator.php' );
 
@@ -282,7 +285,7 @@ class BitAccount extends LibertyMime {
 		if( !empty( $pParamHash['account']['title'] ) ) {
 			$pParamHash['account']['content_store']['title'] = substr( $pParamHash['account']['title'], 0, 160 );
 		} else if( empty( $pParamHash['account']['title'] ) ) { // else is error as must have title
-			$this->mErrors['title'] = tra('You must enter a title for this').' $this->getContentTypeName().';
+			$this->mErrors['title'] = tra('You must enter a title for this '.$this->getContentTypeName());
 		}
 
 		// collapse the hash that is passed to parent class so that service data is passed through properly - need to do so before verify service call below
@@ -557,7 +560,16 @@ class BitAccount extends LibertyMime {
 
 		return $this->mSchema;
 	}
-
+	
+	/**
+	 * getIdByField
+	 * get id by type fields
+	 */
+	public static function getIdByField( $pKey, $pValue ) {
+		global $gBitSystem;
+		return $gBitSystem->mDb->getOne( "SELECT account_id FROM `".BIT_DB_PREFIX."account_data` account LEFT JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (account.`content_id` = lc.`content_id`) WHERE account.`".$pKey."` = ?", $pValue );
+	}
+	
 	// Getters for reference column options - return associative arrays formatted for generating html select inputs
 
 
