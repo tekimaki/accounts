@@ -52,7 +52,7 @@
 					{/jstab}
 				{/if}
 				{jstab title="Edit"}
-					{legend legend=$gContent->getContentTypeName()}
+				{legend legend=$gContent->getContentTypeName() class="inlineLabels"}
 						<input type="hidden" name="account[account_id]" value="{$gContent->mInfo.account_id}" />
 						{formfeedback warning=$errors.store}
 
@@ -60,7 +60,7 @@
 							{formfeedback warning=$errors.title}
 							{formlabel label="Account Name" for="title"}
 							{forminput}
-								<input type="text" size="50" name="account[title]" id="title" value="{$gContent->mInfo.title|escape}" />
+								<input class="textInput" type="text" size="50" name="account[title]" id="title" value="{$gContent->mInfo.title|escape}" />
 							{/forminput}
 						</div>
  
