@@ -527,14 +527,6 @@ class BitAccount extends LibertyMime {
 	function prepVerify() {
 		if (empty($this->mVerification['account_data'])) {
 
-	 		/* Validation for title */
-	$this->mVerification['account_data']['null']['title'] = array(
-		'name' => 'Account Name',
-);
-	 		/* Validation for data */
-	$this->mVerification['account_data']['null']['data'] = array(
-		'name' => 'About',
-);
 
 		}
 	}
