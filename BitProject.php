@@ -527,14 +527,6 @@ class BitProject extends LibertyMime {
 	function prepVerify() {
 		if (empty($this->mVerification['project_data'])) {
 
-	 		/* Validation for title */
-	$this->mVerification['project_data']['null']['title'] = array(
-		'name' => 'Project Name',
-);
-	 		/* Validation for data */
-	$this->mVerification['project_data']['null']['data'] = array(
-		'name' => 'Description',
-);
 	 		/* Validation for account_id */
 			$this->mVerification['project_data']['reference']['account_id'] = array(
 				'name' => 'Account Name',

@@ -527,14 +527,6 @@ class BitSubProject extends LibertyMime {
 	function prepVerify() {
 		if (empty($this->mVerification['subproject_data'])) {
 
-	 		/* Validation for title */
-	$this->mVerification['subproject_data']['null']['title'] = array(
-		'name' => 'Sub-Project Name',
-);
-	 		/* Validation for data */
-	$this->mVerification['subproject_data']['null']['data'] = array(
-		'name' => 'Description',
-);
 	 		/* Validation for account_id */
 			$this->mVerification['subproject_data']['reference']['account_id'] = array(
 				'name' => 'Account Name',
