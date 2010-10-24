@@ -22,6 +22,7 @@
    -==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 */
 
+define( 'LIBERTY_SERVICE_SUBPROJECT_CONTENT', 'subproject_content' );
 
 global $gBitSystem;
 
@@ -41,6 +42,25 @@ if( $gBitSystem->isPackageActive( 'accounts' ) ){ //&& $gBitUser->hasPermission(
 	);
 	$gBitSystem->registerAppMenu( $menuHash );
 
+    // include service functions
+	require_once( ACCOUNTS_PKG_PATH.'SubProjectContent.php' );
+
+	/*
+    $gLibertySystem->registerService(
+		LIBERTY_SERVICE_SUBPROJECT_CONTENT,
+		ACCOUNTS_PKG_NAME,
+        array(
+			'content_edit_function' => 'subproject_content_content_edit',
+			'content_store_function' => 'subproject_content_content_store',
+			'content_expunge_function' => 'subproject_content_content_expunge',
+			'content_display_function' => 'subproject_content_content_display',
+			'content_preview_function' => 'subproject_content_content_preview',
+        ),
+        array(
+			'description' => 'Stores content within a subproject'
+        )
+    );
+	*/
 
 $gLibertySystem->loadPackagePlugins( ACCOUNTS_PKG_NAME );
 

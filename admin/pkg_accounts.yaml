@@ -20,6 +20,32 @@ package:
       account_member_role: {label: Account Member Role, type: int, note: The group_id for the account membership role.}
       project_member_role: {label: Project Member Role, type: int, note: The group_id for the project membership role.}
       account_member_role: {label: Account Member Role, type: int, note: The group_id for the sub-project membership role.}
+
+  services:
+    subproject_content:
+      name: SubProjectContent
+      class_name: SubProjectContent
+      description: Stores content within a subproject
+      base_class: LibertyBase
+      base_package: liberty
+      type: subproject_content
+      service: subproject_content
+      functions: [content_edit, content_store, content_expunge, content_display, content_preview]
+      sql: [content_edit_sql]
+      templates: [content_edit_mini]
+      permissions:
+        default: [update: admin]
+      relation: one-to-many     # options: one-to-one, one-to-many, many-to-many
+      fields:
+        subproject_id: 
+          name: Sub Projects
+          help: Select the sub-projects this content belongs to
+          schema: {type: I4, notnull: true}
+          validator: {type: reference, table: subproject_data, column: subproject_id, required: true}
+          input: {type: select, multiple: true, desc_column: title, desc_table: liberty_content, optionsHashName: availableSubprojects, js: [onchange]}
+      constraints:
+        CONSTRAINT `scm_subproject_id_ref` FOREIGN KEY (`subproject_id`) REFERENCES `subproject_data` (`subproject_id`)
+
   types:
     account:
       templates: {list_type.tpl: ulli}
@@ -102,22 +128,6 @@ package:
         CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
         CONSTRAINT `project_id_ref` FOREIGN KEY (`project_id`) REFERENCES `project_data` (`project_id`)
   tables:
-    subproject_content_map:
-      description: A map from a subproject to the content in it
-      fields:
-        subproject_id: 
-          name: Sub-Project Id
-          schema: {type: I4, notnull: true}
-          validator: {type: reference, table: subproject_data, column: subproject_id, required: true}
-          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableSubprojects, js: [onchange]}
-        content_id:
-          name: Content Id
-          schema: {type: I4, notnull: true}
-          validator: {type: reference, table: liberty_content, column: content_id, required: true}
-          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableContent, js: [onchange]}
-      constraints:
-        CONSTRAINT `scm_subproject_id_ref` FOREIGN KEY (`subproject_id`) REFERENCES `subproject_data` (`subproject_id`)
-        CONSTRAINT `scm_contents_id_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
     users_roles_map:
       description: A map of an account project or subproject to a user and group
       fields:

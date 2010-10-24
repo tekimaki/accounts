@@ -40,13 +40,15 @@ accounts:
         , CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
         , CONSTRAINT `project_id_ref` FOREIGN KEY (`project_id`) REFERENCES `project_data` (`project_id`)
         '
-    subproject_content_map: |
-        subproject_id I4 NOTNULL,
-        content_id I4 NOTNULL
+    subproject_content_data: |
+        content_id I4 NOTNULL,
+        subproject_id I4 NOTNULL
         CONSTRAINT '
+        , CONSTRAINT `subproject_content_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
+		, CONSTRAINT `subproject_content_subproject_id_subproject_id_ref` FOREIGN KEY (`subproject_id`) REFERENCES `subproject_data` (`subproject_id`)
         , CONSTRAINT `scm_subproject_id_ref` FOREIGN KEY (`subproject_id`) REFERENCES `subproject_data` (`subproject_id`)
-        , CONSTRAINT `scm_contents_id_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
         '
+
     users_roles_map: |
         group_id I4 PRIMARY,
         user_id I4 PRIMARY,
@@ -126,7 +128,36 @@ accounts:
     p_subproject_admin:
       description: Can admin any subproject entry
       level: admin
+    p_subproject_content_create:
+      description:  Can create a subproject_content entry
+      level: registered
+    p_subproject_content_view:
+      description:  Can view subproject_content entries
+      level: basic
+    p_subproject_content_update:
+      description: Can update any subproject_content entry
+      level: editors
+    p_subproject_content_expunge:
+      description: Can delete any subproject_content entry
+      level: admin
+    p_subproject_content_admin:
+      description: Can admin any subproject_content entry
+      level: admin
   contenttypes:
     BitAccount: BitAccount.php
     BitProject: BitProject.php
     BitSubProject: BitSubProject.php
+  plugins:
+    subproject_content:
+      handler_file: SubProjectContent.php
+      api_handlers:
+        sql:
+          content_edit_sql: subproject_content_content_edit_sql
+        function:
+          content_edit: subproject_content_content_edit
+          content_store: subproject_content_content_store
+          content_expunge: subproject_content_content_expunge
+          content_display: subproject_content_content_display
+          content_preview: subproject_content_content_preview
+        tpl:
+          content_edit_mini: "bitpackage:accounts/subproject_content_content_edit_mini_inc.tpl"

@@ -68,8 +68,8 @@
 	{formlabel label="Account Name" for="account_id" required="y"}
 	{forminput}
 
-	    	{html_options id="account_id" options=$account_id_options name="subproject[account_id]" selected=$gContent->getField('account_id') onchange="BitSubProject.onChangeAccountId(this);"  }
-    
+	        {html_options id="account_id" options=$account_id_options name="subproject[account_id]" selected=$gContent->getField('account_id') onchange="BitSubProject.onChangeAccountId(this);"  }
+        
 	{formhelp note=""}
 	{/forminput}
 						</div>
@@ -78,8 +78,8 @@
 	{formlabel label="Project Name" for="project_id" required="y"}
 	{forminput}
 
-	    	{html_options id="project_id" options=$project_id_options name="subproject[project_id]" selected=$gContent->getField('project_id')  }
-    
+	        {html_options id="project_id" options=$project_id_options name="subproject[project_id]" selected=$gContent->getField('project_id')  }
+        
 	{formhelp note=""}
 	{/forminput}
 						</div>
