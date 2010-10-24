@@ -377,13 +377,9 @@ class BitSubProject extends LibertyMime {
 
 		/* =-=- CUSTOM BEGIN: getList -=-= */
 
-		// @TODO this seems strange to limit to a list of one.
-		/*
-		if (!empty($pParamHash['account_content_id'])) {
-			$whereSql .= " AND lc.`content_id` = ? ";
-			$bindVars[] = $pParamHash['account_content_id'];
+		if (empty($pParamHash['include_defaults'])) {
+			$whereSql .= " AND subproject.is_default = 0";
 		}
-		*/
 
 		/* =-=- CUSTOM END: getList -=-= */
 

@@ -237,7 +237,7 @@ class BitProject extends LibertyMime {
 				$this->clearDefaults();
 			}
 			if ( $new ) {
-				$this->createDefaultSubProject($pParamHash['project_store']);
+				$this->createDefaultSubProject($pParamHash['project']['content_store'], $pParamHash['project_store']);
 			}
 			/* =-=- CUSTOM END: store -=-= */
 
@@ -380,13 +380,9 @@ class BitProject extends LibertyMime {
 
 		/* =-=- CUSTOM BEGIN: getList -=-= */
 
-		// @TODO this seems strange to limit to a list of one.
-		/*
-		if (!empty($pParamHash['account_content_id'])) {
-			$whereSql .= " AND lc.`content_id` = ? ";
-			$bindVars[] = $pParamHash['account_content_id'];
+		if (empty($pParamHash['include_defaults'])) {
+			$whereSql .= " AND project.is_default = 0";
 		}
-		*/
 
 		/* =-=- CUSTOM END: getList -=-= */
 
@@ -639,12 +635,12 @@ class BitProject extends LibertyMime {
 	/**
 	 * Creates the default project for this account
 	 */
-	function createDefaultSubProject($pParamHash) {
+	function createDefaultSubProject($pContentHash, $pParamHash) {
 		require_once(ACCOUNTS_PKG_PATH.'BitSubProject.php');
 		$bsp = new BitSubProject();
 		$store = array();
-		$store['subproject']['title'] = 'Default';
-		$store['subproject']['edit'] = 'Default SubProject For Project';
+		$store['subproject']['title'] = $pContentHash['title'];
+		$store['subproject']['edit'] = 'Default SubProject For Project and Account';
 		$store['subproject']['account_id'] = $pParamHash['account_id'];
 		$store['subproject']['project_id'] = $this->mProjectId;
 		$store['subproject']['is_default'] = 'y';

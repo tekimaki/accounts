@@ -234,7 +234,7 @@ class BitAccount extends LibertyMime {
 
 			/* =-=- CUSTOM BEGIN: store -=-= */
 			if ($new) {
-				$this->createDefaultProject();
+				$this->createDefaultProject($pParamHash['account']['content_store']);
 			}
 			/* =-=- CUSTOM END: store -=-= */
 
@@ -585,11 +585,11 @@ class BitAccount extends LibertyMime {
 	/**
 	 * Creates the default project for this account
 	 */
-	function createDefaultProject() {
+	function createDefaultProject($pParamHash) {
 		require_once(ACCOUNTS_PKG_PATH.'BitProject.php');
 		$bp = new BitProject();
 		$store = array();
-		$store['project']['title'] = 'Default';
+		$store['project']['title'] = $pParamHash['title'];
 		$store['project']['edit'] = 'Default Project For Account';
 		$store['project']['account_id'] = $this->mAccountId;
 		$store['project']['is_default'] = 'y';
