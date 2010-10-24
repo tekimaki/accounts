@@ -29,7 +29,6 @@ accounts:
         account_id I4 NOTNULL
         CONSTRAINT '
         , CONSTRAINT `project_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
-        , CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
         '
     subproject_data: |
         subproject_id I4 PRIMARY,
@@ -39,8 +38,6 @@ accounts:
         is_default I1 NOTNULL
         CONSTRAINT '
         , CONSTRAINT `subproject_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
-        , CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
-        , CONSTRAINT `project_id_ref` FOREIGN KEY (`project_id`) REFERENCES `project_data` (`project_id`)
         '
     subproject_content_data: |
         content_id I4 NOTNULL,
@@ -48,18 +45,8 @@ accounts:
         CONSTRAINT '
         , CONSTRAINT `subproject_content_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
 		, CONSTRAINT `subproject_content_subproject_id_subproject_id_ref` FOREIGN KEY (`subproject_id`) REFERENCES `subproject_data` (`subproject_id`)
-        , CONSTRAINT `scm_subproject_id_ref` FOREIGN KEY (`subproject_id`) REFERENCES `subproject_data` (`subproject_id`)
         '
 
-    users_roles_map: |
-		group_id I4 PRIMARY,
-		user_id I4 PRIMARY,
-		content_id I4 PRIMARY
-        CONSTRAINT '
-        , CONSTRAINT `urm_group_id` FOREIGN KEY (`group_id`) REFERENCES `users_groups` (`group_id`)
-        , CONSTRAINT `urm_user_id` FOREIGN KEY (`content_id`) REFERENCES `users_users` (`user_id`)
-        , CONSTRAINT `urm_content_id_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
-        '
   constraints: 
   indexes: 
   sequences: 
@@ -153,8 +140,6 @@ accounts:
     subproject_content:
       handler_file: SubProjectContent.php
       api_handlers:
-        sql:
-          content_edit_sql: subproject_content_content_edit_sql
         function:
           content_edit: subproject_content_content_edit
           content_store: subproject_content_content_store

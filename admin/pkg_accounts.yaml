@@ -31,7 +31,6 @@ package:
       type: subproject_content
       service: subproject_content
       functions: [content_edit, content_store, content_expunge, content_display, content_preview]
-      sql: [content_edit_sql]
       templates: [content_edit_mini]
       permissions:
         default: [update: admin]
@@ -43,8 +42,6 @@ package:
           schema: {type: I4, notnull: true}
           validator: {type: reference, table: subproject_data, column: subproject_id, required: true}
           input: {type: select, multiple: true, desc_column: title, desc_table: liberty_content, optionsHashName: availableSubprojects, js: [onchange]}
-      constraints:
-        CONSTRAINT `scm_subproject_id_ref` FOREIGN KEY (`subproject_id`) REFERENCES `subproject_data` (`subproject_id`)
 
   types:
     account:
@@ -97,8 +94,7 @@ package:
           schema: {type: I4, notnull: true}
           validator: {type: reference, table: account_data, column: account_id, required: true}
           input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: myAccounts }
-      constraints:
-        CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
+
     subproject:
       templates: {list_type.tpl: ulli}
       content_name: Sub-Project
@@ -134,29 +130,4 @@ package:
           schema: {type: I1, notnull: true, default: 0}
           validator: {type: boolean}
           input: {type: none}
-      constraints:
-        CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
-        CONSTRAINT `project_id_ref` FOREIGN KEY (`project_id`) REFERENCES `project_data` (`project_id`)
-  tables:
-    users_roles_map:
-      description: A map of an account project or subproject to a user and group
-      fields:
-        group_id: 
-          name: Group Id
-          schema: {type: I4, primary: true}
-          validator: {type: reference, table: users_groups, column: group_id, required: true}
-          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableGroups, js: [onchange]}
-        user_id: 
-          name: User Id
-          schema: {type: I4, primary: true}
-          validator: {type: reference, table: users_users, column: user_id, required: true}
-          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableUsers, js: [onchange]}
-        content_id: 
-          name: Content Id
-          schema: {type: I4, primary: true}
-          validator: {type: reference, table: users_users, column: user_id, required: true, constrain_foreign_column: content_type_guid, constrain_value: {bitaccount, bitproject, bitsubproject} }
-          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableContent, js: [onchange]}
-      constraints:
-        CONSTRAINT `urm_group_id` FOREIGN KEY (`group_id`) REFERENCES `users_groups` (`group_id`)
-        CONSTRAINT `urm_user_id` FOREIGN KEY (`content_id`) REFERENCES `users_users` (`user_id`)
-        CONSTRAINT `urm_content_id_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
+
