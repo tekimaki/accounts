@@ -46,6 +46,9 @@
 			{* =-=- CUSTOM END: body -=-= *}
 
 
+			<div class="row is_default">
+				<label>Is Default:</label>&nbsp;{$gContent->getField('is_default')|escape}
+			</div>
 			<div class="row account_id">
 				<label>Account Name:</label>&nbsp;{$gContent->getField('account_id')|escape}
 			</div>

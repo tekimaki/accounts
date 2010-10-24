@@ -206,6 +206,8 @@ class BitProject extends LibertyMime {
 		// This is particularly important for classes which will
 		// touch the filesystem in some way.
 		$abort = ignore_user_abort(FALSE);
+		// A flag to let the custom store block know if we updated or inserted.
+		$new = FALSE;
 		if( $this->verify( $pParamHash )
 			&& LibertyMime::store( $pParamHash['project'] ) ) {
 			$this->mDb->StartTrans();
@@ -216,6 +218,7 @@ class BitProject extends LibertyMime {
 					$result = $this->mDb->associateUpdate( $table, $pParamHash['project_store'], $locId );
 				}
 			} else {
+				$new = TRUE;
 				$pParamHash['project_store']['content_id'] = $pParamHash['project']['content_id'];
 				if( @$this->verifyId( $pParamHash['project_id'] ) ) {
 					// if pParamHash['project']['project_id'] is set, some is requesting a particular project_id. Use with caution!
@@ -230,7 +233,12 @@ class BitProject extends LibertyMime {
 
 
 			/* =-=- CUSTOM BEGIN: store -=-= */
-
+			if ( !empty( $pParamHash['project_store']['is_default'] ) ) {
+				$this->clearDefaults();
+			}
+			if ( $new ) {
+				$this->createDefaultSubProject($pParamHash['project_store']);
+			}
 			/* =-=- CUSTOM END: store -=-= */
 
 
@@ -527,6 +535,10 @@ class BitProject extends LibertyMime {
 	function prepVerify() {
 		if (empty($this->mVerification['project_data'])) {
 
+	 		/* Validation for is_default */
+			$this->mVerification['project_data']['boolean']['is_default'] = array(
+				'name' => 'Is Default',
+			);
 	 		/* Validation for account_id */
 			$this->mVerification['project_data']['reference']['account_id'] = array(
 				'name' => 'Account Name',
@@ -557,6 +569,13 @@ class BitProject extends LibertyMime {
 				'type' => 'null',
 				'label' => 'Description',
 				'help' => 'A description of the project',
+			);
+	 		/* Schema for is_default */
+			$this->mSchema['project_data']['is_default'] = array(
+				'name' => 'is_default',
+				'type' => 'boolean',
+				'label' => 'Is Default',
+				'help' => '',
 			);
 	 		/* Schema for account_id */
 			$this->mSchema['project_data']['account_id'] = array(
@@ -603,6 +622,40 @@ class BitProject extends LibertyMime {
 
 	/* This section is for any helper methods you wish to create */
 	/* =-=- CUSTOM BEGIN: methods -=-= */
+
+	/**
+	 * Clear Defaults to make sure we are the only one marked as a default
+	 **/
+	function clearDefaults() {
+		if ($this->isValid() && !empty($this->mInfo['account_id'])) {
+			$this->mDb->StartTrans();
+			$table = BIT_DB_PREFIX."project_data";
+			$sql = "UPDATE `".$table."` SET is_default = 'n' WHERE account_id == ? AND project_id != ?";
+			$location = array($this->mInfo['account_id'], $this->mProjectId);
+			$this->mDb->query($sql, $location);
+		}
+	}
+
+	/**
+	 * Creates the default project for this account
+	 */
+	function createDefaultSubProject($pParamHash) {
+		require_once(ACCOUNTS_PKG_PATH.'BitSubProject.php');
+		$bsp = new BitSubProject();
+		$store = array();
+		$store['subproject']['title'] = 'Default';
+		$store['subproject']['edit'] = 'Default SubProject For Project';
+		$store['subproject']['account_id'] = $pParamHash['account_id'];
+		$store['subproject']['project_id'] = $this->mProjectId;
+		$store['subproject']['is_default'] = 'y';
+		$bsp->store($store);
+
+		if ($bsp->isValid()) {
+			$this->storePreference('default_subproject_id', $bsp->mSubprojectId);
+		}
+		// Copy any store errors;
+		$this->mErrors = array_merge($this->mErrors, $bp->mErrors);
+	}
 
 	/**
 	 * @TODO may want to support a list permission more broadly

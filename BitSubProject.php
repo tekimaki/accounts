@@ -206,6 +206,8 @@ class BitSubProject extends LibertyMime {
 		// This is particularly important for classes which will
 		// touch the filesystem in some way.
 		$abort = ignore_user_abort(FALSE);
+		// A flag to let the custom store block know if we updated or inserted.
+		$new = FALSE;
 		if( $this->verify( $pParamHash )
 			&& LibertyMime::store( $pParamHash['subproject'] ) ) {
 			$this->mDb->StartTrans();
@@ -216,6 +218,7 @@ class BitSubProject extends LibertyMime {
 					$result = $this->mDb->associateUpdate( $table, $pParamHash['subproject_store'], $locId );
 				}
 			} else {
+				$new = TRUE;
 				$pParamHash['subproject_store']['content_id'] = $pParamHash['subproject']['content_id'];
 				if( @$this->verifyId( $pParamHash['subproject_id'] ) ) {
 					// if pParamHash['subproject']['subproject_id'] is set, some is requesting a particular subproject_id. Use with caution!
@@ -230,7 +233,9 @@ class BitSubProject extends LibertyMime {
 
 
 			/* =-=- CUSTOM BEGIN: store -=-= */
-
+			if ( !empty( $pParamHash['subproject_store']['is_default'] ) ) {
+				$this->clearDefaults();
+			}
 			/* =-=- CUSTOM END: store -=-= */
 
 
@@ -541,6 +546,10 @@ class BitSubProject extends LibertyMime {
 				'column' => 'project_id',
 				'required' => '1'
 			);
+	 		/* Validation for is_default */
+			$this->mVerification['subproject_data']['boolean']['is_default'] = array(
+				'name' => 'Is Default',
+			);
 
 		}
 	}
@@ -584,6 +593,13 @@ class BitSubProject extends LibertyMime {
 				'table' => 'project_data',
 				'column' => 'project_id',
 				'required' => '1'
+			);
+	 		/* Schema for is_default */
+			$this->mSchema['subproject_data']['is_default'] = array(
+				'name' => 'is_default',
+				'type' => 'boolean',
+				'label' => 'Is Default',
+				'help' => '',
 			);
 		}
 
@@ -630,6 +646,19 @@ class BitSubProject extends LibertyMime {
 
 	/* This section is for any helper methods you wish to create */
 	/* =-=- CUSTOM BEGIN: methods -=-= */
+
+	/**
+	 * Clear Defaults to make sure we are the only one marked as a default
+	 **/
+	function clearDefaults() {
+		if ($this->isValid() && !empty($this->mInfo['account_id'])) {
+			$this->mDb->StartTrans();
+			$table = BIT_DB_PREFIX."subproject_data";
+			$sql = "UPDATE `".$table."` SET is_default = 0 WHERE project_id == ? AND subproject_id = ?";
+			$location = array($this->mInfo['project_id'], $this->mSubrojectId);
+			$this->mDb->query($sql, $location);
+		}
+	}
 
 	/**
 	 * @TODO may want to support a list permission more broadly

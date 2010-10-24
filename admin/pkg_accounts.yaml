@@ -87,6 +87,11 @@ package:
         data:
           name: Description
           help: A description of the project
+        is_default:
+          name: Is Default
+          schema: {type: I1, notnull: true, default: 0}
+          validator: {type: boolean}
+          input: {type: none}
         account_id:
           name: Account Name
           schema: {type: I4, notnull: true}
@@ -124,6 +129,11 @@ package:
           schema: {type: I4, notnull: true}
           validator: {type: reference, table: project_data, column: project_id, required: true}
           input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName:myProjects}
+        is_default:
+          name: Is Default
+          schema: {type: I1, notnull: true, default: 0}
+          validator: {type: boolean}
+          input: {type: none}
       constraints:
         CONSTRAINT `account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
         CONSTRAINT `project_id_ref` FOREIGN KEY (`project_id`) REFERENCES `project_data` (`project_id`)

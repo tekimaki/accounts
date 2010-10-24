@@ -206,6 +206,8 @@ class BitAccount extends LibertyMime {
 		// This is particularly important for classes which will
 		// touch the filesystem in some way.
 		$abort = ignore_user_abort(FALSE);
+		// A flag to let the custom store block know if we updated or inserted.
+		$new = FALSE;
 		if( $this->verify( $pParamHash )
 			&& LibertyMime::store( $pParamHash['account'] ) ) {
 			$this->mDb->StartTrans();
@@ -216,6 +218,7 @@ class BitAccount extends LibertyMime {
 					$result = $this->mDb->associateUpdate( $table, $pParamHash['account_store'], $locId );
 				}
 			} else {
+				$new = TRUE;
 				$pParamHash['account_store']['content_id'] = $pParamHash['account']['content_id'];
 				if( @$this->verifyId( $pParamHash['account_id'] ) ) {
 					// if pParamHash['account']['account_id'] is set, some is requesting a particular account_id. Use with caution!
@@ -230,7 +233,9 @@ class BitAccount extends LibertyMime {
 
 
 			/* =-=- CUSTOM BEGIN: store -=-= */
-
+			if ($new) {
+				$this->createDefaultProject();
+			}
 			/* =-=- CUSTOM END: store -=-= */
 
 
@@ -576,6 +581,27 @@ class BitAccount extends LibertyMime {
 
 	/* This section is for any helper methods you wish to create */
 	/* =-=- CUSTOM BEGIN: methods -=-= */
+
+	/**
+	 * Creates the default project for this account
+	 */
+	function createDefaultProject() {
+		require_once(ACCOUNTS_PKG_PATH.'BitProject.php');
+		$bp = new BitProject();
+		$store = array();
+		$store['project']['title'] = 'Default';
+		$store['project']['edit'] = 'Default Project For Account';
+		$store['project']['account_id'] = $this->mAccountId;
+		$store['project']['is_default'] = 'y';
+		$bp->store($store);
+		// Store defaults in content preferences for easy access.
+		if ($bp->isValid()) {
+			$this->storePreference('default_project_id', $bp->mProjectId);
+			$this->storePreference('default_subproject_id', $bp->getPreference('default_subproject_id'));
+		}
+		// Copy any store errors;
+		$this->mErrors = array_merge($this->mErrors, $bp->mErrors);		
+	}
 
 	/**
 	 * @TODO may want to support a list permission more broadly

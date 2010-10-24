@@ -47,6 +47,9 @@
 	 		     	{if $gBitSystem->isFeatureActive('subproject_list_project_id' ) eq 'y'}
 						<li>{smartlink ititle="Project Name" isort=project_id offset=$control.offset}</li>
 					{/if}
+	 		     	{if $gBitSystem->isFeatureActive('subproject_list_is_default' ) eq 'y'}
+						<li>{smartlink ititle="Is Default" isort=is_default offset=$control.offset}</li>
+					{/if}
 
 
 					{if $gBitSystem->isFeatureActive( 'subproject_list_summary' ) eq 'y'}
@@ -91,6 +94,9 @@
 						{/if}
 	 		     	    {if $gBitSystem->isFeatureActive('subproject_list_project_id' ) eq 'y'}
 							<li><label>Project Name:</label>&nbsp;{$dataItem.project_id|escape}</li>
+						{/if}
+	 		     	    {if $gBitSystem->isFeatureActive('subproject_list_is_default' ) eq 'y'}
+							<li><label>Is Default:</label>&nbsp;{$dataItem.is_default|escape}</li>
 						{/if}
 </ul>
 

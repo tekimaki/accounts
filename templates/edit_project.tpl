@@ -68,7 +68,7 @@
 	{formlabel label="Account Name" for="account_id" required="y"}
 	{forminput}
 
-	        {html_options id="account_id" options=$account_id_options name="project[account_id]" selected=$gContent->getField('account_id')  }
+            {html_options id="account_id" options=$account_id_options name="project[account_id]" selected=$gContent->getField('account_id')  }
         
 	{formhelp note=""}
 	{/forminput}

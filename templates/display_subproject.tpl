@@ -52,6 +52,9 @@
 			<div class="row project_id">
 				<label>Project Name:</label>&nbsp;{$gContent->getField('project_id')|escape}
 			</div>
+			<div class="row is_default">
+				<label>Is Default:</label>&nbsp;{$gContent->getField('is_default')|escape}
+			</div>
 
 			{$gContent->mInfo.parsed_data}
 

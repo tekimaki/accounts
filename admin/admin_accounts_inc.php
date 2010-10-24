@@ -73,6 +73,10 @@ $formprojectLists = array(
 		'label' => 'Description',
 		'note' => 'Display the description text.',
 	),
+        "project_list_is_default" => array(
+		'label' => 'Is Default',
+		'note' => 'Display the is_default',
+	),
         "project_list_account_id" => array(
 		'label' => 'Account Name',
 		'note' => 'Display the account_id',
@@ -103,6 +107,10 @@ $formsubprojectLists = array(
         "subproject_list_project_id" => array(
 		'label' => 'Project Name',
 		'note' => 'Display the project_id',
+	),
+        "subproject_list_is_default" => array(
+		'label' => 'Is Default',
+		'note' => 'Display the is_default',
 	),
 );
 $gBitSmarty->assign( 'formsubprojectLists', $formsubprojectLists );
