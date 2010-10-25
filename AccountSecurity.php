@@ -321,47 +321,37 @@ function account_security_content_list_sql( $pObject, $pParamHash ){
 function account_security_content_user_perms( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_user_perms -=-= */
-		/*
 		global $gBitUser, $gBitSystem;		
-		$membership_group_id = $gBitSystem->getConfig('account_membership_group_id', NULL);
-		if (!empty($membership_group_id)) {
+		$membership_group_id = $gBitSystem->getConfig('account_membership_group_id', -1);
+		if (!empty($membership_group_id) && $pObject->isValid()) {
 			// Prevent null userId;
 			if( !is_numeric( $userId ) ) $userId = 0;
+			
+			// Find the groups for this content and user
+			$query = 
+				"SELECT asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
+				"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
+				"INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` scd ON (sd.`content_id` = scd.`content_id` )".
+				"WHERE asd.`user_id` = ? OR asd.`user_id` = ? ".
+				"AND scd.`content_id` = ?";
+			$bindVars = array($userId, ANONYMOUS_USER_ID, $pObject->mContentId);
+			$groups = $pObject->mDb->getArray($query, $bindVars);
 
-			// Find the subprojects for this user
-			$user_subprojects_query = "
-				SELECT sp.`subproject_id` FROM `".BIT_DB_PREFIX."subproject_data`
-					JOIN `".BIT_DB_PREFIX."account_security_data` asd ON (asd.`content_id` = sp.`content_id` AND asd.`group_id` = ? AND asd.`user_id` = ?)
-               UNION
-				SELECT sp.`subproject_id` FROM `".BIT_DB_PREFIX."subproject_data`
-                    JOIN `".BIT_DB_PREFIX."account_data` ad ON (sp.`account_id` = ad.`account_id`)
-					JOIN `".BIT_DB_PREFIX."account_security_data` asd ON (asd.`content_id` = ad.`content_id` AND ad.`group_id` = ? AND asd.`user_id` = ?)
-               UNION
-				SELECT sp.`subproject_id` FROM `".BIT_DB_PREFIX."subproject_data`
-                    JOIN `".BIT_DB_PREFIX."account_data` ad ON (sp.`account_id` = ad.`account_id`)
-					JOIN `".BIT_DB_PREFIX."account_security_data` asd ON (asd.`content_id` = ad.`content_id` AND ad.`group_id` = ? AND asd.`user_id` = ?)";
-			$bind_vars = array($membership_group_id, $user_id, $membership_group_id, $user_id, $membership_group_id, $user_id);
-
-			// Find the groups for this user
-
-			// Limit to this content
-			$subproject_query = "
-				SELECT scd.`subproject_id` FROM `".BIT_DB_PREFIX."subproject_content_data`
-                WHERE scd.`content_id` = ? AND subproject_id IN ($user_subproject_query)";
-			$bind_vars = array_merge($pObect->mContentId, $bind_vars);
-
-			$query = "
-				SELECT ugp.`perm_name` as `hash_key`, 1 as `group_perm`, ugp.`perm_name`, ugp.`perm_value`, ugp.`group_id`
-				FROM `".BIT_DB_PREFIX."account_security_data` ugm
-					LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` ugp ON (ugm.`group_id`=ugp.`group_id`)
-					LEFT JOIN `".BIT_DB_PREFIX."liberty_content_permissions` lcp ON(lcp.`group_id`=ugm.`group_id` AND lcp.`content_id`=? AND ugp.`perm_name`=lcp.`perm_name`)
-				WHERE lcp.`perm_name` IS NULL AND ugm.";
-			$bind_vars = array( $pObject->mContentId, $pObject->mContentId, $userId, ANONYMOUS_USER_ID );
-			$accessPerms = $this->mDb->getAssoc( $query, $bind_vars );
-			if ( !empty($accessPerms) ) {
-				$pObject->mUserContentPerms = array_merge($pObject->mUserContentPerms, $accessPerms);
+			if (!empty($groups)) {
+				$query =
+					"SELECT ugp.`perm_name` as `hash_key`, 1 as `group_perm`, ugp.`perm_name`, ugp.`perm_value`, ugp.`group_id` ".
+					"FROM `".BIT_DB_PREFIX."users_group_permissions` ugp ".
+					"LEFT JOIN `".BIT_DB_PREFIX."liberty_content_permissions` lcp ON(lcp.`group_id`=ugp.`group_id` AND lcp.`content_id`=? AND ugp.`perm_name`=lcp.`perm_name`) ".
+					"WHERE lcp.`perm_name` IS NULL AND ugp.`group_id` IN ".
+					"( ".implode( ',',array_fill( 0, count( $groups ),'?' ) ).") ";
+				$bindVars = array_merge(array($pObject->mContentId), $groups);
+				
+				$accessPerms = $this->mDb->getAssoc( $query, $bind_vars );
+				if ( !empty($accessPerms) ) {
+					$pObject->mUserContentPerms = array_merge($pObject->mUserContentPerms, $accessPerms);
+				}
 			}
 		}
-		*/
+
 		/* =-=- CUSTOM END: account_security_content_user_perms -=-= */	}
 }
