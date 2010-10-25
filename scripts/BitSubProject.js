@@ -9,7 +9,7 @@ BitSubProject = {
 	, //continue list, comma not included by generator on last func
 
         updateProjectOptions:function(account_content_id){
-                var row = BitBase.getElement('row_subproject_project_id');
+                var row = BitBase.getElement('row_subproject_project_content_id');
                 if( !isNaN(parseInt(account_content_id)) ){
                         $.ajax({
                                 url:BitSystem.urls.accounts+'ajax.php',

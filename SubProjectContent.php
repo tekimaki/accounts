@@ -161,7 +161,7 @@ class SubProjectContent extends LibertyBase {
 			$whereSql = preg_replace( '/^[\s]*AND\b/i', 'WHERE ', $whereSql );
 		}
 
-		$query = "SELECT  `subproject_id` FROM `subproject_content_data`".$whereSql;
+		$query = "SELECT  `subproject_content_id` FROM `subproject_content_data`".$whereSql;
 		$ret = $this->mDb->getArray( $query, $bindVars );
 		return $ret;
 	}
@@ -202,11 +202,11 @@ class SubProjectContent extends LibertyBase {
 	function prepVerify() {
 		if (empty($this->mVerification['subproject_content_data'])) {
 
-	 		/* Validation for subproject_id */
-			$this->mVerification['subproject_content_data']['reference']['subproject_id'] = array(
+	 		/* Validation for subproject_content_id */
+			$this->mVerification['subproject_content_data']['reference']['subproject_content_id'] = array(
 				'name' => 'Sub Projects',
 				'table' => 'subproject_data',
-				'column' => 'subproject_id',
+				'column' => 'content_id',
 				'required' => '1'
 			);
 
@@ -219,14 +219,14 @@ class SubProjectContent extends LibertyBase {
 	public function getSchema() {
 		if (empty($this->mSchema['subproject_content_data'])) {
 
-	 		/* Schema for subproject_id */
-			$this->mSchema['subproject_content_data']['subproject_id'] = array(
-				'name' => 'subproject_id',
+	 		/* Schema for subproject_content_id */
+			$this->mSchema['subproject_content_data']['subproject_content_id'] = array(
+				'name' => 'subproject_content_id',
 				'type' => 'reference',
 				'label' => 'Sub Projects',
 				'help' => 'Select the sub-projects this content belongs to',
 				'table' => 'subproject_data',
-				'column' => 'subproject_id',
+				'column' => 'content_id',
 				'required' => '1'
 			);
 		}
@@ -248,10 +248,10 @@ class SubProjectContent extends LibertyBase {
 	function getSubProjectsOptions( &$pParamHash=array() ){
 		$bindVars = array();
 		$joinSql = $whereSql = "";
-		/* =-=- CUSTOM BEGIN: subproject_id_options -=-= */
+		/* =-=- CUSTOM BEGIN: subproject_content_id_options -=-= */
 
-		/* =-=- CUSTOM END: subproject_id_options -=-= */
-		$query = "SELECT a.subproject_id, b.title FROM subproject_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
+		/* =-=- CUSTOM END: subproject_content_id_options -=-= */
+		$query = "SELECT a.content_id, b.title FROM subproject_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
 		return $this->mDb->getAssoc( $query, $bindVars );
 	}
 
@@ -282,8 +282,8 @@ function subproject_content_content_edit( $pObject, $pParamHash ){
 		$subproject_content = new SubProjectContent();
 
 		// Load options for Sub Projects
-		$subproject_id_options =  $subproject_content->getSubProjectsOptions( $listHash );
-		$gBitSmarty->assign('subproject_id_options', $subproject_id_options);
+		$subproject_content_id_options =  $subproject_content->getSubProjectsOptions( $listHash );
+		$gBitSmarty->assign('subproject_content_id_options', $subproject_content_id_options);
 
 	}
 }
@@ -323,8 +323,8 @@ function subproject_content_content_preview( $pObject, $pParamHash ){
 		$subproject_content = new SubProjectContent();
 
 		// Load options for Sub Projects
-		$subproject_id_options =  $subproject_content->getSubProjectsOptions( $listHash );
-		$gBitSmarty->assign('subproject_id_options', $subproject_id_options);
+		$subproject_content_id_options =  $subproject_content->getSubProjectsOptions( $listHash );
+		$gBitSmarty->assign('subproject_content_id_options', $subproject_content_id_options);
 
 	}
 }

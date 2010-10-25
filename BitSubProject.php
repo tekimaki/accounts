@@ -531,14 +531,14 @@ class BitSubProject extends LibertyMime {
 	 		/* Validation for account_content_id */
 			$this->mVerification['subproject_data']['reference']['account_content_id'] = array(
 				'name' => 'Account Name',
-				'table' => 'liberty_content',
+				'table' => 'account_data',
 				'column' => 'content_id',
 				'required' => '1'
 			);
 	 		/* Validation for project_content_id */
 			$this->mVerification['subproject_data']['reference']['project_content_id'] = array(
 				'name' => 'Project Name',
-				'table' => 'liberty_content',
+				'table' => 'project_data',
 				'column' => 'content_id',
 				'required' => '1'
 			);
@@ -576,7 +576,7 @@ class BitSubProject extends LibertyMime {
 				'type' => 'reference',
 				'label' => 'Account Name',
 				'help' => '',
-				'table' => 'liberty_content',
+				'table' => 'account_data',
 				'column' => 'content_id',
 				'required' => '1'
 			);
@@ -586,7 +586,7 @@ class BitSubProject extends LibertyMime {
 				'type' => 'reference',
 				'label' => 'Project Name',
 				'help' => '',
-				'table' => 'liberty_content',
+				'table' => 'project_data',
 				'column' => 'content_id',
 				'required' => '1'
 			);
@@ -619,7 +619,7 @@ class BitSubProject extends LibertyMime {
 		/* =-=- CUSTOM BEGIN: account_content_id_options -=-= */
 
 		/* =-=- CUSTOM END: account_content_id_options -=-= */
-		$query = "SELECT a.content_id, b.title FROM liberty_content a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
+		$query = "SELECT a.content_id, b.title FROM account_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
 		return $this->mDb->getAssoc( $query, $bindVars );
 	}
 
@@ -629,7 +629,7 @@ class BitSubProject extends LibertyMime {
 		/* =-=- CUSTOM BEGIN: project_content_id_options -=-= */
 
 		/* =-=- CUSTOM END: project_content_id_options -=-= */
-		$query = "SELECT a.content_id, b.title FROM liberty_content a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
+		$query = "SELECT a.content_id, b.title FROM project_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
 		return $this->mDb->getAssoc( $query, $bindVars );
 	}
 
