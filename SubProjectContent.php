@@ -205,7 +205,7 @@ class SubProjectContent extends LibertyBase {
 	 		/* Validation for subproject_content_id */
 			$this->mVerification['subproject_content_data']['reference']['subproject_content_id'] = array(
 				'name' => 'Sub Projects',
-				'table' => 'subproject_data',
+				'table' => 'liberty_content',
 				'column' => 'content_id',
 				'required' => '1'
 			);
@@ -225,7 +225,7 @@ class SubProjectContent extends LibertyBase {
 				'type' => 'reference',
 				'label' => 'Sub Projects',
 				'help' => 'Select the sub-projects this content belongs to',
-				'table' => 'subproject_data',
+				'table' => 'liberty_content',
 				'column' => 'content_id',
 				'required' => '1'
 			);
@@ -251,7 +251,7 @@ class SubProjectContent extends LibertyBase {
 		/* =-=- CUSTOM BEGIN: subproject_content_id_options -=-= */
 
 		/* =-=- CUSTOM END: subproject_content_id_options -=-= */
-		$query = "SELECT a.content_id, b.title FROM subproject_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
+		$query = "SELECT a.content_id, b.title FROM liberty_content a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
 		return $this->mDb->getAssoc( $query, $bindVars );
 	}
 
