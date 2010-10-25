@@ -42,6 +42,16 @@ accounts:
         , CONSTRAINT `subproject_account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
         , CONSTRAINT `subproject_project_id_ref` FOREIGN KEY (`project_id`) REFERENCES `project_data` (`project_id`)
         '
+    account_security_data: |
+        content_id I4 NOTNULL,
+        group_id I4 PRIMARY,
+        user_id I4 PRIMARY
+        CONSTRAINT '
+        , CONSTRAINT `account_security_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
+        , CONSTRAINT `account_security_group_id_ref` FOREIGN KEY (`group_id`) REFERENCES `users_groups` (`group_id`)
+        , CONSTRAINT `account_security_user_id_ref` FOREIGN KEY (`user_id`) REFERENCES `users_users` (`user_id`)
+        '
+
     subproject_content_data: |
         content_id I4 NOTNULL,
         subproject_id I4 NOTNULL
@@ -120,6 +130,21 @@ accounts:
     p_subproject_admin:
       description: Can admin any subproject entry
       level: admin
+    p_account_security_create:
+      description:  Can create a account_security entry
+      level: registered
+    p_account_security_view:
+      description:  Can view account_security entries
+      level: basic
+    p_account_security_update:
+      description: Can update any account_security entry
+      level: editors
+    p_account_security_expunge:
+      description: Can delete any account_security entry
+      level: admin
+    p_account_security_admin:
+      description: Can admin any account_security entry
+      level: admin
     p_subproject_content_create:
       description:  Can create a subproject_content entry
       level: registered
@@ -140,6 +165,13 @@ accounts:
     BitProject: BitProject.php
     BitSubProject: BitSubProject.php
   plugins:
+    account_security:
+      handler_file: AccountSecurity.php
+      api_handlers:
+        sql:
+          content_list_sql: account_security_content_list_sql
+        function:
+          content_user_perms: account_security_content_user_perms
     subproject_content:
       handler_file: SubProjectContent.php
       api_handlers:

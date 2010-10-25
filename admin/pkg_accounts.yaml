@@ -22,6 +22,31 @@ package:
       account_member_role: {label: Account Member Role, type: int, note: The group_id for the sub-project membership role.}
 
   services:
+    account_security:
+      name: AccountSecurity
+      class_name: AccountSecurity
+      description: Provides account related security
+      base_class: LibertyBase
+      base_package: liberty
+      type: account_security
+      service: account_security
+      sql: [content_list_sql]
+      functions: [content_user_perms]
+      permissions:
+        default: [update: admin, view: admin, create: admin, expunge: admin]
+      relation: one-to-many
+      fields:
+        group_id: 
+          name: Group Id
+          schema: {type: I4, primary: true}
+          validator: {type: reference, table: users_groups, column: group_id, required: true}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableGroups, js: [onchange]}
+        user_id: 
+          name: User Id
+          schema: {type: I4, primary: true}
+          validator: {type: reference, table: users_users, column: user_id, required: true}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableUsers, js: [onchange]}
+
     subproject_content:
       name: SubProjectContent
       class_name: SubProjectContent

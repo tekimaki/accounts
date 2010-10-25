@@ -22,6 +22,7 @@
    -==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 */
 
+define( 'LIBERTY_SERVICE_ACCOUNT_SECURITY', 'account_security' );
 define( 'LIBERTY_SERVICE_SUBPROJECT_CONTENT', 'subproject_content' );
 
 global $gBitSystem;
@@ -43,6 +44,20 @@ if( $gBitSystem->isPackageActive( 'accounts' ) ){ //&& $gBitUser->hasPermission(
 	$gBitSystem->registerAppMenu( $menuHash );
 
     // include service functions
+	require_once( ACCOUNTS_PKG_PATH.'AccountSecurity.php' );
+
+	/*
+    $gLibertySystem->registerService(
+		LIBERTY_SERVICE_ACCOUNT_SECURITY,
+		ACCOUNTS_PKG_NAME,
+        array(
+			'content_user_perms_function' => 'account_security_content_user_perms',
+        ),
+        array(
+			'description' => 'Provides account related security'
+        )
+    );
+	*/
 	require_once( ACCOUNTS_PKG_PATH.'SubProjectContent.php' );
 
 	/*
