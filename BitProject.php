@@ -535,11 +535,11 @@ class BitProject extends LibertyMime {
 			$this->mVerification['project_data']['boolean']['is_default'] = array(
 				'name' => 'Is Default',
 			);
-	 		/* Validation for account_id */
-			$this->mVerification['project_data']['reference']['account_id'] = array(
+	 		/* Validation for account_content_id */
+			$this->mVerification['project_data']['reference']['account_content_id'] = array(
 				'name' => 'Account Name',
-				'table' => 'account_data',
-				'column' => 'account_id',
+				'table' => 'liberty_content',
+				'column' => 'content_id',
 				'required' => '1'
 			);
 
@@ -573,14 +573,14 @@ class BitProject extends LibertyMime {
 				'label' => 'Is Default',
 				'help' => '',
 			);
-	 		/* Schema for account_id */
-			$this->mSchema['project_data']['account_id'] = array(
-				'name' => 'account_id',
+	 		/* Schema for account_content_id */
+			$this->mSchema['project_data']['account_content_id'] = array(
+				'name' => 'account_content_id',
 				'type' => 'reference',
 				'label' => 'Account Name',
 				'help' => '',
-				'table' => 'account_data',
-				'column' => 'account_id',
+				'table' => 'liberty_content',
+				'column' => 'content_id',
 				'required' => '1'
 			);
 		}
@@ -602,10 +602,10 @@ class BitProject extends LibertyMime {
 	function getAccountNameOptions( &$pParamHash=array() ){
 		$bindVars = array();
 		$joinSql = $whereSql = "";
-		/* =-=- CUSTOM BEGIN: account_id_options -=-= */
+		/* =-=- CUSTOM BEGIN: account_content_id_options -=-= */
 
-		/* =-=- CUSTOM END: account_id_options -=-= */
-		$query = "SELECT a.account_id, b.title FROM account_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
+		/* =-=- CUSTOM END: account_content_id_options -=-= */
+		$query = "SELECT a.content_id, b.title FROM liberty_content a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
 		return $this->mDb->getAssoc( $query, $bindVars );
 	}
 

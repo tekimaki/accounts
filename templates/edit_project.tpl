@@ -63,12 +63,12 @@
 								<input class="textInput" type="text" size="50" name="project[title]" id="title" value="{$gContent->mInfo.title|escape}" />
 							{/forminput}
 						</div>
-						<div class="row" id="row_project_account_id" style="">
-								{formfeedback warning=$errors.account_id}
-	{formlabel label="Account Name" for="account_id" required="y"}
+						<div class="row" id="row_project_account_content_id" style="">
+								{formfeedback warning=$errors.account_content_id}
+	{formlabel label="Account Name" for="account_content_id" required="y"}
 	{forminput}
 
-            {html_options id="account_id" options=$account_id_options name="project[account_id]" selected=$gContent->getField('account_id')  }
+            {html_options id="account_content_id" options=$account_content_id_options name="project[account_content_id]" selected=$gContent->getField('account_content_id')  }
         
 	{formhelp note=""}
 	{/forminput}

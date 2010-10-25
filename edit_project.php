@@ -72,12 +72,12 @@ if( isset( $_REQUEST["preview"] ) ) {
 
 
 // Prep any data we may need for the form
-$account_id_options = $gContent->getAccountNameOptions();
-$account_id_options_list = array( ''=>tra('Select one...') );
-foreach( $account_id_options as $key=>$value ){
-	$account_id_options_list[$key] = $value;
+$account_content_id_options = $gContent->getAccountNameOptions();
+$account_content_id_options_list = array( ''=>tra('Select one...') );
+foreach( $account_content_id_options as $key=>$value ){
+	$account_content_id_options_list[$key] = $value;
 }
-$gBitSmarty->assign_by_ref( 'account_id_options', $account_id_options_list );
+$gBitSmarty->assign_by_ref( 'account_content_id_options', $account_content_id_options_list );
 
 
 /* =-=- CUSTOM BEGIN: edit -=-= */

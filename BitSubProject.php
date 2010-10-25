@@ -528,18 +528,18 @@ class BitSubProject extends LibertyMime {
 	function prepVerify() {
 		if (empty($this->mVerification['subproject_data'])) {
 
-	 		/* Validation for account_id */
-			$this->mVerification['subproject_data']['reference']['account_id'] = array(
+	 		/* Validation for account_content_id */
+			$this->mVerification['subproject_data']['reference']['account_content_id'] = array(
 				'name' => 'Account Name',
-				'table' => 'account_data',
-				'column' => 'account_id',
+				'table' => 'liberty_content',
+				'column' => 'content_id',
 				'required' => '1'
 			);
-	 		/* Validation for project_id */
-			$this->mVerification['subproject_data']['reference']['project_id'] = array(
+	 		/* Validation for project_content_id */
+			$this->mVerification['subproject_data']['reference']['project_content_id'] = array(
 				'name' => 'Project Name',
-				'table' => 'project_data',
-				'column' => 'project_id',
+				'table' => 'liberty_content',
+				'column' => 'content_id',
 				'required' => '1'
 			);
 	 		/* Validation for is_default */
@@ -570,24 +570,24 @@ class BitSubProject extends LibertyMime {
 				'label' => 'Description',
 				'help' => 'A description of the sub-project',
 			);
-	 		/* Schema for account_id */
-			$this->mSchema['subproject_data']['account_id'] = array(
-				'name' => 'account_id',
+	 		/* Schema for account_content_id */
+			$this->mSchema['subproject_data']['account_content_id'] = array(
+				'name' => 'account_content_id',
 				'type' => 'reference',
 				'label' => 'Account Name',
 				'help' => '',
-				'table' => 'account_data',
-				'column' => 'account_id',
+				'table' => 'liberty_content',
+				'column' => 'content_id',
 				'required' => '1'
 			);
-	 		/* Schema for project_id */
-			$this->mSchema['subproject_data']['project_id'] = array(
-				'name' => 'project_id',
+	 		/* Schema for project_content_id */
+			$this->mSchema['subproject_data']['project_content_id'] = array(
+				'name' => 'project_content_id',
 				'type' => 'reference',
 				'label' => 'Project Name',
 				'help' => '',
-				'table' => 'project_data',
-				'column' => 'project_id',
+				'table' => 'liberty_content',
+				'column' => 'content_id',
 				'required' => '1'
 			);
 	 		/* Schema for is_default */
@@ -616,20 +616,20 @@ class BitSubProject extends LibertyMime {
 	function getAccountNameOptions( &$pParamHash=array() ){
 		$bindVars = array();
 		$joinSql = $whereSql = "";
-		/* =-=- CUSTOM BEGIN: account_id_options -=-= */
+		/* =-=- CUSTOM BEGIN: account_content_id_options -=-= */
 
-		/* =-=- CUSTOM END: account_id_options -=-= */
-		$query = "SELECT a.account_id, b.title FROM account_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
+		/* =-=- CUSTOM END: account_content_id_options -=-= */
+		$query = "SELECT a.content_id, b.title FROM liberty_content a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
 		return $this->mDb->getAssoc( $query, $bindVars );
 	}
 
 	function getProjectNameOptions( &$pParamHash=array() ){
 		$bindVars = array();
 		$joinSql = $whereSql = "";
-		/* =-=- CUSTOM BEGIN: project_id_options -=-= */
+		/* =-=- CUSTOM BEGIN: project_content_id_options -=-= */
 
-		/* =-=- CUSTOM END: project_id_options -=-= */
-		$query = "SELECT a.project_id, b.title FROM project_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
+		/* =-=- CUSTOM END: project_content_id_options -=-= */
+		$query = "SELECT a.content_id, b.title FROM liberty_content a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
 		return $this->mDb->getAssoc( $query, $bindVars );
 	}
 

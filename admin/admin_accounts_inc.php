@@ -77,9 +77,9 @@ $formprojectLists = array(
 		'label' => 'Is Default',
 		'note' => 'Display the is_default',
 	),
-        "project_list_account_id" => array(
+        "project_list_account_content_id" => array(
 		'label' => 'Account Name',
-		'note' => 'Display the account_id',
+		'note' => 'Display the account_content_id',
 	),
 );
 $gBitSmarty->assign( 'formprojectLists', $formprojectLists );
@@ -100,13 +100,13 @@ $formsubprojectLists = array(
 		'label' => 'Description',
 		'note' => 'Display the description text.',
 	),
-        "subproject_list_account_id" => array(
+        "subproject_list_account_content_id" => array(
 		'label' => 'Account Name',
-		'note' => 'Display the account_id',
+		'note' => 'Display the account_content_id',
 	),
-        "subproject_list_project_id" => array(
+        "subproject_list_project_content_id" => array(
 		'label' => 'Project Name',
-		'note' => 'Display the project_id',
+		'note' => 'Display the project_content_id',
 	),
         "subproject_list_is_default" => array(
 		'label' => 'Is Default',

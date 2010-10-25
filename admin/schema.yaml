@@ -26,21 +26,21 @@ accounts:
         project_id I4 PRIMARY,
         content_id I4 NOTNULL,
         is_default I1 NOTNULL,
-        account_id I4 NOTNULL
+        account_content_id I4 NOTNULL
         CONSTRAINT '
         , CONSTRAINT `project_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
-        , CONSTRAINT `project_account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
+        , CONSTRAINT `project_account_content_id_ref` FOREIGN KEY (`account_content_id`) REFERENCES `liberty_content` (`content_id`)
         '
     subproject_data: |
         subproject_id I4 PRIMARY,
         content_id I4 NOTNULL,
-        account_id I4 NOTNULL,
-        project_id I4 NOTNULL,
+        account_content_id I4 NOTNULL,
+        project_content_id I4 NOTNULL,
         is_default I1 NOTNULL
         CONSTRAINT '
         , CONSTRAINT `subproject_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
-        , CONSTRAINT `subproject_account_id_ref` FOREIGN KEY (`account_id`) REFERENCES `account_data` (`account_id`)
-        , CONSTRAINT `subproject_project_id_ref` FOREIGN KEY (`project_id`) REFERENCES `project_data` (`project_id`)
+        , CONSTRAINT `subproject_account_content_id_ref` FOREIGN KEY (`account_content_id`) REFERENCES `liberty_content` (`content_id`)
+        , CONSTRAINT `subproject_project_content_id_ref` FOREIGN KEY (`project_content_id`) REFERENCES `liberty_content` (`content_id`)
         '
     account_security_data: |
         content_id I4 NOTNULL,

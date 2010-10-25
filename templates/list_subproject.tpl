@@ -41,11 +41,11 @@
 	 		     	{if $gBitSystem->isFeatureActive('subproject_list_data' ) eq 'y'}
 						<li>{smartlink ititle="Description" isort=data offset=$control.offset}</li>
 					{/if}
-	 		     	{if $gBitSystem->isFeatureActive('subproject_list_account_id' ) eq 'y'}
-						<li>{smartlink ititle="Account Name" isort=account_id offset=$control.offset}</li>
+	 		     	{if $gBitSystem->isFeatureActive('subproject_list_account_content_id' ) eq 'y'}
+						<li>{smartlink ititle="Account Name" isort=account_content_id offset=$control.offset}</li>
 					{/if}
-	 		     	{if $gBitSystem->isFeatureActive('subproject_list_project_id' ) eq 'y'}
-						<li>{smartlink ititle="Project Name" isort=project_id offset=$control.offset}</li>
+	 		     	{if $gBitSystem->isFeatureActive('subproject_list_project_content_id' ) eq 'y'}
+						<li>{smartlink ititle="Project Name" isort=project_content_id offset=$control.offset}</li>
 					{/if}
 	 		     	{if $gBitSystem->isFeatureActive('subproject_list_is_default' ) eq 'y'}
 						<li>{smartlink ititle="Is Default" isort=is_default offset=$control.offset}</li>
@@ -89,11 +89,11 @@
 	 		     	    {if $gBitSystem->isFeatureActive('subproject_list_title' ) eq 'y'}
 							<li><label>Sub-Project Name:</label>&nbsp;{$dataItem.title|escape}</li>
 						{/if}
-	 		     	    {if $gBitSystem->isFeatureActive('subproject_list_account_id' ) eq 'y'}
-							<li><label>Account Name:</label>&nbsp;{$dataItem.account_id|escape}</li>
+	 		     	    {if $gBitSystem->isFeatureActive('subproject_list_account_content_id' ) eq 'y'}
+							<li><label>Account Name:</label>&nbsp;{$dataItem.account_content_id|escape}</li>
 						{/if}
-	 		     	    {if $gBitSystem->isFeatureActive('subproject_list_project_id' ) eq 'y'}
-							<li><label>Project Name:</label>&nbsp;{$dataItem.project_id|escape}</li>
+	 		     	    {if $gBitSystem->isFeatureActive('subproject_list_project_content_id' ) eq 'y'}
+							<li><label>Project Name:</label>&nbsp;{$dataItem.project_content_id|escape}</li>
 						{/if}
 	 		     	    {if $gBitSystem->isFeatureActive('subproject_list_is_default' ) eq 'y'}
 							<li><label>Is Default:</label>&nbsp;{$dataItem.is_default|escape}</li>

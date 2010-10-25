@@ -63,22 +63,22 @@
 								<input class="textInput" type="text" size="50" name="subproject[title]" id="title" value="{$gContent->mInfo.title|escape}" />
 							{/forminput}
 						</div>
-						<div class="row" id="row_subproject_account_id" style="">
-								{formfeedback warning=$errors.account_id}
-	{formlabel label="Account Name" for="account_id" required="y"}
+						<div class="row" id="row_subproject_account_content_id" style="">
+								{formfeedback warning=$errors.account_content_id}
+	{formlabel label="Account Name" for="account_content_id" required="y"}
 	{forminput}
 
-            {html_options id="account_id" options=$account_id_options name="subproject[account_id]" selected=$gContent->getField('account_id') onchange="BitSubProject.onChangeAccountId(this);"  }
+            {html_options id="account_content_id" options=$account_content_id_options name="subproject[account_content_id]" selected=$gContent->getField('account_content_id') onchange="BitSubProject.onChangeAccountContentId(this);"  }
         
 	{formhelp note=""}
 	{/forminput}
 						</div>
-						<div class="row" id="row_subproject_project_id" style="">
-								{formfeedback warning=$errors.project_id}
-	{formlabel label="Project Name" for="project_id" required="y"}
+						<div class="row" id="row_subproject_project_content_id" style="">
+								{formfeedback warning=$errors.project_content_id}
+	{formlabel label="Project Name" for="project_content_id" required="y"}
 	{forminput}
 
-            {html_options id="project_id" options=$project_id_options name="subproject[project_id]" selected=$gContent->getField('project_id')  }
+            {html_options id="project_content_id" options=$project_content_id_options name="subproject[project_content_id]" selected=$gContent->getField('project_content_id')  }
         
 	{formhelp note=""}
 	{/forminput}

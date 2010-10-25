@@ -44,8 +44,8 @@
 	 		     	{if $gBitSystem->isFeatureActive('project_list_is_default' ) eq 'y'}
 						<li>{smartlink ititle="Is Default" isort=is_default offset=$control.offset}</li>
 					{/if}
-	 		     	{if $gBitSystem->isFeatureActive('project_list_account_id' ) eq 'y'}
-						<li>{smartlink ititle="Account Name" isort=account_id offset=$control.offset}</li>
+	 		     	{if $gBitSystem->isFeatureActive('project_list_account_content_id' ) eq 'y'}
+						<li>{smartlink ititle="Account Name" isort=account_content_id offset=$control.offset}</li>
 					{/if}
 
 
@@ -89,8 +89,8 @@
 	 		     	    {if $gBitSystem->isFeatureActive('project_list_is_default' ) eq 'y'}
 							<li><label>Is Default:</label>&nbsp;{$dataItem.is_default|escape}</li>
 						{/if}
-	 		     	    {if $gBitSystem->isFeatureActive('project_list_account_id' ) eq 'y'}
-							<li><label>Account Name:</label>&nbsp;{$dataItem.account_id|escape}</li>
+	 		     	    {if $gBitSystem->isFeatureActive('project_list_account_content_id' ) eq 'y'}
+							<li><label>Account Name:</label>&nbsp;{$dataItem.account_content_id|escape}</li>
 						{/if}
 </ul>
 

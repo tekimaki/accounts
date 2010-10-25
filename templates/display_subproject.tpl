@@ -46,11 +46,11 @@
 			{* =-=- CUSTOM END: body -=-= *}
 
 
-			<div class="row account_id">
-				<label>Account Name:</label>&nbsp;{$gContent->getField('account_id')|escape}
+			<div class="row account_content_id">
+				<label>Account Name:</label>&nbsp;{$gContent->getField('account_content_id')|escape}
 			</div>
-			<div class="row project_id">
-				<label>Project Name:</label>&nbsp;{$gContent->getField('project_id')|escape}
+			<div class="row project_content_id">
+				<label>Project Name:</label>&nbsp;{$gContent->getField('project_content_id')|escape}
 			</div>
 			<div class="row is_default">
 				<label>Is Default:</label>&nbsp;{$gContent->getField('is_default')|escape}

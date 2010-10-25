@@ -49,8 +49,8 @@
 			<div class="row is_default">
 				<label>Is Default:</label>&nbsp;{$gContent->getField('is_default')|escape}
 			</div>
-			<div class="row account_id">
-				<label>Account Name:</label>&nbsp;{$gContent->getField('account_id')|escape}
+			<div class="row account_content_id">
+				<label>Account Name:</label>&nbsp;{$gContent->getField('account_content_id')|escape}
 			</div>
 
 			{$gContent->mInfo.parsed_data}

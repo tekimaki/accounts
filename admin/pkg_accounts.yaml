@@ -114,12 +114,11 @@ package:
           schema: {type: I1, notnull: true, default: 0}
           validator: {type: boolean}
           input: {type: none}
-        account_id:
+        account_content_id:
           name: Account Name
           schema: {type: I4, notnull: true}
-          validator: {type: reference, table: account_data, column: account_id, required: true}
+          validator: {type: reference, table: liberty_content, column: content_id, required: true}
           input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: myAccounts }
-
     subproject:
       templates: {list_type.tpl: ulli}
       content_name: Sub-Project
@@ -140,15 +139,15 @@ package:
         data:
           name: Description
           help: A description of the sub-project
-        account_id:
+        account_content_id:
           name: Account Name
           schema: {type: I4, notnull: true}
-          validator: {type: reference, table: account_data, column: account_id, required: true}
+          validator: {type: reference, table: liberty_content, column: content_id, required: true}
           input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: myAccounts, js: [onchange]}
-        project_id:
+        project_content_id:
           name: Project Name
           schema: {type: I4, notnull: true}
-          validator: {type: reference, table: project_data, column: project_id, required: true}
+          validator: {type: reference, table: liberty_content, column: content_id, required: true}
           input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName:myProjects}
         is_default:
           name: Is Default
