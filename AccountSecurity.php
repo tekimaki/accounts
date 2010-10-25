@@ -342,15 +342,15 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 				$query =
 					"SELECT ugp.`perm_name` as `hash_key`, 1 as `group_perm`, ugp.`perm_name`, ugp.`perm_value`, ugp.`group_id` ".
 					"FROM `".BIT_DB_PREFIX."users_group_permissions` ugp ".
-					"LEFT JOIN `".BIT_DB_PREFIX."liberty_content_permissions` lcp ON(lcp.`group_id`=ugp.`group_id` AND lcp.`content_id`=? AND ugp.`perm_name`=lcp.`perm_name`) ".
+					"LEFT JOIN `".BIT_DB_PREFIX."liberty_content_permissions` lcp ON (lcp.`group_id`=ugp.`group_id` AND lcp.`content_id`=? AND ugp.`perm_name`=lcp.`perm_name`) ".
 					"WHERE lcp.`perm_name` IS NULL AND ugp.`group_id` IN ".
-					"( ".implode( ',',array_fill( 0, count( $groups ),'?' ) ).") ";
+					"( ".implode( ',',array_fill( 0, count( $groups ),'?' ) )." ) ";
 				$bindVars = array_merge(array($pObject->mContentId), $groups);
+				$accessPerms = $pObject->mDb->getAssoc( $query, $bindVars );
 				
-				$accessPerms = $pObject->mDb->getAssoc( $query, $bind_vars );
-
 				if ( !empty($accessPerms) ) {
-					$pObject->mUserContentPerms = array_merge($pObject->mUserContentPerms, $accessPerms);
+					// Do accessPerms first so that per content rejections override.
+					$pObject->mUserContentPerms = array_merge($accessPerms, $pObject->mUserContentPerms);
 				}
 			}
 		}
