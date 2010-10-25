@@ -641,8 +641,8 @@ class BitProject extends LibertyMime {
 		$store = array();
 		$store['subproject']['title'] = $pContentHash['title'];
 		$store['subproject']['edit'] = 'Default SubProject For Project and Account';
-		$store['subproject']['account_id'] = $pParamHash['account_id'];
-		$store['subproject']['project_id'] = $this->mProjectId;
+		$store['subproject']['account_content_id'] = $pParamHash['account_content_id'];
+		$store['subproject']['project_content_id'] = $this->mContentId;
 		$store['subproject']['is_default'] = 'y';
 		$bsp->store($store);
 
