@@ -38,14 +38,16 @@ package:
       fields:
         group_id: 
           name: Group Id
-          schema: {type: I4, primary: true}
+          schema: {type: I4, notnull: true}
           validator: {type: reference, table: users_groups, column: group_id, required: true}
           input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableGroups, js: [onchange]}
         user_id: 
           name: User Id
-          schema: {type: I4, primary: true}
+          schema: {type: I4, notnull: true}
           validator: {type: reference, table: users_users, column: user_id, required: true}
           input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: availableUsers, js: [onchange]}
+      constraints:
+          PRIMARY KEY (content_id, group_id, user_id)
 
     subproject_content:
       name: SubProjectContent

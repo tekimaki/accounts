@@ -44,12 +44,13 @@ accounts:
         '
     account_security_data: |
         content_id I4 NOTNULL,
-        group_id I4 PRIMARY,
-        user_id I4 PRIMARY
+        group_id I4 NOTNULL,
+        user_id I4 NOTNULL
         CONSTRAINT '
         , CONSTRAINT `account_security_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
         , CONSTRAINT `account_security_group_id_ref` FOREIGN KEY (`group_id`) REFERENCES `users_groups` (`group_id`)
         , CONSTRAINT `account_security_user_id_ref` FOREIGN KEY (`user_id`) REFERENCES `users_users` (`user_id`)
+        , PRIMARY KEY (content_id, group_id, user_id)
         '
 
     subproject_content_data: |
