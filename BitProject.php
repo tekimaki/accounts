@@ -605,7 +605,7 @@ class BitProject extends LibertyMime {
 		/* =-=- CUSTOM BEGIN: account_content_id_options -=-= */
 
 		/* =-=- CUSTOM END: account_content_id_options -=-= */
-		$query = "SELECT a.content_id, b.title FROM liberty_content a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
+		$query = "SELECT a.content_id, b.title FROM account_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
 		return $this->mDb->getAssoc( $query, $bindVars );
 	}
 
@@ -640,7 +640,7 @@ class BitProject extends LibertyMime {
 		$bsp = new BitSubProject();
 		$store = array();
 		$store['subproject']['title'] = $pContentHash['title'];
-		$store['subproject']['edit'] = 'Default SubProject For Project and Account';
+		$store['subproject']['edit'] = 'Default SubProject For Project';
 		$store['subproject']['account_content_id'] = $pParamHash['account_content_id'];
 		$store['subproject']['project_content_id'] = $this->mContentId;
 		$store['subproject']['is_default'] = 'y';

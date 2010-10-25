@@ -314,7 +314,7 @@ class AccountSecurity extends LibertyBase {
 function account_security_content_list_sql( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_list_sql -=-= */
-		
+
 		/* =-=- CUSTOM END: account_security_content_list_sql -=-= */
 		return $ret;	}
 }

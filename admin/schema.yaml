@@ -54,10 +54,10 @@ accounts:
 
     subproject_content_data: |
         content_id I4 NOTNULL,
-        subproject_id I4 NOTNULL
+        subproject_content_id I4 NOTNULL
         CONSTRAINT '
         , CONSTRAINT `subproject_content_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
-        , CONSTRAINT `subproject_content_subproject_id_ref` FOREIGN KEY (`subproject_id`) REFERENCES `subproject_data` (`subproject_id`)
+        , CONSTRAINT `subproject_content_subproject_content_id_ref` FOREIGN KEY (`subproject_content_id`) REFERENCES `liberty_content` (`content_id`)
         '
 
   constraints: 

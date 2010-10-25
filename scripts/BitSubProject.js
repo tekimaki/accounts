@@ -1,7 +1,8 @@
 BitSubProject = {
 	onChangeAccountContentId:function( inputElm ){
 		/* =-=- CUSTOM BEGIN: onChangeAccountContentId -=-= */
-
+                account_content_id = inputElm.value;
+                BitSubProject.updateProjectOptions(account_content_id);
 		/* =-=- CUSTOM END: onChangeAccountContentId -=-= */
 	}
 

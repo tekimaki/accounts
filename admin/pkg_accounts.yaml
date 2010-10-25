@@ -61,12 +61,12 @@ package:
         default: [update: admin]
       relation: one-to-many     # options: one-to-one, one-to-many, many-to-many
       fields:
-        subproject_id: 
+        subproject_content_id: 
           name: Sub Projects
           help: Select the sub-projects this content belongs to
           schema: {type: I4, notnull: true}
-          validator: {type: reference, table: subproject_data, column: subproject_id, required: true}
-          input: {type: select, multiple: true, desc_column: title, desc_table: liberty_content, optionsHashName: availableSubprojects, js: [onchange]}
+          validator: {type: reference, table: liberty_content, column: content_id, required: true}
+          input: {type: select, multiple: true, desc_column: title, desc_table: liberty_content, optionsHashName: availableSubprojects, js: [onchange], table: subproject_data, column: content_id}
 
   types:
     account:
@@ -118,7 +118,7 @@ package:
           name: Account Name
           schema: {type: I4, notnull: true}
           validator: {type: reference, table: liberty_content, column: content_id, required: true}
-          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: myAccounts }
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: myAccounts, table: account_data, column: content_id}
     subproject:
       templates: {list_type.tpl: ulli}
       content_name: Sub-Project
@@ -143,12 +143,12 @@ package:
           name: Account Name
           schema: {type: I4, notnull: true}
           validator: {type: reference, table: liberty_content, column: content_id, required: true}
-          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: myAccounts, js: [onchange]}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName: myAccounts, js: [onchange], table: project_data, column: account_content_id}
         project_content_id:
           name: Project Name
           schema: {type: I4, notnull: true}
           validator: {type: reference, table: liberty_content, column: content_id, required: true}
-          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName:myProjects}
+          input: {type: select, desc_column: title, desc_table: liberty_content, optionsHashName:myProjects, table: project_data, column: content_id}
         is_default:
           name: Is Default
           schema: {type: I1, notnull: true, default: 0}
