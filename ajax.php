@@ -10,10 +10,10 @@ if( !empty( $_POST['req'] ) ){
   switch( $_POST['req'] ){
   case 'get_available_projects':
     // Load up the requested account.
-    if ( !empty( $_POST['account_id'] ) ) {
+    if ( !empty( $_POST['account_content_id'] ) ) {
       require_once(ACCOUNTS_PKG_PATH."BitAccount.php");
       require_once(ACCOUNTS_PKG_PATH."BitSubProject.php");
-      $account = new BitAccount( $_POST['account_id'] );
+      $account = new BitAccount( NULL, $_POST['account_content_id'] );
       $account->load();
       if ($account->isValid()) {
 	$account->verifyUserPermission( 'p_subproject_create' );

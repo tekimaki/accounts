@@ -10,7 +10,7 @@ BitSubProject = {
 	, //continue list, comma not included by generator on last func
 
         updateProjectOptions:function(account_content_id){
-                var row = BitBase.getElement('row_subproject_project_id');
+                var row = BitBase.getElement('row_subproject_project_content_id');
                 if( !isNaN(parseInt(account_content_id)) ){
                         $.ajax({
                                 url:BitSystem.urls.accounts+'ajax.php',
@@ -18,7 +18,7 @@ BitSubProject = {
                                 context:document.body,
                                 data:{req:'get_available_projects',account_content_id:account_content_id},
                                 success:function(dom){
-                                        $('#project_id').replaceWith(dom);
+                                        $('#project_content_id').replaceWith(dom);
                                         row.style.display = 'block';
                                 }
                         });

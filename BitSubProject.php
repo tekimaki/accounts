@@ -627,7 +627,13 @@ class BitSubProject extends LibertyMime {
 		$bindVars = array();
 		$joinSql = $whereSql = "";
 		/* =-=- CUSTOM BEGIN: project_content_id_options -=-= */
-
+		if (!empty($pParamHash['account_content_id'])) {
+			$whereSql = "WHERE a.`account_content_id` = ?";
+			$bindVars = $pParamHash['account_content_id'];
+		} else {
+			// No account specified then we don't know what to do
+			return array();
+		}
 		/* =-=- CUSTOM END: project_content_id_options -=-= */
 		$query = "SELECT a.content_id, b.title FROM project_data a INNER JOIN liberty_content b ON a.content_id = b.content_id $joinSql $whereSql";
 		return $this->mDb->getAssoc( $query, $bindVars );
