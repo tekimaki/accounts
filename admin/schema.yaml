@@ -47,7 +47,7 @@ accounts:
         group_id I4 PRIMARY,
         user_id I4 PRIMARY
         CONSTRAINT '
-        , CONSTRAINT `account_security_content_ref` FOREIGN KEY (`content_id`) REFERENCES `liberty_content` (`content_id`)
+        , CONSTRAINT `account_security_content_ref` FOREIGN KEY (`content_id`) REFERENCES `subproject_data` (`content_id`)
         , CONSTRAINT `account_security_group_id_ref` FOREIGN KEY (`group_id`) REFERENCES `users_groups` (`group_id`)
         , CONSTRAINT `account_security_user_id_ref` FOREIGN KEY (`user_id`) REFERENCES `users_users` (`user_id`)
         '
