@@ -325,17 +325,18 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 		$membership_group_id = $gBitSystem->getConfig('account_membership_group_id', -1);
 		if (!empty($membership_group_id) && $pObject->isValid()) {
 			// Prevent null userId;
+			$userId = $gBitUser->mUserId;
 			if( !is_numeric( $userId ) ) $userId = 0;
 			
 			// Find the groups for this content and user
 			$query = 
-				"SELECT asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
+				"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
 				"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
-				"INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` scd ON (sd.`content_id` = scd.`content_id` )".
+				"INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` scd ON (sd.`content_id` = scd.`subproject_content_id` )".
 				"WHERE asd.`user_id` = ? OR asd.`user_id` = ? ".
 				"AND scd.`content_id` = ?";
 			$bindVars = array($userId, ANONYMOUS_USER_ID, $pObject->mContentId);
-			$groups = $pObject->mDb->getArray($query, $bindVars);
+			$groups = $pObject->mDb->getAssoc($query, $bindVars);
 
 			if (!empty($groups)) {
 				$query =
@@ -346,7 +347,8 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 					"( ".implode( ',',array_fill( 0, count( $groups ),'?' ) ).") ";
 				$bindVars = array_merge(array($pObject->mContentId), $groups);
 				
-				$accessPerms = $this->mDb->getAssoc( $query, $bind_vars );
+				$accessPerms = $pObject->mDb->getAssoc( $query, $bind_vars );
+
 				if ( !empty($accessPerms) ) {
 					$pObject->mUserContentPerms = array_merge($pObject->mUserContentPerms, $accessPerms);
 				}
