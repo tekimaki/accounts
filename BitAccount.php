@@ -38,6 +38,7 @@ require_once( LIBERTY_PKG_PATH.'LibertyMime.php' );
 require_once( LIBERTY_PKG_PATH . 'LibertyValidator.php' );
 
 /* =-=- CUSTOM BEGIN: require -=-= */
+require_once( USERS_PKG_PATH.'BitUser.php' );
 
 /* =-=- CUSTOM END: require -=-= */
 
