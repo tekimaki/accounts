@@ -335,6 +335,8 @@ function subproject_content_content_edit( $pObject, $pParamHash ){
 }
 function subproject_content_content_store( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+		global $gBitSystem, $gBitSmarty, $gAccount, $gBitUser;
+
 		// get the subproject id to map too
 		if( !empty( $pParamHash['connect_subproject_content_id'] ) ){
 			$pParamHash['subproject_content_id'] = $pParamHash['connect_subproject_content_id'];
