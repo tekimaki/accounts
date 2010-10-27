@@ -38,8 +38,8 @@ if( empty( $gContent ) || !is_object( $gContent ) || !$gContent->isValid() ) {
 	} elseif( @BitBase::verifyId( $_REQUEST['content_id'] ) ) {
 		$gContent = new BitAccount( NULL, $_REQUEST['content_id'] );
 
-	} elseif (@BitBase::verifyId( $_REQUEST['accounts']['account_id'] ) ) {
-		$gContent = new BitAccount( $_REQUEST['accounts']['account_id'] );
+	} elseif (@BitBase::verifyId( $_REQUEST['account']['account_id'] ) ) {
+		$gContent = new BitAccount( $_REQUEST['account']['account_id'] );
 
 	// otherwise create new object
 	} else {
