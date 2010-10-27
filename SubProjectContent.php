@@ -276,7 +276,7 @@ function subproject_content_content_edit( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 		global $gBitSystem, $gBitSmarty, $gAccount, $gBitUser;
 
-		$subproject_content = new SubProjectContent($pObject);
+		$subproject_content = new SubProjectContent( $pObject->mContentId );
 
 		// three paths to passing a subproject id to the edit form
 		// 1. content has already been mapped
@@ -333,8 +333,10 @@ function subproject_content_content_store( $pObject, $pParamHash ){
 		// get the subproject id to map too
 		if( !empty( $pParamHash['connect_subproject_content_id'] ) ){
 			$pParamHash['subproject_content_id'] = $pParamHash['connect_subproject_content_id'];
+		}
 		elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
 			$pParamHash['subproject_content_id'] = $gAccount->getPreference( 'default_project_id' );
+		}
 		elseif( $pObject->isServiceRequired( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 			if( empty( $connect_subproject_content_id ) ){
 				if( $gBitUser->isAdmin() ){
