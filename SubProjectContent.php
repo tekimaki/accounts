@@ -272,6 +272,23 @@ class SubProjectContent extends LibertyBase {
 
 }
 
+function subproject_content_content_list_sql( $pObject, $pParamHash ){
+	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+		/* =-=- CUSTOM BEGIN: subproject_content_content_list_sql -=-= */
+		global $gAccount;
+
+		if( is_object( $gAccount ) && $gAccount->isValid() ) {
+			$ret = array();
+			$ret['select_sql'] = $ret['join_sql'] = $ret['where_sql'] = "";
+			$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` subproject_content_data  ON ( lc.`content_id`=subproject_content_data.`content_id` )";
+			$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_data` subproject_data ON (subproject_content_data.`subproject_content_id` = subproject_data.`content_id`)";
+			$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
+			$ret['bind_vars'] = array( $gAccount->mContentId );
+		}
+
+		/* =-=- CUSTOM END: subproject_content_content_list_sql -=-= */
+		return $ret;	}
+}
 function subproject_content_content_edit( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 		global $gBitSystem, $gBitSmarty, $gAccount, $gBitUser;
@@ -296,12 +313,12 @@ function subproject_content_content_edit( $pObject, $pParamHash ){
 		}
 		// 3. user has not designated an id, but gAccount is in effect
 		elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
-			$connect_subproject_content_id = $gAccount->getPreference( 'default_subproject_id' );
+			$connect_subproject_content_id = $gAccount->getPreference( 'default_subproject_content_id' );
 			if( empty( $connect_subproject_content_id ) ){
 				// try to auto create the default project and subproject 
 				$projHash = array( 'title' => $gAccount->getTitle() );
 				$gAccount->createDefaultProject( $projHash );
-				if( !($connect_subproject_content_id = $gAccount->getPreference( 'default_subproject_id' ) ) ){
+				if( !($connect_subproject_content_id = $gAccount->getPreference( 'default_subproject_content_id' ) ) ){
 					if( $gBitUser->isAdmin() ){
 						$gBitSystem->fatalError( 'Site configuration error', 'error.tpl', 'No default subproject known for gAccount '.$gAccount->getTitle().'. A default subproject needs to be created for this account.' );	
 					}else{
@@ -342,7 +359,7 @@ function subproject_content_content_store( $pObject, $pParamHash ){
 			$pParamHash['subproject_content_data']['subproject_content_id'] = $pParamHash['connect_subproject_content_id'];
 		}
 		elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
-			$pParamHash['subproject_content_data']['subproject_content_id'] = $gAccount->getPreference( 'default_subproject_id' );
+			$pParamHash['subproject_content_data']['subproject_content_id'] = $gAccount->getPreference( 'default_subproject_content_id' );
 		}
 		elseif( $pObject->isServiceRequired( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 			if( empty( $connect_subproject_content_id ) ){

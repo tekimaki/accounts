@@ -597,8 +597,8 @@ class BitAccount extends LibertyMime {
 		$bp->store($store);
 		// Store defaults in content preferences for easy access.
 		if ($bp->isValid()) {
-			$this->storePreference('default_project_id', $bp->mProjectId);
-			$this->storePreference('default_subproject_id', $bp->getPreference('default_subproject_id'));
+			$this->storePreference('default_project_content_id', $bp->mContentId);
+			$this->storePreference('default_subproject_content_id', $bp->getPreference('default_subproject_content_id'));
 		}
 		// Copy any store errors;
 		if( is_array( $bp->mErrors ) ){

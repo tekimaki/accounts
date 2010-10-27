@@ -176,6 +176,8 @@ accounts:
     subproject_content:
       handler_file: SubProjectContent.php
       api_handlers:
+        sql:
+		  content_list_sql: subproject_content_content_list_sql
         function:
           content_edit: subproject_content_content_edit
           content_store: subproject_content_content_store
