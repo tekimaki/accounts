@@ -339,10 +339,10 @@ function subproject_content_content_store( $pObject, $pParamHash ){
 
 		// get the subproject id to map too
 		if( !empty( $pParamHash['connect_subproject_content_id'] ) ){
-			$pParamHash['subproject_content_id'] = $pParamHash['connect_subproject_content_id'];
+			$pParamHash['subproject_content_data']['subproject_content_id'] = $pParamHash['connect_subproject_content_id'];
 		}
 		elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
-			$pParamHash['subproject_content_id'] = $gAccount->getPreference( 'default_subproject_id' );
+			$pParamHash['subproject_content_data']['subproject_content_id'] = $gAccount->getPreference( 'default_subproject_id' );
 		}
 		elseif( $pObject->isServiceRequired( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 			if( empty( $connect_subproject_content_id ) ){
@@ -353,6 +353,7 @@ function subproject_content_content_store( $pObject, $pParamHash ){
 				}
 			}
 		}
+		vd( $pParamHash['subproject_content_id'] );
 
 		// store the mapping
 		$subproject_content = new SubProjectContent( $pObject->mContentId );

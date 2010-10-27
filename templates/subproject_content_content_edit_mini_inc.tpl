@@ -1,5 +1,10 @@
 {strip}
 {if $gContent->hasService($smarty.const.LIBERTY_SERVICE_SUBPROJECT_CONTENT)} 
+	{if $connect_subproject_content_id}
+		<input type="hidden" name="connection_subproject_content_id" value="{$connect_subproject_content_id}" />
+	{/if}
+
+	{*
 	{if $gContent->isValid() && $gBitUser->hasPermission('p_subproject_content_update') ||
 		$gBitUser->hasPermission('p_subproject_content_view')}
 	{legend legend=$serviceName.label|default:$serviceName}
@@ -26,5 +31,6 @@
 		</div>
         {/legend}
         {/if}
+	*}
 {/if}
 {/strip}
