@@ -289,6 +289,9 @@ function subproject_content_content_list_sql( $pObject, $pParamHash ){
 		/* =-=- CUSTOM END: subproject_content_content_list_sql -=-= */
 		return $ret;	}
 }
+function subproject_content_content_load_sql( $pObject, $pParamHash ){
+	return subproject_content_content_list_sql( $pObject, $pParamHash );
+}
 function subproject_content_content_edit( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 		global $gBitSystem, $gBitSmarty, $gAccount, $gBitUser;
