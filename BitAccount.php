@@ -593,7 +593,7 @@ class BitAccount extends LibertyMime {
 		$store['project']['title'] = $pParamHash['title'];
 		$store['project']['edit'] = 'Default Project For Account';
 		$store['project']['account_content_id'] = $this->mContentId;
-		$store['project']['is_default'] = 'y';
+		$store['project']['is_default'] = 1;
 		$bp->store($store);
 		// Store defaults in content preferences for easy access.
 		if ($bp->isValid()) {
