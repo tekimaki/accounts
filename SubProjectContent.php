@@ -296,12 +296,17 @@ function subproject_content_content_edit( $pObject, $pParamHash ){
 		}
 		// 3. user has not designated an id, but gAccount is in effect
 		elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
-			$connect_subproject_content_id = $gAccount->getPreference( 'default_project_id' );
+			$connect_subproject_content_id = $gAccount->getPreference( 'default_subproject_id' );
 			if( empty( $connect_subproject_content_id ) ){
-				if( $gBitUser->isAdmin() ){
-					$gBitSystem->fatalError( 'Site configuration error', 'error.tpl', 'No default subproject known for gAccount '.$gAccount->getTitle().'. A default subproject needs to be created for this account.' );	
-				}else{
-					$gBitSystem->fatalError( 'Site configuration error', 'error.tpl', 'Please report this incident to an administrator.' );
+				// try to auto create the default project and subproject 
+				$projHash = array( 'title' => $gAccount->getTitle() );
+				$gAccount->createDefaultProject( $projHash );
+				if( !($connect_subproject_content_id = $gAccount->getPreference( 'default_subproject_id' ) ) ){
+					if( $gBitUser->isAdmin() ){
+						$gBitSystem->fatalError( 'Site configuration error', 'error.tpl', 'No default subproject known for gAccount '.$gAccount->getTitle().'. A default subproject needs to be created for this account.' );	
+					}else{
+						$gBitSystem->fatalError( 'Site configuration error', 'error.tpl', 'Please report this incident to an administrator.' );
+					}
 				}
 			}
 		}
@@ -335,7 +340,7 @@ function subproject_content_content_store( $pObject, $pParamHash ){
 			$pParamHash['subproject_content_id'] = $pParamHash['connect_subproject_content_id'];
 		}
 		elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
-			$pParamHash['subproject_content_id'] = $gAccount->getPreference( 'default_project_id' );
+			$pParamHash['subproject_content_id'] = $gAccount->getPreference( 'default_subproject_id' );
 		}
 		elseif( $pObject->isServiceRequired( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 			if( empty( $connect_subproject_content_id ) ){

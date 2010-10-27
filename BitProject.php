@@ -650,7 +650,9 @@ class BitProject extends LibertyMime {
 			$this->storePreference('default_subproject_id', $bsp->mSubprojectId);
 		}
 		// Copy any store errors;
-		$this->mErrors = array_merge($this->mErrors, $bp->mErrors);
+		if( is_array( $bp->mErrors ) ){
+			$this->mErrors = array_merge($this->mErrors, $bp->mErrors);
+		}
 	}
 
 	/**

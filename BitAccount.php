@@ -601,7 +601,9 @@ class BitAccount extends LibertyMime {
 			$this->storePreference('default_subproject_id', $bp->getPreference('default_subproject_id'));
 		}
 		// Copy any store errors;
-		$this->mErrors = array_merge($this->mErrors, $bp->mErrors);		
+		if( is_array( $bp->mErrors ) ){
+			$this->mErrors = array_merge($this->mErrors, $bp->mErrors);		
+		}
 	}
 
 	/**
