@@ -274,25 +274,83 @@ class SubProjectContent extends LibertyBase {
 
 function subproject_content_content_edit( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
-		global $gBitSmarty;
+		global $gBitSystem, $gBitSmarty, $gAccount, $gBitUser;
 
-		// pass through to display to load up content data
-		subproject_content_content_display( $pObject, $pParamHash );
+		$subproject_content = new SubProjectContent($pObject);
 
-		$subproject_content = new SubProjectContent();
+		// three paths to passing a subproject id to the edit form
+		// 1. content has already been mapped
+		// 2. user has designated an id to map to
+		// 3. user has not designated an id, but gAccount is in effect
+		// 4. no id and no gaccount - a list of projects is offered, NOTE: NOT IMPLEMENTED FOR SIMPLICITY AT THIS POINT
 
+		// permission checks happen within the security plugin 
+
+		// 1. content has already been mapped
+		if( $pObject->isValid() && $subp_ids = $subproject_content->getList() ) {
+			$connect_subproject_content_id = $subp_ids[0];
+		}
+		// 2. user has designated an id to map to 
+		elseif( !empty( $pParamHash['connect_subproject_content_id'] ) ){
+			$connect_subproject_content_id = $pParamHash['connect_subproject_content_id'];
+		}
+		// 3. user has not designated an id, but gAccount is in effect
+		elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
+			$connect_subproject_content_id = $gAccount->getPreference( 'default_project_id' );
+			if( empty( $connect_subproject_content_id ) ){
+				if( $gBitUser->isAdmin() ){
+					$gBitSystem->fatalError( 'Site configuration error', 'error.tpl', 'No default subproject known for gAccount '.$gAccount->getTitle().'. A default subproject needs to be created for this account.' );	
+				}else{
+					$gBitSystem->fatalError( 'Site configuration error', 'error.tpl', 'Please report this incident to an administrator.' );
+				}
+			}
+		}
+		// Fatal Error - subproject_content_id required
+		elseif( $pObject->isServiceRequired( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+			if( $gBitUser->isAdmin() ){
+				$gBitSystem->fatalError( 'Site configuration error', 'error.tpl', 'No subproject id set in SubProjectContent::subproject_content_content_edit' );	
+			}else{
+				$gBitSystem->fatalError( 'Bad Request, Access Denied' );
+			}
+		}
+		// 4. get a select list @TODO this is crude and disabled until the feature is warranted
+		else{
+		/*
 		// Load options for Sub Projects
 		$subproject_content_id_options =  $subproject_content->getSubProjectsOptions( $listHash );
 		$gBitSmarty->assign('subproject_content_id_options', $subproject_content_id_options);
+		break;
+		*/
+		}
+		// pass through to display to load up content data
+		subproject_content_content_display( $pObject, $pParamHash );
 
+		$gBitSmarty->assign( 'connect_subproject_content_id', $connect_subproject_content_id );
 	}
 }
 function subproject_content_content_store( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+		// get the subproject id to map too
+		if( !empty( $pParamHash['connect_subproject_content_id'] ) ){
+			$pParamHash['subproject_content_id'] = $pParamHash['connect_subproject_content_id'];
+		elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
+			$pParamHash['subproject_content_id'] = $gAccount->getPreference( 'default_project_id' );
+		elseif( $pObject->isServiceRequired( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+			if( empty( $connect_subproject_content_id ) ){
+				if( $gBitUser->isAdmin() ){
+					$gBitSystem->fatalError( 'Site configuration error', 'error.tpl', 'No subproject id set in SubProjectContent::subproject_content_content_store' );	
+				}else{
+					$gBitSystem->fatalError( 'Bad Request, Access Denied' );
+				}
+			}
+		}
+
+		// store the mapping
 		$subproject_content = new SubProjectContent( $pObject->mContentId );
 		if( !$subproject_content->store( $pParamHash ) ){
 			$pObject->setError( 'subproject_content', $subproject_content->mErrors );
-		}	}
+		}
+	}
 }
 function subproject_content_content_expunge( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
@@ -304,12 +362,14 @@ function subproject_content_content_expunge( $pObject, $pParamHash ){
 function subproject_content_content_display( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 		global $gBitSmarty;
+		/* NOT NECESSARY - CONSIDER DROPING FROM API HANDLERS
 		if( $pObject->isValid() ) {
 			$subproject_content = new SubProjectContent();
 			$listHash = array( 'content_id' => $pObject->mContentId );
 			$pObject->mInfo['subproject_content'] = $subproject_content->getList( $listHash );
 
 		}
+		*/
 	}
 }
 function subproject_content_content_preview( $pObject, $pParamHash ){
@@ -317,14 +377,16 @@ function subproject_content_content_preview( $pObject, $pParamHash ){
 		global $gBitSmarty;
 
 		// call edit service which loads any data necessary for form
+		subproject_content_content_edit();
+		// preview
 		$subproject_content = new SubProjectContent();
 		$pObject->mInfo['subproject_content'] = $subproject_content->previewFields( $pParamHash );
 
-		$subproject_content = new SubProjectContent();
-
 		// Load options for Sub Projects
+		/*
 		$subproject_content_id_options =  $subproject_content->getSubProjectsOptions( $listHash );
 		$gBitSmarty->assign('subproject_content_id_options', $subproject_content_id_options);
+		*/
 
 	}
 }
