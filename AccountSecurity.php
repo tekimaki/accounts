@@ -314,7 +314,45 @@ class AccountSecurity extends LibertyBase {
 function account_security_content_list_sql( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_list_sql -=-= */
+		global $gBitUser, $gBitSystem;
 
+		// Find the groups for this user
+		$groups = array_keys($gBitUser->mGroups);
+		// UserId alias for readability
+		$userId = $gBitUser->mUserId;
+
+		// Check that these are all integers just for safety. Assumes they have at least one group but all should have -1
+		if ($gBitSystem->verifyId($groups) && $gBitSystem->verifyId($userId)) {
+
+			// Debug select
+			/*
+			$ret['select_sql'] =
+				", as_lcpm.`perm_name` AS as_target_perm".
+				", as_scd.subproject_content_id AS as_scid".
+				", as_asd.`group_id` AS as_group_id, as_asd.`user_id` AS as_user_id ".
+				", as_ugpgc.`perm_name` AS as_grant_perm".
+				", as_ugpgc.`group_id` AS ugpgc_group".
+				", as_dflt.`perm_name` AS as_dflt_perm".
+				"";
+			*/
+
+			$ret['join_sql'] =
+				// Find the permision name
+				" LEFT JOIN `".BIT_DB_PREFIX."liberty_secure_permissions_map` as_lcpm ON ( as_lcpm.`content_type_guid` = lc.`content_type_guid` AND as_lcpm.`perm_type` = 'view' )".
+				// What subproject is this content in.
+				" LEFT JOIN `".BIT_DB_PREFIX."subproject_content_data` as_scd ON (lc.`content_id` = as_scd.`content_id` )".
+				// Find the group for that subproject
+				" LEFT JOIN `".BIT_DB_PREFIX."account_security_data` as_asd ON (as_scd.`subproject_content_id` = as_asd.`content_id` AND (as_asd.`user_id` = ".$userId." OR as_asd.`user_id` = ".ANONYMOUS_USER_ID." ) ) ".
+				// Check if a group is allowed by default
+				" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_dflt ON (as_dflt.`perm_name` = as_lcpm.`perm_name` AND as_dflt.`group_id` IN (".implode(',', $groups) .") )".
+				// Check if subproject group is allowed
+				" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_ugpgc ON (as_ugpgc.`perm_name` = as_lcpm.`perm_name` AND as_ugpgc.`group_id` = as_asd.`group_id` )";
+
+			// Only where the permission is granted by default or by account
+			// TODO: Teach this to play nice with liberty_security
+			$ret['where_sql'] = " AND ( lc.`user_id` = ? OR as_ugpgc.`perm_name` IS NOT NULL OR as_dflt.`perm_name` IS NOT NULL )";
+			$ret['bind_vars'] = array( $userId );
+		}
 		/* =-=- CUSTOM END: account_security_content_list_sql -=-= */
 		return $ret;	}
 }
