@@ -308,7 +308,7 @@ function subproject_content_content_edit( $pObject, $pParamHash ){
 
 		// 1. content has already been mapped
 		if( $pObject->isValid() && $subp_ids = $subproject_content->getList() ) {
-			$connect_subproject_content_id = $subp_ids[0];
+			$connect_subproject_content_id = $subp_ids[0]['subproject_content_id'];
 		}
 		// 2. user has designated an id to map to 
 		elseif( !empty( $pParamHash['connect_subproject_content_id'] ) ){
@@ -359,10 +359,10 @@ function subproject_content_content_store( $pObject, $pParamHash ){
 
 		// get the subproject id to map too
 		if( !empty( $pParamHash['connect_subproject_content_id'] ) ){
-			$pParamHash['subproject_content_data']['subproject_content_id'] = $pParamHash['connect_subproject_content_id'];
+			$pParamHash['subproject_content_data'][]['subproject_content_id'] = $pParamHash['connect_subproject_content_id'];
 		}
 		elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
-			$pParamHash['subproject_content_data']['subproject_content_id'] = $gAccount->getPreference( 'default_subproject_content_id' );
+			$pParamHash['subproject_content_data'][]['subproject_content_id'] = $gAccount->getPreference( 'default_subproject_content_id' );
 		}
 		elseif( $pObject->isServiceRequired( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 			if( empty( $connect_subproject_content_id ) ){
@@ -373,7 +373,6 @@ function subproject_content_content_store( $pObject, $pParamHash ){
 				}
 			}
 		}
-		vd( $pParamHash['subproject_content_id'] );
 
 		// store the mapping
 		$subproject_content = new SubProjectContent( $pObject->mContentId );

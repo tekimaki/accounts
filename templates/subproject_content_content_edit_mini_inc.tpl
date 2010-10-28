@@ -1,7 +1,7 @@
 {strip}
 {if $gContent->hasService($smarty.const.LIBERTY_SERVICE_SUBPROJECT_CONTENT)} 
 	{if $connect_subproject_content_id}
-		<input type="hidden" name="connection_subproject_content_id" value="{$connect_subproject_content_id}" />
+		<input type="hidden" name="connect_subproject_content_id" value="{$connect_subproject_content_id}" />
 	{/if}
 
 	{*
