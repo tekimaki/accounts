@@ -365,17 +365,32 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 			// Prevent null userId;
 			$userId = $gBitUser->mUserId;
 			if( !is_numeric( $userId ) ) $userId = 0;
-			
-			// Find the groups for this content and user
-			$query = 
-				"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
-				"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
-				"INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` scd ON (sd.`content_id` = scd.`subproject_content_id` )".
-				"WHERE asd.`user_id` = ? OR asd.`user_id` = ? ".
-				"AND scd.`content_id` = ?";
-			$bindVars = array($userId, ANONYMOUS_USER_ID, $pObject->mContentId);
-			$groups = $pObject->mDb->getAssoc($query, $bindVars);
 
+			// Find the groups for this content and user
+			$apsTypes = array( 'bitaccount', 'bitproject', 'bitsubproject' );
+
+			// @TODO = refactor - these queries can be built up from like parts 
+			// content management objects
+			if( in_array( $pObject->mContentTypeGuid, $apsTypes ) ){
+				$query = 
+					"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
+					"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
+					"WHERE asd.`user_id` = ? OR asd.`user_id` = ? ";
+				$bindVars = array($userId, ANONYMOUS_USER_ID );
+				$groups = $pObject->mDb->getAssoc($query, $bindVars);
+			}
+			// mapped content
+			else{
+				$query = 
+					"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
+					"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
+					"INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` scd ON (sd.`content_id` = scd.`subproject_content_id` )".
+					"WHERE asd.`user_id` = ? OR asd.`user_id` = ? ".
+					"AND scd.`content_id` = ?";
+				$bindVars = array($userId, ANONYMOUS_USER_ID, $pObject->mContentId);
+				$groups = $pObject->mDb->getAssoc($query, $bindVars);
+			}
+			// get permissions
 			if (!empty($groups)) {
 				$query =
 					"SELECT ugp.`perm_name` as `hash_key`, 1 as `group_perm`, ugp.`perm_name`, ugp.`perm_value`, ugp.`group_id` ".
