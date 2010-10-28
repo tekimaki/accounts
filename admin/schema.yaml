@@ -92,6 +92,9 @@ accounts:
     p_account_view:
       description:  Can view account entries
       level: basic
+    p_account_list:
+      description: Can view lists of accounts
+      level: admin
     p_account_update:
       description: Can update any account entry
       level: admin
