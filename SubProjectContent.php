@@ -130,7 +130,7 @@ class SubProjectContent extends LibertyBase {
 			$whereSql = preg_replace( '/^[\s]*AND\b/i', 'WHERE ', $whereSql );
 		}
 
-		$query = "DELETE FROM `subproject_content` ".$whereSql;
+		$query = "DELETE FROM `subproject_content_data` ".$whereSql;
 
 		if( $this->mDb->query( $query, $bindVars ) ){
 			$ret = TRUE;
