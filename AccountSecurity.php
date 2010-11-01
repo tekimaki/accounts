@@ -379,8 +379,15 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 					$subproject_content_id = $pParamHash['connect_subproject_content_id'];
 				}
 				// try by gAccount
-				elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
-					$subproject_content_id = $gAccount->getPreference( 'default_subproject_content_id' );
+				elseif( is_object( $gAccount ) ) {
+					if( $gAccount->isValid() ) {
+						$subproject_content_id = $gAccount->getPreference( 'default_subproject_content_id' );
+					// special case where gAccount is not loaded yet
+					}elseif( isset( $gAccount->mContentId ) ){
+						$query = "SELECT pref_value FROM  `".BIT_DB_PREFIX."liberty_content_prefs` WHERE content_id = ? and pref_name = ?";
+						$bindVars = array( $gAccount->mContentId, 'default_subproject_content_id' );
+						$subproject_content_id = $gBitSystem->mDb->getOne( $query, $bindVars );
+					}
 				}
 				// we have a subproject id to get roles based on
 				if( !empty( $subproject_content_id ) ){
