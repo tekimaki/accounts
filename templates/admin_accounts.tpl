@@ -78,7 +78,7 @@
 				</div>
 {* End foreach type *}
 			{/legend}
-			<div class="row submit">
+			<div class="buttonHolder row submit">
 				<input class="button" type="submit" name="accounts_settings" value="{tr}Change preferences{/tr}" />
 			</div>
 		{/jstab}
@@ -104,7 +104,7 @@
                     </div>
                 {/foreach}
             {/legend}
-			<div class="row submit">
+			<div class="buttonHolder row submit">
 				<input class="button" type="submit" name="accounts_settings" value="{tr}Change preferences{/tr}" />
 			</div>
 		{/jstab}
@@ -126,7 +126,7 @@
 						</div>
 					{/foreach}
 				{/legend}
-				<div class="row submit">
+				<div class="buttonHolder row submit">
 					<input class="button" type="submit" name="accounts_settings" value="{tr}Change preferences{/tr}" />
 				</div>
 			{/jstab}
@@ -151,7 +151,7 @@
 						</div>
 					{/foreach}
 				{/legend}
-				<div class="row submit">
+				<div class="buttonHolder row submit">
 					<input class="button" type="submit" name="accounts_settings" value="{tr}Change preferences{/tr}" />
 				</div>
 			{/jstab}
@@ -176,7 +176,7 @@
 						</div>
 					{/foreach}
 				{/legend}
-				<div class="row submit">
+				<div class="buttonHolder row submit">
 					<input class="button" type="submit" name="accounts_settings" value="{tr}Change preferences{/tr}" />
 				</div>
 			{/jstab}
