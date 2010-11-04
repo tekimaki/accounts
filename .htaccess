@@ -23,6 +23,7 @@
     RewriteRule    ^account$ list_account.php [L,QSA]
     RewriteRule    ^account/([0-9]+)$  index.php?account_id=$1  [L,QSA]
     RewriteRule    ^account/([0-9]+)/([a-zA-Z0-9_-]+)$  index.php?account_id=$1&section=$2  [L,QSA]
+    RewriteRule    ^account/([0-9]+)/([a-zA-Z0-9_-]+)/([a-z]+)$  index.php?account_id=$1&section=$2&action=$3  [L,QSA]
     RewriteRule    ^account/edit/([0-9]+)$  edit_account.php?account_id=$1  [L,QSA]
     RewriteRule    ^account/delete/([0-9]+)$  remove_account.php?account_id=$1  [L,QSA]
 
@@ -30,6 +31,7 @@
     RewriteRule    ^project$ list_project.php [L,QSA]
     RewriteRule    ^project/([0-9]+)$  index.php?project_id=$1  [L,QSA]
     RewriteRule    ^project/([0-9]+)/([a-zA-Z0-9_-]+)$  index.php?project_id=$1&section=$2  [L,QSA]
+    RewriteRule    ^project/([0-9]+)/([a-zA-Z0-9_-]+)/([a-z]+)$  index.php?project_id=$1&section=$2&action=$3  [L,QSA]
     RewriteRule    ^project/edit/([0-9]+)$  edit_project.php?project_id=$1  [L,QSA]
     RewriteRule    ^project/delete/([0-9]+)$  remove_project.php?project_id=$1  [L,QSA]
 
@@ -37,6 +39,7 @@
     RewriteRule    ^project$ list_subproject.php [L,QSA]
     RewriteRule    ^project/([0-9]+)$  index.php?subproject_id=$1  [L,QSA]
     RewriteRule    ^project/([0-9]+)/([a-zA-Z0-9_-]+)$  index.php?subproject_id=$1&section=$2  [L,QSA]
+    RewriteRule    ^project/([0-9]+)/([a-zA-Z0-9_-]+)/([a-z]+)$  index.php?subproject_id=$1&section=$2&action=$3  [L,QSA]
     RewriteRule    ^project/edit/([0-9]+)$  edit_subproject.php?subproject_id=$1  [L,QSA]
     RewriteRule    ^project/delete/([0-9]+)$  remove_subproject.php?subproject_id=$1  [L,QSA]
 
@@ -45,6 +48,7 @@
 
     RewriteRule    ^([0-9]+)$  index.php?account_id=$1  [L,QSA]
     RewriteRule    ^([0-9]+)/([a-zA-Z0-9_-]+)$  index.php?account_id=$1&section=$2  [L,QSA]
+    RewriteRule    ^([0-9]+)/([a-zA-Z0-9_-]+)/([a-z]+)$  index.php?account_id=$1&section=$2&action=$3  [L,QSA]
     RewriteRule    ^edit/([0-9]+)$  edit_account.php?account_id=$1  [L,QSA]
     RewriteRule    ^delete/([0-9]+)$  remove_account.php?account_id=$1  [L,QSA]
     # =-=- CUSTOM END: htaccess -=-= #
