@@ -82,13 +82,36 @@ foreach( $_REQUEST as $key => $val ) {
 }
 
 if (empty($requestType)) {
-	// Use the home type and home content
-	$requestType = $gBitSystem->getConfig("accounts_home_type", "account");
-    if( $gBitSystem->getConfig( 'accounts_home_format', 'list' ) == 'list' ){
-        include_once( ACCOUNTS_PKG_PATH.'list_'.$requestType.'.php' );
-        die;
-    }else{
-		$_REQUEST[$requestType.'_id'] = $gBitSystem->getConfig( "accounts_".$requestType."_home_id" );
+    // If content id and content_type_guid are specified try those
+    if( !empty( $_REQUEST['content_id'] ) && !empty( $_REQUEST['content_type_guid'] ) ){
+        switch( $_REQUEST['content_type_guid'] ){
+        case 'bitaccount':
+            $requestType = 'account';
+            $requestKeyType = 'content_id';
+            $_REQUEST['account_content_id'] = $_REQUEST['content_id'];
+            break;
+        case 'bitproject':
+            $requestType = 'project';
+            $requestKeyType = 'content_id';
+            $_REQUEST['project_content_id'] = $_REQUEST['content_id'];
+            break;
+        case 'bitsubproject':
+            $requestType = 'subproject';
+            $requestKeyType = 'content_id';
+            $_REQUEST['subproject_content_id'] = $_REQUEST['content_id'];
+            break;
+        }
+    }
+    // Use the home type and home content
+    if( empty( $requestType) ){
+		// Use the home type and home content
+		$requestType = $gBitSystem->getConfig("accounts_home_type", "account");
+		if( $gBitSystem->getConfig( 'accounts_home_format', 'list' ) == 'list' ){
+			include_once( ACCOUNTS_PKG_PATH.'list_'.$requestType.'.php' );
+			die;
+		}else{
+			$_REQUEST[$requestType.'_id'] = $gBitSystem->getConfig( "accounts_".$requestType."_home_id" );
+		}
 	}
 }
 

@@ -38,8 +38,12 @@ if( empty( $gContent ) || !is_object( $gContent ) || !$gContent->isValid() ) {
 	} elseif( @BitBase::verifyId( $_REQUEST['content_id'] ) ) {
 		$gContent = new BitProject( NULL, $_REQUEST['content_id'] );
 
-	} elseif (@BitBase::verifyId( $_REQUEST['accounts']['project_id'] ) ) {
-		$gContent = new BitProject( $_REQUEST['accounts']['project_id'] );
+	// if project_content_id supplied, use that
+	} elseif( @BitBase::verifyId( $_REQUEST['project_content_id'] ) ) {
+		$gContent = new BitProject( NULL, $_REQUEST['project_content_id'] );
+
+	} elseif (@BitBase::verifyId( $_REQUEST['project']['project_id'] ) ) {
+		$gContent = new BitProject( $_REQUEST['project']['project_id'] );
 
 	// otherwise create new object
 	} else {
