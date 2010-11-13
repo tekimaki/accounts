@@ -37,7 +37,7 @@
 
 				{* =-=- CUSTOM END: servicetabs -=-= *}
 				{* any service edit template tabs *}
-				{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_tab_tpl" display_help_tab=1}
+				{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_tab_tpl" display_help_tab=1 formid="editaccountform"}
 			{/jstabs}
 			</div>
 			<div class="editcontainer">
@@ -66,7 +66,7 @@
  
 						{textarea label="About" name="account[edit]" help="A statement about the account."}{$gContent->mInfo.data}{/textarea}
 						{* any simple service edit options *}
-						{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_mini_tpl"}
+						{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_mini_tpl" formid="editaccountform"}
 
 
 						{if $gBitUser->hasPermission('p_liberty_attach_attachments') }
