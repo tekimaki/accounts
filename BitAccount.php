@@ -574,7 +574,29 @@ class BitAccount extends LibertyMime {
 	
 	// Getters for reference column options - return associative arrays formatted for generating html select inputs
 
-
+	/**
+	 * getAvailableContentStatuses
+	 */
+	function getAvailableContentStatuses( $pUserMinimum=-6, $pUserMaximum=51 ) {
+		global $gBitUser;
+		// standard list of options
+		if( !$gBitUser->hasPermission( 'p_liberty_edit_all_status' )) {
+			$ret = array( 
+				-5 => "Draft",
+				10 => "Provisional",
+				50 => "Available",
+			);
+		}
+		// for admins modify the master list of options
+		else{
+			$ret = LibertyMime::getAvailableContentStatuses( $pUserMinimum, $pUserMaximum );
+			$ret[-5] = "Draft";
+			$ret[10] = "Provisional";
+			$ret[50] = "Available";
+			ksort( $ret );
+		}
+        return $ret;
+	}
 
 
 	// {{{ =================== Custom Helper Mthods  ====================
