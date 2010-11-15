@@ -91,6 +91,13 @@ package:
         data:
           name: About
           help: A statement about the account.
+      statuses:                         # custom status codes that replace the default liberty package options
+        min: -6                         # these codes are a little retarded in liberty package
+        max: 51                         # min and max are +1 more than the lowest and highest menu codes one wants available
+        codes:                          # custom menu codes
+          '-5': Draft
+          10: Provisional
+          50: Available
     project:
       content_name: Project
       content_name_plural: Projects
