@@ -23,12 +23,10 @@ package:
 
   services:
     account_security:
-      name: AccountSecurity
       class_name: AccountSecurity
       description: Provides account related security
       base_class: LibertyBase
       base_package: liberty
-      type: account_security
       service: account_security
       sql: [content_list_sql]
       functions: [content_user_perms]
@@ -50,13 +48,12 @@ package:
           PRIMARY KEY (content_id, group_id, user_id)
 
     subproject_content:
-      name: SubProjectContent
       class_name: SubProjectContent
       description: Stores content within a subproject
       base_class: LibertyBase
       base_package: liberty
-      type: subproject_content
       service: subproject_content
+      sql: [content_list_sql, content_load_sql]
       functions: [content_edit, content_store, content_expunge, content_display, content_preview]
       templates: [content_edit_mini]
       permissions:
