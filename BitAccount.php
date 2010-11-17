@@ -505,6 +505,47 @@ class BitAccount extends LibertyMime {
 		return $ret;
 	}
 
+
+	function getEditUrl($pSection = NULL){
+		global $gBitSystem;
+		$ret = NULL;
+
+		// section edit url is the display url + /edit - this also handles gAccount
+		if( !empty($pSection) ){
+			$ret = $this->getDisplayUrl($pSection).'/edit';
+		}
+
+		/* =-=- CUSTOM BEGIN: getEditUrl -=-= */
+		if ($ret == NULL) {
+			global $gAccount;
+			if ($gAccount == $this) {
+				$ret = '/edit';
+			} else {
+				if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
+					$ret = ACCOUNTS_PKG_URL.'/edit/'.$this->mAccountId;
+				} else {
+					$ret = ACCOUNTS_PKG_URL."edit_account.php?account_id=".$this->mAccountId;
+				}
+			}
+		}
+
+		/* =-=- CUSTOM END: getEditUrl -=-= */		
+
+		// Did the section or custom code block give us a URL?
+		if ($ret == NULL) {
+			if( @$this->isValid() ) {
+				if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
+					$ret = ACCOUNTS_PKG_URL.'account/edit/'.$this->mAccountId;
+				} else {
+					$ret = ACCOUNTS_PKG_URL."edit_account.php?account_id=".$this->mAccountId;
+				}
+			}
+		}
+
+		return $ret;
+	}
+
+
 	/**
 	 * previewFields prepares the fields in this type for preview
 	 */
