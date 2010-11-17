@@ -522,7 +522,7 @@ class BitAccount extends LibertyMime {
 				$ret = '/edit';
 			} else {
 				if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
-					$ret = ACCOUNTS_PKG_URL.'/edit/'.$this->mAccountId;
+					$ret = ACCOUNTS_PKG_URL.'edit/'.$this->mAccountId;
 				} else {
 					$ret = ACCOUNTS_PKG_URL."edit_account.php?account_id=".$this->mAccountId;
 				}
