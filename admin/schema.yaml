@@ -176,6 +176,7 @@ accounts:
           content_list_sql: account_security_content_list_sql
         function:
           content_user_perms: account_security_content_user_perms
+          content_expunge: account_security_content_expunge
     subproject_content:
       handler_file: SubProjectContent.php
       api_handlers:

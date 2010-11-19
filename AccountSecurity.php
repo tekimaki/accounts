@@ -130,7 +130,7 @@ class AccountSecurity extends LibertyBase {
 			$whereSql = preg_replace( '/^[\s]*AND\b/i', 'WHERE ', $whereSql );
 		}
 
-		$query = "DELETE FROM `account_security` ".$whereSql;
+		$query = "DELETE FROM `account_security_data` ".$whereSql;
 
 		if( $this->mDb->query( $query, $bindVars ) ){
 			$ret = TRUE;
@@ -153,6 +153,7 @@ class AccountSecurity extends LibertyBase {
 			$whereSql = " AND `account_security_data`.content_id = ?";
 		}
 
+		/* =-=- CUSTOM BEGIN: getList -=-= */
 		// limit results by group_id
 		if( !empty( $pParamHash['group_id'] ) ){
 			$bindVars[] = $pParamHash['group_id'];
@@ -165,7 +166,6 @@ class AccountSecurity extends LibertyBase {
 			$whereSql .= " AND `user_id` = ?";
 		}
 
-		/* =-=- CUSTOM BEGIN: getList -=-= */
 
 		/* =-=- CUSTOM END: getList -=-= */
 
@@ -448,4 +448,11 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 		}
 
 		/* =-=- CUSTOM END: account_security_content_user_perms -=-= */	}
+}
+function account_security_content_expunge( $pObject, $pParamHash ){
+	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
+		$account_security = new AccountSecurity( $pObject->mContentId );
+		if( !$account_security->expunge() ){
+			$pObject->setError( 'account_security', $account_security->mErrors );
+		}	}
 }
