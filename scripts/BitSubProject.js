@@ -12,6 +12,7 @@ BitSubProject = {
         updateProjectOptions:function(account_content_id){
                 var row = BitBase.getElement('row_subproject_project_content_id');
                 if( !isNaN(parseInt(account_content_id)) ){
+			BitBase.showSpinner();
                         $.ajax({
                                 url:BitSystem.urls.accounts+'ajax.php',
                                 type:'POST',
@@ -20,6 +21,7 @@ BitSubProject = {
                                 success:function(dom){
                                         $('#project_content_id').replaceWith(dom);
                                         row.style.display = 'block';
+					BitBase.hideSpinner();
                                 }
                         });
                 }else{
