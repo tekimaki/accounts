@@ -43,40 +43,6 @@ if( $gBitSystem->isPackageActive( 'accounts' ) ){ //&& $gBitUser->hasPermission(
 	);
 	$gBitSystem->registerAppMenu( $menuHash );
 
-    // include service functions
-	require_once( ACCOUNTS_PKG_PATH.'AccountSecurity.php' );
-
-	/*
-    $gLibertySystem->registerService(
-		LIBERTY_SERVICE_ACCOUNT_SECURITY,
-		ACCOUNTS_PKG_NAME,
-        array(
-			'content_user_perms_function' => 'account_security_content_user_perms',
-        ),
-        array(
-			'description' => 'Provides account related security'
-        )
-    );
-	*/
-	require_once( ACCOUNTS_PKG_PATH.'SubProjectContent.php' );
-
-	/*
-    $gLibertySystem->registerService(
-		LIBERTY_SERVICE_SUBPROJECT_CONTENT,
-		ACCOUNTS_PKG_NAME,
-        array(
-			'content_edit_function' => 'subproject_content_content_edit',
-			'content_store_function' => 'subproject_content_content_store',
-			'content_expunge_function' => 'subproject_content_content_expunge',
-			'content_display_function' => 'subproject_content_content_display',
-			'content_preview_function' => 'subproject_content_content_preview',
-        ),
-        array(
-			'description' => 'Stores content within a subproject'
-        )
-    );
-	*/
-
 $gLibertySystem->loadPackagePlugins( ACCOUNTS_PKG_NAME );
 
 }

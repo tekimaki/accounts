@@ -29,7 +29,7 @@ package:
       base_package: liberty
       service: account_security
       sql: [content_list_sql]
-      functions: [content_user_perms]
+      functions: [content_user_perms, content_expunge]
       permissions:
         default: [update: admin, view: admin, create: admin, expunge: admin]
       relation: one-to-many
