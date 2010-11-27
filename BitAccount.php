@@ -40,6 +40,10 @@ require_once( LIBERTY_PKG_PATH . 'LibertyValidator.php' );
 /* =-=- CUSTOM BEGIN: require -=-= */
 require_once( USERS_PKG_PATH.'BitUser.php' );
 
+define( 'BIACCOUNT_DRAFT_STATUS_ID', -5 );
+define( 'BIACCOUNT_PROVISIONAL_STATUS_ID', 10 );
+define( 'BIACCOUNT_PUBLIC_STATUS_ID', 50 );
+
 /* =-=- CUSTOM END: require -=-= */
 
 
@@ -623,17 +627,17 @@ class BitAccount extends LibertyMime {
 		// standard list of options
 		if( !$gBitUser->hasPermission( 'p_liberty_edit_all_status' )) {
 			$ret = array( 
-				-5 => "Draft",
-				10 => "Provisional",
-				50 => "Available",
+				BIACCOUNT_DRAFT_STATUS_ID => "Draft",
+				BIACCOUNT_PROVISIONAL_STATUS_ID => "Provisional",
+				BIACCOUNT_PUBLIC_STATUS_ID => "Available",
 			);
 		}
 		// for admins modify the master list of options
 		else{
 			$ret = LibertyMime::getAvailableContentStatuses( $pUserMinimum, $pUserMaximum );
-			$ret[-5] = "Draft";
-			$ret[10] = "Provisional";
-			$ret[50] = "Available";
+			$ret[BIACCOUNT_DRAFT_STATUS_ID] = "Draft";
+			$ret[BIACCOUNT_PROVISIONAL_STATUS_ID] = "Provisional";
+			$ret[BIACCOUNT_PUBLIC_STATUS_ID] = "Available";
 			ksort( $ret );
 		}
         return $ret;
