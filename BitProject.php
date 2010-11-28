@@ -215,6 +215,7 @@ class BitProject extends LibertyMime {
 			if( $this->mProjectId ) {
 				if( !empty( $pParamHash['project_store'] ) ){
 					$locId = array( "project_id" => $pParamHash['project']['project_id'] );
+					$table = BIT_DB_PREFIX."project_data";
 					$result = $this->mDb->associateUpdate( $table, $pParamHash['project_store'], $locId );
 				}
 			} else {
@@ -230,6 +231,7 @@ class BitProject extends LibertyMime {
 
 				$result = $this->mDb->associateInsert( $table, $pParamHash['project_store'] );
 			}
+
 
 
 			/* =-=- CUSTOM BEGIN: store -=-= */
@@ -502,6 +504,35 @@ class BitProject extends LibertyMime {
 
 		return $ret;
 	}
+
+
+    function getEditUrl($pSection = NULL){
+        global $gBitSystem;
+        $ret = NULL;
+
+		// section edit url is the display url + /edit 
+        if( !empty($pSection) ){
+            $ret = $this->getDisplayUrl($pSection).'/edit';
+        }
+
+        /* =-=- CUSTOM BEGIN: getEditUrl -=-= */
+
+        /* =-=- CUSTOM END: getEditUrl -=-= */
+
+        // Did the section or custom code block give us a URL?
+        if ($ret == NULL) {
+            if( @$this->isValid() ) {
+                if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
+                    $ret = ACCOUNTS_PKG_URL.'project/edit/'.$this->mProjectId;
+                } else {
+                    $ret = ACCOUNTS_PKG_URL."edit_project.php?project_id=".$this->mProjectId;
+                }
+            }
+        }
+
+        return $ret;
+    }
+
 
 	/**
 	 * previewFields prepares the fields in this type for preview

@@ -8,7 +8,7 @@ package:
     name: LGPL
     description: Licensed under the GNU LESSER GENERAL PUBLIC LICENSE.
     url: http://www.gnu.org/copyleft/lesser.html 
-  version: 0.1
+  version: 0.0.1
   requirements:
     liberty: {min: 2.1.5}
     libertygraph: {min: 0.0.0}
@@ -17,9 +17,15 @@ package:
   pluggable: true
   settings:
     roles:
-      account_member_role: {label: Account Member Role, type: int, note: The group_id for the account membership role.}
-      project_member_role: {label: Project Member Role, type: int, note: The group_id for the project membership role.}
-      account_member_role: {label: Account Member Role, type: int, note: The group_id for the sub-project membership role.}
+      account_admin_role: {label: Account Admin Role Group Id, type: string, note: The group_id for the account admin role.}
+      account_manager_role: {label: Account Manager Role Group Id, type: string, note: The group_id for the account manager role.}
+      account_member_role: {label: Account Member Role Group Id, type: string, note: The group_id for the account member role.}
+      project_admin_role: {label: Project Admin Role Group Id, type: string, note: The group_id for the project admin role.}
+      project_manager_role: {label: Project Manager Role Group Id, type: string, note: The group_id for the project manager role.}
+      project_member_role: {label: Project Member Role Group Id, type: string, note: The group_id for the project member role.}
+      subproject_admin_role: {label: Sub-Project Admin Role Group Id, type: string, note: The group_id for the subproject admin role.}
+      subproject_manager_role: {label: Sub-Project Manager Role Group Id, type: string, note: The group_id for the subproject manager role.}
+      subproject_member_role: {label: Sub-Project Member Role Group Id, type: string, note: The group_id for the subproject member role.}
 
   services:
     account_security:
