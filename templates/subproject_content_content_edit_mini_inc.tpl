@@ -5,8 +5,8 @@
 	{/if}
 
 	{*
-	{if $gContent->isValid() && $gBitUser->hasPermission('p_subproject_content_update') ||
-		$gBitUser->hasPermission('p_subproject_content_view')}
+	{if $gContent->isValid() && $gContent->hasUserPermission('p_subproject_content_update') ||
+		$gContent->hasUserPermission('p_subproject_content_view')}
 	{legend legend=$serviceName.label|default:$serviceName}
 		<div class="row" id="row_subproject_content_subproject_content_id" style="">
 	{formfeedback warning=$errors.subproject_content_id}

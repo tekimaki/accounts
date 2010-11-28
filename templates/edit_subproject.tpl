@@ -37,7 +37,7 @@
 
 				{* =-=- CUSTOM END: servicetabs -=-= *}
 				{* any service edit template tabs *}
-				{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_tab_tpl" display_help_tab=1}
+				{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_tab_tpl" display_help_tab=1 formid="editsubprojectform"}
 			{/jstabs}
 			</div>
 			<div class="editcontainer">
@@ -64,39 +64,40 @@
 							{/forminput}
 						</div>
 						<div class="row" id="row_subproject_account_content_id" style="">
-								{formfeedback warning=$errors.account_content_id}
+							
+	{formfeedback warning=$errors.account_content_id}
 	{formlabel label="Account Name" for="account_content_id" required="y"}
 	{forminput}
 
-            {html_options id="account_content_id" options=$account_content_id_options name="subproject[account_content_id]" selected=$gContent->getField('account_content_id') onchange="BitSubProject.onChangeAccountContentId(this);"  }
-        
+        			{html_options id="account_content_id" options=$account_content_id_options name="subproject[account_content_id]" selected=$gContent->getField('account_content_id') onchange="BitSubProject.onChangeAccountContentId(this);" }
+    
 	{formhelp note=""}
 	{/forminput}
 						</div>
 						<div class="row" id="row_subproject_project_content_id" style="">
-								{formfeedback warning=$errors.project_content_id}
+							
+	{formfeedback warning=$errors.project_content_id}
 	{formlabel label="Project Name" for="project_content_id" required="y"}
 	{forminput}
 
-            {html_options id="project_content_id" options=$project_content_id_options name="subproject[project_content_id]" selected=$gContent->getField('project_content_id')  }
-        
+        			{html_options id="project_content_id" options=$project_content_id_options name="subproject[project_content_id]" selected=$gContent->getField('project_content_id')  }
+    
 	{formhelp note=""}
 	{/forminput}
 						</div>
  
 						{textarea label="Description" name="subproject[edit]" help="A description of the sub-project"}{$gContent->mInfo.data}{/textarea}
 						{* any simple service edit options *}
-						{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_mini_tpl"}
+						{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_mini_tpl" formid="editsubprojectform"}
 
 
-						{if $gBitUser->hasPermission('p_liberty_attach_attachments') }
+						{if $gContent->hasUserPermission('p_liberty_attach_attachments') }
 							<div class="row">
 							{legend legend="Attachments"}
 								{include file="bitpackage:liberty/edit_storage.tpl"}
 							{/legend}
 							</div>
 						{/if}
-
 
 						<div class="buttonHolder row submit">
 							<input class="button" type="submit" name="preview" value="{tr}Preview{/tr}" />

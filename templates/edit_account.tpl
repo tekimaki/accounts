@@ -69,14 +69,13 @@
 						{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_mini_tpl" formid="editaccountform"}
 
 
-						{if $gBitUser->hasPermission('p_liberty_attach_attachments') }
+						{if $gContent->hasUserPermission('p_liberty_attach_attachments') }
 							<div class="row">
 							{legend legend="Attachments"}
 								{include file="bitpackage:liberty/edit_storage.tpl"}
 							{/legend}
 							</div>
 						{/if}
-
 
 						<div class="buttonHolder row submit">
 							<input class="button" type="submit" name="preview" value="{tr}Preview{/tr}" />
