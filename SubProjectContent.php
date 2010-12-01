@@ -406,7 +406,7 @@ function subproject_content_content_preview( $pObject, $pParamHash ){
 		global $gBitSmarty;
 
 		// call edit service which loads any data necessary for form
-		subproject_content_content_edit();
+		subproject_content_content_edit( $pObject, $pParamHash );
 		// preview
 		$subproject_content = new SubProjectContent();
 		$pObject->mInfo['subproject_content'] = $subproject_content->previewFields( $pParamHash );
