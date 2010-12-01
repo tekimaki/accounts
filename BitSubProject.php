@@ -215,6 +215,7 @@ class BitSubProject extends LibertyMime {
 			if( $this->mSubprojectId ) {
 				if( !empty( $pParamHash['subproject_store'] ) ){
 					$locId = array( "subproject_id" => $pParamHash['subproject']['subproject_id'] );
+					$table = BIT_DB_PREFIX."subproject_data";
 					$result = $this->mDb->associateUpdate( $table, $pParamHash['subproject_store'], $locId );
 				}
 			} else {
@@ -230,6 +231,7 @@ class BitSubProject extends LibertyMime {
 
 				$result = $this->mDb->associateInsert( $table, $pParamHash['subproject_store'] );
 			}
+
 
 
 			/* =-=- CUSTOM BEGIN: store -=-= */
@@ -499,6 +501,35 @@ class BitSubProject extends LibertyMime {
 
 		return $ret;
 	}
+
+
+    function getEditUrl($pSection = NULL){
+        global $gBitSystem;
+        $ret = NULL;
+
+		// section edit url is the display url + /edit 
+        if( !empty($pSection) ){
+            $ret = $this->getDisplayUrl($pSection).'/edit';
+        }
+
+        /* =-=- CUSTOM BEGIN: getEditUrl -=-= */
+
+        /* =-=- CUSTOM END: getEditUrl -=-= */
+
+        // Did the section or custom code block give us a URL?
+        if ($ret == NULL) {
+            if( @$this->isValid() ) {
+                if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
+                    $ret = ACCOUNTS_PKG_URL.'project/edit/'.$this->mSubprojectId;
+                } else {
+                    $ret = ACCOUNTS_PKG_URL."edit_subproject.php?subproject_id=".$this->mSubprojectId;
+                }
+            }
+        }
+
+        return $ret;
+    }
+
 
 	/**
 	 * previewFields prepares the fields in this type for preview

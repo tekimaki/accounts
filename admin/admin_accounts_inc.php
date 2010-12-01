@@ -25,15 +25,50 @@
 
 
 $formRoles = array(
+	"accounts_account_admin_role" => array(
+		'label' => 'Account Admin Role Group Id',
+		'note' => 'The group_id for the account admin role.',
+		'type' => 'input',
+			),
+	"accounts_account_manager_role" => array(
+		'label' => 'Account Manager Role Group Id',
+		'note' => 'The group_id for the account manager role.',
+		'type' => 'input',
+			),
 	"accounts_account_member_role" => array(
-		'label' => 'Account Member Role',
-		'note' => 'The group_id for the sub-project membership role.',
-		'type' => 'int',
+		'label' => 'Account Member Role Group Id',
+		'note' => 'The group_id for the account member role.',
+		'type' => 'input',
+			),
+	"accounts_project_admin_role" => array(
+		'label' => 'Project Admin Role Group Id',
+		'note' => 'The group_id for the project admin role.',
+		'type' => 'input',
+			),
+	"accounts_project_manager_role" => array(
+		'label' => 'Project Manager Role Group Id',
+		'note' => 'The group_id for the project manager role.',
+		'type' => 'input',
 			),
 	"accounts_project_member_role" => array(
-		'label' => 'Project Member Role',
-		'note' => 'The group_id for the project membership role.',
-		'type' => 'int',
+		'label' => 'Project Member Role Group Id',
+		'note' => 'The group_id for the project member role.',
+		'type' => 'input',
+			),
+	"accounts_subproject_admin_role" => array(
+		'label' => 'Sub-Project Admin Role Group Id',
+		'note' => 'The group_id for the subproject admin role.',
+		'type' => 'input',
+			),
+	"accounts_subproject_manager_role" => array(
+		'label' => 'Sub-Project Manager Role Group Id',
+		'note' => 'The group_id for the subproject manager role.',
+		'type' => 'input',
+			),
+	"accounts_subproject_member_role" => array(
+		'label' => 'Sub-Project Member Role Group Id',
+		'note' => 'The group_id for the subproject member role.',
+		'type' => 'input',
 			),
 );
 $gBitSmarty->assign( 'formRoles', $formRoles );
