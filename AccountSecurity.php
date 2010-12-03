@@ -66,21 +66,13 @@ class AccountSecurity extends LibertyBase {
 			if ( !empty( $pParamHash['account_security_store'] ) ){
 				$table = 'account_security_data';
 				$this->mDb->StartTrans();
-				foreach ($pParamHash['account_security_store'] as $key => $data) {
-					if (!empty($pParamHash['content_store']['content_id'])) {
-						$data['content_id'] = $pParamHash['content_store']['content_id'];
-					} else {
-						$data['content_id'] = $this->mContentId;
-					}
-					if ($this->mDb->getOne("SELECT * from ".$table." WHERE `content_id` = ?"
-										   , array($data['content_id']
-												 ))) {
-						$locId = array( "content_id" => $data['content_id']
-										);
-						$result = $this->mDb->associateUpdate( $table, $data, $locId );
-					} else {
-						$result = $this->mDb->associateInsert( $table, $data );
-					}
+				if ( empty($pParamHash['account_security_store']['content_id']) && !empty( $this->mContentId ) ) {
+					$pParamHash['account_security_store']['content_id'] = $this->mContentId;
+				}
+				if ( !empty( $pParamHash['account_security_store']['content_id'] ) && 
+					 !$this->mDb->getOne( "SELECT * from ".$table." WHERE `content_id` = ?", array($pParamHash['account_security_store']['content_id'] ) )
+				){
+					$result = $this->mDb->associateInsert( $table, $pParamHash['account_security_store'] );
 				}
 			}
 
