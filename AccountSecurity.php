@@ -70,7 +70,10 @@ class AccountSecurity extends LibertyBase {
 					$pParamHash['account_security_store']['content_id'] = $this->mContentId;
 				}
 				if ( !empty( $pParamHash['account_security_store']['content_id'] ) && 
-					 !$this->mDb->getOne( "SELECT * from ".$table." WHERE `content_id` = ?", array($pParamHash['account_security_store']['content_id'] ) )
+					 !$this->mDb->getOne( "SELECT * from ".$table." WHERE `content_id` = ? AND `user_id` = ? AND `group_id` = ?", array(
+						$pParamHash['account_security_store']['content_id'], 
+						$pParamHash['account_security_store']['user_id'], 
+						$pParamHash['account_security_store']['group_id'] ) )
 				){
 					$result = $this->mDb->associateInsert( $table, $pParamHash['account_security_store'] );
 				}
