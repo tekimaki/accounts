@@ -436,8 +436,12 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 
 				if ( !empty($accessPerms) ) {
 					// Do accessPerms first so that per content rejections override.
-					$pObject->mUserContentPerms = !empty( $pObject->mUserContentPerms )?array_merge($accessPerms, $pObject->mUserContentPerms):$accessPerms;
-					$gBitUser->mPerms = !empty( $gBitUser->mPerms )?array_merge( $accessPerms, $gBitUser->mPerms ):$accessPerms;
+					if( !empty( $pParamHash['content_permissions'] ) ){
+						$pObject->mUserContentPerms = !empty( $pObject->mUserContentPerms )?array_merge($accessPerms, $pObject->mUserContentPerms):$accessPerms;
+					}
+					if( !empty( $pParamHash['user_permissions'] ) ){
+						$gBitUser->mPerms = !empty( $gBitUser->mPerms )?array_merge( $accessPerms, $gBitUser->mPerms ):$accessPerms;
+					}
 				}
 			}
 		}
