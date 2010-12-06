@@ -386,7 +386,7 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 					$query = 
 						"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
 						"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
-						"WHERE asd.`user_id` = ? OR asd.`user_id` = ? ".
+						"WHERE ( asd.`user_id` = ? OR asd.`user_id` = ? ) ".
 						"AND sd.`content_id` = ? ";
 					$bindVars = array($userId, ANONYMOUS_USER_ID, $subproject_content_id );
 					$groups = $pObject->mDb->getAssoc($query, $bindVars);
@@ -398,7 +398,7 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 					"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
 					"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
 					"INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` scd ON (sd.`content_id` = scd.`subproject_content_id` )".
-					"WHERE asd.`user_id` = ? OR asd.`user_id` = ? ".
+					"WHERE ( asd.`user_id` = ? OR asd.`user_id` = ? ) ".
 					"AND scd.`content_id` = ?";
 				$bindVars = array($userId, ANONYMOUS_USER_ID, $pObject->mContentId);
 				$groups = $pObject->mDb->getAssoc($query, $bindVars);
