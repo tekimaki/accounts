@@ -70,7 +70,10 @@ class AccountSecurity extends LibertyBase {
 					$pParamHash['account_security_store']['content_id'] = $this->mContentId;
 				}
 				if ( !empty( $pParamHash['account_security_store']['content_id'] ) && 
-					 !$this->mDb->getOne( "SELECT * from ".$table." WHERE `content_id` = ?", array($pParamHash['account_security_store']['content_id'] ) )
+					 !$this->mDb->getOne( "SELECT * from ".$table." WHERE `content_id` = ? AND `user_id` = ? AND `group_id` = ?", array(
+						$pParamHash['account_security_store']['content_id'], 
+						$pParamHash['account_security_store']['user_id'], 
+						$pParamHash['account_security_store']['group_id'] ) )
 				){
 					$result = $this->mDb->associateInsert( $table, $pParamHash['account_security_store'] );
 				}
@@ -386,7 +389,7 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 					$query = 
 						"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
 						"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
-						"WHERE asd.`user_id` = ? OR asd.`user_id` = ? ".
+						"WHERE ( asd.`user_id` = ? OR asd.`user_id` = ? ) ".
 						"AND sd.`content_id` = ? ";
 					$bindVars = array($userId, ANONYMOUS_USER_ID, $subproject_content_id );
 					$groups = $pObject->mDb->getAssoc($query, $bindVars);
@@ -398,7 +401,7 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 					"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
 					"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
 					"INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` scd ON (sd.`content_id` = scd.`subproject_content_id` )".
-					"WHERE asd.`user_id` = ? OR asd.`user_id` = ? ".
+					"WHERE ( asd.`user_id` = ? OR asd.`user_id` = ? ) ".
 					"AND scd.`content_id` = ?";
 				$bindVars = array($userId, ANONYMOUS_USER_ID, $pObject->mContentId);
 				$groups = $pObject->mDb->getAssoc($query, $bindVars);
@@ -433,8 +436,12 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 
 				if ( !empty($accessPerms) ) {
 					// Do accessPerms first so that per content rejections override.
-					$pObject->mUserContentPerms = !empty( $pObject->mUserContentPerms )?array_merge($accessPerms, $pObject->mUserContentPerms):$accessPerms;
-					$gBitUser->mPerms = !empty( $gBitUser->mPerms )?array_merge( $accessPerms, $gBitUser->mPerms ):$accessPerms;
+					if( !empty( $pParamHash['content_permissions'] ) ){
+						$pObject->mUserContentPerms = !empty( $pObject->mUserContentPerms )?array_merge($accessPerms, $pObject->mUserContentPerms):$accessPerms;
+					}
+					if( !empty( $pParamHash['user_permissions'] ) ){
+						$gBitUser->mPerms = !empty( $gBitUser->mPerms )?array_merge( $accessPerms, $gBitUser->mPerms ):$accessPerms;
+					}
 				}
 			}
 		}
