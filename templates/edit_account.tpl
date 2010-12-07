@@ -23,7 +23,7 @@
 			{/if}
 		</h1>
 	</div>
-
+	{formfeedback success=$success}
 	<div class="body">
 		{formfeedback warning=$errors}
 		{form enctype="multipart/form-data" id="editaccountform"}
