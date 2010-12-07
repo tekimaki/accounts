@@ -58,7 +58,11 @@ if( !empty( $_REQUEST["save_account"] ) ) {
 	$gBitUser->verifyTicket();
 
 	if( $gContent->store( $_REQUEST ) ) {
-		bit_redirect( $gContent->getDisplayUrl() );
+		if( $gBitSystem->getConfig('edit_success_return_to_form')=='n' ){
+			bit_redirect( $gContent->getDisplayUrl() );
+		}else{
+			$gBitSmarty->assign_by_ref( 'success', tra( 'Your account has been updated' ) );
+		}
 	} else {
 		// if store fails set preview
 		$_REQUEST['preview'] = TRUE;

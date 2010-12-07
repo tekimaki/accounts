@@ -40,6 +40,10 @@ require_once( LIBERTY_PKG_PATH . 'LibertyValidator.php' );
 /* =-=- CUSTOM BEGIN: require -=-= */
 require_once( USERS_PKG_PATH.'BitUser.php' );
 
+define( 'BIACCOUNT_DRAFT_STATUS_ID', -5 );
+define( 'BIACCOUNT_PROVISIONAL_STATUS_ID', 10 );
+define( 'BIACCOUNT_PUBLIC_STATUS_ID', 50 );
+
 /* =-=- CUSTOM END: require -=-= */
 
 
@@ -216,6 +220,7 @@ class BitAccount extends LibertyMime {
 			if( $this->mAccountId ) {
 				if( !empty( $pParamHash['account_store'] ) ){
 					$locId = array( "account_id" => $pParamHash['account']['account_id'] );
+					$table = BIT_DB_PREFIX."account_data";
 					$result = $this->mDb->associateUpdate( $table, $pParamHash['account_store'], $locId );
 				}
 			} else {
@@ -231,6 +236,7 @@ class BitAccount extends LibertyMime {
 
 				$result = $this->mDb->associateInsert( $table, $pParamHash['account_store'] );
 			}
+
 
 
 			/* =-=- CUSTOM BEGIN: store -=-= */
@@ -506,16 +512,16 @@ class BitAccount extends LibertyMime {
 	}
 
 
-	function getEditUrl($pSection = NULL){
-		global $gBitSystem;
-		$ret = NULL;
+    function getEditUrl($pSection = NULL){
+        global $gBitSystem;
+        $ret = NULL;
 
-		// section edit url is the display url + /edit - this also handles gAccount
-		if( !empty($pSection) ){
-			$ret = $this->getDisplayUrl($pSection).'/edit';
-		}
+		// section edit url is the display url + /edit 
+        if( !empty($pSection) ){
+            $ret = $this->getDisplayUrl($pSection).'/edit';
+        }
 
-		/* =-=- CUSTOM BEGIN: getEditUrl -=-= */
+        /* =-=- CUSTOM BEGIN: getEditUrl -=-= */
 		if ($ret == NULL) {
 			global $gAccount;
 			if ($gAccount == $this) {
@@ -529,21 +535,21 @@ class BitAccount extends LibertyMime {
 			}
 		}
 
-		/* =-=- CUSTOM END: getEditUrl -=-= */		
+        /* =-=- CUSTOM END: getEditUrl -=-= */
 
-		// Did the section or custom code block give us a URL?
-		if ($ret == NULL) {
-			if( @$this->isValid() ) {
-				if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
-					$ret = ACCOUNTS_PKG_URL.'account/edit/'.$this->mAccountId;
-				} else {
-					$ret = ACCOUNTS_PKG_URL."edit_account.php?account_id=".$this->mAccountId;
-				}
-			}
-		}
+        // Did the section or custom code block give us a URL?
+        if ($ret == NULL) {
+            if( @$this->isValid() ) {
+                if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
+                    $ret = ACCOUNTS_PKG_URL.'account/edit/'.$this->mAccountId;
+                } else {
+                    $ret = ACCOUNTS_PKG_URL."edit_account.php?account_id=".$this->mAccountId;
+                }
+            }
+        }
 
-		return $ret;
-	}
+        return $ret;
+    }
 
 
 	/**
@@ -623,17 +629,17 @@ class BitAccount extends LibertyMime {
 		// standard list of options
 		if( !$gBitUser->hasPermission( 'p_liberty_edit_all_status' )) {
 			$ret = array( 
-				-5 => "Draft",
-				10 => "Provisional",
-				50 => "Available",
+				BIACCOUNT_DRAFT_STATUS_ID => "Draft",
+				BIACCOUNT_PROVISIONAL_STATUS_ID => "Provisional",
+				BIACCOUNT_PUBLIC_STATUS_ID => "Available",
 			);
 		}
 		// for admins modify the master list of options
 		else{
 			$ret = LibertyMime::getAvailableContentStatuses( $pUserMinimum, $pUserMaximum );
-			$ret[-5] = "Draft";
-			$ret[10] = "Provisional";
-			$ret[50] = "Available";
+			$ret[BIACCOUNT_DRAFT_STATUS_ID] = "Draft";
+			$ret[BIACCOUNT_PROVISIONAL_STATUS_ID] = "Provisional";
+			$ret[BIACCOUNT_PUBLIC_STATUS_ID] = "Available";
 			ksort( $ret );
 		}
         return $ret;
