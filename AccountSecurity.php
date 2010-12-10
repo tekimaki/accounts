@@ -142,25 +142,30 @@ class AccountSecurity extends LibertyBase {
 		// limit results by content_id
 		if( !empty( $pParamHash['content_id'] ) ){
 			$bindVars[] = $pParamHash['content_id'];
-			$whereSql = " AND `account_security_data`.content_id = ?";
+			$whereSql .= " AND asd.`content_id` = ?";
 		} elseif ( $this->isValid() ) {
 			$bindVars[] = $this->mContentId;
-			$whereSql = " AND `account_security_data`.content_id = ?";
+			$whereSql .= " AND asd.`content_id` = ?";
 		}
 
 		/* =-=- CUSTOM BEGIN: getList -=-= */
 		// limit results by group_id
 		if( !empty( $pParamHash['group_id'] ) ){
 			$bindVars[] = $pParamHash['group_id'];
-			$whereSql .= " AND `group_id` = ?";
+			$whereSql .= " AND asd.`group_id` = ?";
 		}
 
 		// limit results by user_id
 		if( !empty( $pParamHash['user_id'] ) ){
 			$bindVars[] = $pParamHash['user_id'];
-			$whereSql .= " AND `user_id` = ?";
+			$whereSql .= " AND asd.`user_id` = ?";
 		}
 
+		// limit results by content_type_guid
+        if( !empty( $pParamHash['content_type_guid'] ) ){
+            $bindVars[] = $pParamHash['content_type_guid'];
+            $whereSql .= " AND lc.`content_type_guid` = ?";
+        }
 
 		/* =-=- CUSTOM END: getList -=-= */
 
@@ -168,7 +173,11 @@ class AccountSecurity extends LibertyBase {
 			$whereSql = preg_replace( '/^[\s]*AND\b/i', 'WHERE ', $whereSql );
 		}
 
-		$query = "SELECT  `group_id`, `user_id` FROM `account_security_data`".$whereSql;
+		$query = "SELECT  asd.`content_id`, asd.`group_id`, asd.`user_id`, lc.`content_type_guid` 
+					FROM `account_security_data` asd  
+					INNER JOIN `liberty_content` lc ON ( lc.`content_id` = asd.`content_id`)
+					$whereSql";
+
 		$ret = $this->mDb->getArray( $query, $bindVars );
 		return $ret;
 	}
