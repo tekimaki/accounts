@@ -154,7 +154,8 @@ if( 	!empty( $_REQUEST[$requestType.'_name'] ) ||
 	}
 	
 	// Call display services
-	$displayHash = array( 'perm_name' => $gContent->mViewContentPerm );
+	$displayHash = $_REQUEST;
+	$displayHash['perm_name'] = $gContent->mViewContentPerm;
 	$gContent->invokeServices( 'content_display_function', $displayHash );
 
 	// Add a hit to the counter
