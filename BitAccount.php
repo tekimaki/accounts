@@ -40,9 +40,9 @@ require_once( LIBERTY_PKG_PATH . 'LibertyValidator.php' );
 /* =-=- CUSTOM BEGIN: require -=-= */
 require_once( USERS_PKG_PATH.'BitUser.php' );
 
-define( 'BIACCOUNT_DRAFT_STATUS_ID', -5 );
-define( 'BIACCOUNT_PROVISIONAL_STATUS_ID', 10 );
-define( 'BIACCOUNT_PUBLIC_STATUS_ID', 50 );
+define( 'BITACCOUNT_DRAFT_STATUS_ID', -5 );
+define( 'BITACCOUNT_PROVISIONAL_STATUS_ID', 10 );
+define( 'BITACCOUNT_PUBLIC_STATUS_ID', 50 );
 
 /* =-=- CUSTOM END: require -=-= */
 
