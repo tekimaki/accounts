@@ -52,6 +52,8 @@ class AccountSecurity extends LibertyBase {
 
 	var $mSchema;
 
+	var $mServiceContent;
+
 	public function __construct( $pContentId=NULL ) {
 		LibertyBase::LibertyBase();
 		$this->mContentId = $pContentId;
@@ -114,21 +116,41 @@ class AccountSecurity extends LibertyBase {
 		// limit results by content_id
 		if( !empty( $pParamHash['content_id'] ) ){
 			$bindVars[] = $pParamHash['content_id'];
-			$whereSql .= "`content_id` = ?";
+			$whereSql .= " WHERE `content_id` = ?";
 		}
 
 		/* =-=- CUSTOM BEGIN: expunge -=-= */
-
-		/* =-=- CUSTOM END: expunge -=-= */
-
-		if( !empty( $whereSql ) ){
-			$whereSql = preg_replace( '/^[\s]*AND\b/i', 'WHERE ', $whereSql );
+		if( empty( $pParamHash['content_id'] ) && is_object( $this->mServiceContent ) && $this->mServiceContent->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
+			$bindVars[] = $this->mServiceContent->mContentId;
+			$whereSql .= " WHERE `content_id` = ?";
 		}
 
-		$query = "DELETE FROM `account_security_data` ".$whereSql;
+		if( !empty( $pParamHash['group_id'] ) ){
+			$bindVars[] = $pParamHash['group_id'];
+			$whereSql .= "WHERE `group_id` = ?";
+		}
 
-		if( $this->mDb->query( $query, $bindVars ) ){
-			$ret = TRUE;
+		if( !empty( $pParamHash['user_id'] ) ){
+			$bindVars[] = $pParamHash['user_id'];
+			$whereSql .= "WHERE `user_id` = ?";
+		}
+
+		if( empty( $pParamHash['content_id'] ) && is_object( $this->mServiceContent ) && $this->mServiceContent->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID ){
+			$bindVars[] = $this->mServiceContent->mUserId;
+			$whereSql .= " WHERE `user_id` = ?";
+		}
+
+		/* =-=- CUSTOM END: expunge -=-= */
+ 
+        // some sort of limit must be imposed to execute the expunge - nuking the whole table shall not be allowed
+        if( !empty( $whereSql ) ){
+			$whereSql = preg_replace( '/^[\s]*AND\b/i', 'WHERE ', $whereSql );
+
+			$query = "DELETE FROM `account_security_data` ".$whereSql;
+
+			if( $this->mDb->query( $query, $bindVars ) ){
+				$ret = TRUE;
+			}
 		}
 
 		$this->mDb->CompleteTrans();
@@ -274,6 +296,14 @@ class AccountSecurity extends LibertyBase {
      */
     function isValid() {
         return( BitBase::verifyId( $this->mContentId ) );
+    }
+
+
+    /**
+     * setServiceContent
+     */
+    function setServiceContent( &$pObject ){
+        $this->mServiceContent = &$pObject;
     }
 
 
@@ -460,6 +490,7 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 function account_security_content_expunge( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		$account_security = new AccountSecurity( $pObject->mContentId );
+		$account_security->setServiceContent( $pObject );  
 		if( !$account_security->expunge() ){
 			$pObject->setError( 'account_security', $account_security->mErrors );
 		}	}

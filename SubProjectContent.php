@@ -52,6 +52,8 @@ class SubProjectContent extends LibertyBase {
 
 	var $mSchema;
 
+	var $mServiceContent;
+
 	public function __construct( $pContentId=NULL ) {
 		LibertyBase::LibertyBase();
 		$this->mContentId = $pContentId;
@@ -119,21 +121,31 @@ class SubProjectContent extends LibertyBase {
 		// limit results by content_id
 		if( !empty( $pParamHash['content_id'] ) ){
 			$bindVars[] = $pParamHash['content_id'];
-			$whereSql .= "`content_id` = ?";
+			$whereSql .= "WHERE `content_id` = ?";
 		}
 
 		/* =-=- CUSTOM BEGIN: expunge -=-= */
+		if( empty( $pParamHash['content_id'] ) && !empty( $this->mContentId ) ){
+			$bindVars[] = $this->mContentId;
+			$whereSql .= "WHERE `content_id` = ?";
+		}
+
+		if( !empty( $pParamHash['subproject_content_id'] ) ){
+			$bindVars[] = $pParamHash['subproject_content_id'];
+			$whereSql .= "WHERE `subproject_content_id` = ?";
+		}
 
 		/* =-=- CUSTOM END: expunge -=-= */
 
+        // some sort of limit must be imposed to execute the expunge - nuking the whole table shall not be allowed
 		if( !empty( $whereSql ) ){
 			$whereSql = preg_replace( '/^[\s]*AND\b/i', 'WHERE ', $whereSql );
-		}
 
-		$query = "DELETE FROM `subproject_content_data` ".$whereSql;
+			$query = "DELETE FROM `subproject_content_data` ".$whereSql;
 
-		if( $this->mDb->query( $query, $bindVars ) ){
-			$ret = TRUE;
+			if( $this->mDb->query( $query, $bindVars ) ){
+				$ret = TRUE;
+			}
 		}
 
 		$this->mDb->CompleteTrans();
@@ -241,6 +253,14 @@ class SubProjectContent extends LibertyBase {
      */
     function isValid() {
         return( BitBase::verifyId( $this->mContentId ) );
+    }
+
+
+    /**
+     * setServiceContent
+     */
+    function setServiceContent( &$pObject ){
+        $this->mServiceContent = &$pObject;
     }
 
 
@@ -384,6 +404,7 @@ function subproject_content_content_store( $pObject, $pParamHash ){
 function subproject_content_content_expunge( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 		$subproject_content = new SubProjectContent( $pObject->mContentId );
+		$subproject_content->setServiceContent( $pObject );  
 		if( !$subproject_content->expunge() ){
 			$pObject->setError( 'subproject_content', $subproject_content->mErrors );
 		}	}
