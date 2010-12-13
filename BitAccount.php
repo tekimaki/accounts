@@ -629,17 +629,17 @@ class BitAccount extends LibertyMime {
 		// standard list of options
 		if( !$gBitUser->hasPermission( 'p_liberty_edit_all_status' )) {
 			$ret = array( 
-				BIACCOUNT_DRAFT_STATUS_ID => "Draft",
-				BIACCOUNT_PROVISIONAL_STATUS_ID => "Provisional",
-				BIACCOUNT_PUBLIC_STATUS_ID => "Available",
+				BITACCOUNT_DRAFT_STATUS_ID => "Draft",
+				BITACCOUNT_PROVISIONAL_STATUS_ID => "Provisional",
+				BITACCOUNT_PUBLIC_STATUS_ID => "Available",
 			);
 		}
 		// for admins modify the master list of options
 		else{
 			$ret = LibertyMime::getAvailableContentStatuses( $pUserMinimum, $pUserMaximum );
-			$ret[BIACCOUNT_DRAFT_STATUS_ID] = "Draft";
-			$ret[BIACCOUNT_PROVISIONAL_STATUS_ID] = "Provisional";
-			$ret[BIACCOUNT_PUBLIC_STATUS_ID] = "Available";
+			$ret[BITACCOUNT_DRAFT_STATUS_ID] = "Draft";
+			$ret[BITACCOUNT_PROVISIONAL_STATUS_ID] = "Provisional";
+			$ret[BITACCOUNT_PUBLIC_STATUS_ID] = "Available";
 			ksort( $ret );
 		}
         return $ret;
