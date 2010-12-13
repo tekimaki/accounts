@@ -557,10 +557,12 @@ class BitAccount extends LibertyMime {
 	 */
 	function previewFields(&$pParamHash) {
 		$this->prepVerify();
-		LibertyValidator::preview(
-		$this->mVerification['account_data'],
-			$pParamHash['account'],
-			$this->mInfo);
+		if(!empty($this->mVerification['account_data'])){
+			LibertyValidator::preview(
+			$this->mVerification['account_data'],
+				$pParamHash['account'],
+				$this->mInfo);
+		}
 	}
 
 	/**
