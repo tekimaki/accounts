@@ -374,9 +374,19 @@ function account_security_content_list_sql( $pObject, $pParamHash ){
 				// Find the permision name
 				" LEFT JOIN `".BIT_DB_PREFIX."liberty_secure_permissions_map` as_lcpm ON ( as_lcpm.`content_type_guid` = lc.`content_type_guid` AND as_lcpm.`perm_type` = 'view' )".
 				// What subproject is this content in.
-				" LEFT JOIN `".BIT_DB_PREFIX."subproject_content_data` as_scd ON (lc.`content_id` = as_scd.`content_id` )".
-				// Find the group for that subproject
-				" LEFT JOIN `".BIT_DB_PREFIX."account_security_data` as_asd ON (as_scd.`subproject_content_id` = as_asd.`content_id` AND (as_asd.`user_id` = ".$userId." OR as_asd.`user_id` = ".ANONYMOUS_USER_ID." ) ) ".
+				" LEFT JOIN `".BIT_DB_PREFIX."subproject_content_data` as_scd ON (lc.`content_id` = as_scd.`content_id` )".			// content_id is the listed content
+				" LEFT JOIN `".BIT_DB_PREFIX."subproject_data` as_sd ON (as_scd.`subproject_content_id` = as_sd.`content_id` )".	// content_id is the associated subproject content_id
+				// Find the group for that subproject's account
+				" LEFT JOIN `".BIT_DB_PREFIX."account_security_data` as_asd 
+							ON (
+								(
+									as_sd.`content_id` = as_asd.`content_id` 
+									OR as_sd.`project_content_id` = as_asd.`content_id` 
+									OR as_sd.`account_content_id` = as_asd.`content_id` 
+								)
+								AND (as_asd.`user_id` = ".$userId." OR as_asd.`user_id` = ".ANONYMOUS_USER_ID." ) 
+							   )".		
+
 				// Check if a group is allowed by default
 				" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_dflt ON (as_dflt.`perm_name` = as_lcpm.`perm_name` AND as_dflt.`group_id` IN (".implode(',', $groups) .") )".
 				// Check if subproject group is allowed
