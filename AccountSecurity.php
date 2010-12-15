@@ -348,7 +348,7 @@ class AccountSecurity extends LibertyBase {
 function account_security_content_list_sql( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_list_sql -=-= */
-		global $gBitUser, $gBitSystem;
+		global $gAccount, $gBitUser, $gBitSystem;
 
 		// Find the groups for this user
 		$groups = array_keys($gBitUser->mGroups);
@@ -358,44 +358,66 @@ function account_security_content_list_sql( $pObject, $pParamHash ){
 		// Check that these are all integers just for safety. Assumes they have at least one group but all should have -1
 		if ($gBitSystem->verifyId($groups) && $gBitSystem->verifyId($userId)) {
 
-			// Debug select
-			/*
-			$ret['select_sql'] =
-				", as_lcpm.`perm_name` AS as_target_perm".
-				", as_scd.subproject_content_id AS as_scid".
-				", as_asd.`group_id` AS as_group_id, as_asd.`user_id` AS as_user_id ".
-				", as_ugpgc.`perm_name` AS as_grant_perm".
-				", as_ugpgc.`group_id` AS ugpgc_group".
-				", as_dflt.`perm_name` AS as_dflt_perm".
-				"";
-			*/
+			// get permissions for all content types except bituser
+			if( $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 
-			$ret['join_sql'] =
-				// Find the permision name
-				" LEFT JOIN `".BIT_DB_PREFIX."liberty_secure_permissions_map` as_lcpm ON ( as_lcpm.`content_type_guid` = lc.`content_type_guid` AND as_lcpm.`perm_type` = 'view' )".
-				// What subproject is this content in.
-				" LEFT JOIN `".BIT_DB_PREFIX."subproject_content_data` as_scd ON (lc.`content_id` = as_scd.`content_id` )".			// content_id is the listed content
-				" LEFT JOIN `".BIT_DB_PREFIX."subproject_data` as_sd ON (as_scd.`subproject_content_id` = as_sd.`content_id` )".	// content_id is the associated subproject content_id
-				// Find the group for that subproject's account
-				" LEFT JOIN `".BIT_DB_PREFIX."account_security_data` as_asd 
-							ON (
-								(
-									as_sd.`content_id` = as_asd.`content_id` 
-									OR as_sd.`project_content_id` = as_asd.`content_id` 
-									OR as_sd.`account_content_id` = as_asd.`content_id` 
-								)
-								AND (as_asd.`user_id` = ".$userId." OR as_asd.`user_id` = ".ANONYMOUS_USER_ID." ) 
-							   )".		
+				// Debug select
+				/*
+				$ret['select_sql'] =
+					", as_lcpm.`perm_name` AS as_target_perm".
+					", as_scd.subproject_content_id AS as_scid".
+					", as_asd.`group_id` AS as_group_id, as_asd.`user_id` AS as_user_id ".
+					", as_ugpgc.`perm_name` AS as_grant_perm".
+					", as_ugpgc.`group_id` AS ugpgc_group".
+					", as_dflt.`perm_name` AS as_dflt_perm".
+					"";
+				*/
 
-				// Check if a group is allowed by default
-				" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_dflt ON (as_dflt.`perm_name` = as_lcpm.`perm_name` AND as_dflt.`group_id` IN (".implode(',', $groups) .") )".
-				// Check if subproject group is allowed
-				" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_ugpgc ON (as_ugpgc.`perm_name` = as_lcpm.`perm_name` AND as_ugpgc.`group_id` = as_asd.`group_id` )";
+				$ret['join_sql'] =
+					// Find the permision name
+					" LEFT JOIN `".BIT_DB_PREFIX."liberty_secure_permissions_map` as_lcpm ON ( as_lcpm.`content_type_guid` = lc.`content_type_guid` AND as_lcpm.`perm_type` = 'view' )".
+					// What subproject is this content in.
+					" LEFT JOIN `".BIT_DB_PREFIX."subproject_content_data` as_scd ON (lc.`content_id` = as_scd.`content_id` )".			// content_id is the listed content
+					" LEFT JOIN `".BIT_DB_PREFIX."subproject_data` as_sd ON (as_scd.`subproject_content_id` = as_sd.`content_id` )".	// content_id is the associated subproject content_id
+					// Find the group for that subproject's account
+					" LEFT JOIN `".BIT_DB_PREFIX."account_security_data` as_asd 
+								ON (
+									(
+										as_sd.`content_id` = as_asd.`content_id` 
+										OR as_sd.`project_content_id` = as_asd.`content_id` 
+										OR as_sd.`account_content_id` = as_asd.`content_id` 
+									)
+									AND (as_asd.`user_id` = ".$userId." OR as_asd.`user_id` = ".ANONYMOUS_USER_ID." ) 
+								   )".		
 
-			// Only where the permission is granted by default or by account
-			// TODO: Teach this to play nice with liberty_security
-			$ret['where_sql'] = " AND ( lc.`user_id` = ? OR as_ugpgc.`perm_name` IS NOT NULL OR as_dflt.`perm_name` IS NOT NULL )";
-			$ret['bind_vars'] = array( $userId );
+					// Check if a group is allowed by default
+					" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_dflt ON (as_dflt.`perm_name` = as_lcpm.`perm_name` AND as_dflt.`group_id` IN (".implode(',', $groups) .") )".
+					// Check if subproject group is allowed
+					" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_ugpgc ON (as_ugpgc.`perm_name` = as_lcpm.`perm_name` AND as_ugpgc.`group_id` = as_asd.`group_id` )";
+
+				// Only where the permission is granted by default or by account
+				// TODO: Teach this to play nice with liberty_security
+				$ret['where_sql'] = " AND ( lc.`user_id` = ? OR as_ugpgc.`perm_name` IS NOT NULL OR as_dflt.`perm_name` IS NOT NULL )";
+				$ret['bind_vars'] = array( $userId );
+
+			// @TODO move this to new account user class and manage users internally!
+			// This is to solve need to jail lists in users pkg - hackish limit to gAccount
+			// object checking permission on is bituser we need special rules
+			}elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID && is_object( $gAccount ) && $gAccount->isValid()){
+				// modify the groups list with our account roles
+				$groups = array_merge( $groups, array( $gBitSystem->getConfig('accounts_account_admin_role'), $gBitSystem->getConfig('accounts_account_manager_role'), $gBitSystem->getConfig('accounts_account_member_role') ) ); 
+				$ret['join_sql'] = 
+					// Find the permision name
+					" LEFT JOIN `".BIT_DB_PREFIX."liberty_secure_permissions_map` as_lcpm ON ( as_lcpm.`content_type_guid` = lc.`content_type_guid` AND as_lcpm.`perm_type` = 'view' )".
+					// Check if a group is allowed 
+					" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_ugp ON (as_ugp.`perm_name` = as_lcpm.`perm_name` AND as_ugp.`group_id` IN (".implode(',', $groups) .") )";
+
+				// Only where the permission is granted by default or by account
+				// TODO: Teach this to play nice with liberty_security
+				$ret['where_sql'] = " AND ( lc.`user_id` = ? OR as_ugp.`perm_name` IS NOT NULL )";
+				$ret['bind_vars'] = array( $userId );
+			}
+
 		}
 		/* =-=- CUSTOM END: account_security_content_list_sql -=-= */
 		return $ret;	}
@@ -403,102 +425,121 @@ function account_security_content_list_sql( $pObject, $pParamHash ){
 function account_security_content_user_perms( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_user_perms -=-= */
-		global $gBitUser, $gBitSystem, $gAccount;		
-		$membership_group_id = $gBitSystem->getConfig('account_membership_group_id', -1);
-		if (!empty($membership_group_id) ) {
-			$groups = array();
+			global $gBitUser, $gBitSystem, $gAccount;		
+			$membership_group_id = $gBitSystem->getConfig('account_membership_group_id', -1);
+			if (!empty($membership_group_id) ) {
+				$groups = array();
 
-			// Prevent null userId;
-			$userId = $gBitUser->mUserId;
-			if( !is_numeric( $userId ) ) $userId = 0;
+				// Prevent null userId;
+				$userId = $gBitUser->mUserId;
+				if( !is_numeric( $userId ) ) $userId = 0;
 
-			// Find the groups for this content and user
-			$apsTypes = array( 'bitaccount', 'bitproject', 'bitsubproject' );
+				// Find the groups for this content and user
+				$apsTypes = array( 'bitaccount', 'bitproject', 'bitsubproject' );
 
-			// @TODO = refactor - these queries can be built up from like parts 
-			// content management objects
-			if( in_array( $pObject->mContentTypeGuid, $apsTypes ) || !$pObject->isValid() ){
-				// try to determine a subproject content id - preference is give to request 
-				if( !empty( $pParamHash['connect_subproject_content_id'] ) ){
-					$subproject_content_id = $pParamHash['connect_subproject_content_id'];
-				}
-				// try by gAccount
-				elseif( is_object( $gAccount ) ) {
-					if( $gAccount->isValid() ) {
-						$subproject_content_id = $gAccount->getPreference( 'default_subproject_content_id' );
-					// special case where gAccount is not loaded yet
-					}elseif( isset( $gAccount->mContentId ) ){
-						$query = "SELECT pref_value FROM  `".BIT_DB_PREFIX."liberty_content_prefs` WHERE content_id = ? and pref_name = ?";
-						$bindVars = array( $gAccount->mContentId, 'default_subproject_content_id' );
-						$subproject_content_id = $gBitSystem->mDb->getOne( $query, $bindVars );
+				// @TODO move this to new account user class and manage users internally!
+				// user objects
+				if( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID ){
+					// try by gAccount
+					// @TODO this is partly what needs expansiion - should be checking by account, project, and subproject
+					// For now we're only checking if the user to be edited is in gAccount
+					if( is_object( $gAccount ) ) {
+						if( $pObject->isValid() ){
+							$query = 
+								"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
+								"INNER JOIN `".BIT_DB_PREFIX."account_security_data` asd2 ON ( asd.`content_id` = asd2.`content_id` ) ".
+								"WHERE ( asd2.`user_id` = ? AND asd2.`content_id` = ? ) ".
+								"AND ( asd.`user_id` = ? OR asd.`user_id` = ? )";
+							$bindVars = array( $pObject->mUserId, $gAccount->mContentId, $userId, ANONYMOUS_USER_ID );
+							$groups = $pObject->mDb->getAssoc($query, $bindVars);
+						}else{
+						}
 					}
 				}
-				// we have a subproject id to get roles based on
-				if( !empty( $subproject_content_id ) ){
+				// @TODO = refactor - these queries can be built up from like parts 
+				// content management objects
+				elseif( in_array( $pObject->mContentTypeGuid, $apsTypes ) || !$pObject->isValid() ){
+					// try to determine a subproject content id - preference is give to request 
+					if( !empty( $pParamHash['connect_subproject_content_id'] ) ){
+						$subproject_content_id = $pParamHash['connect_subproject_content_id'];
+					}
+					// try by gAccount
+					elseif( is_object( $gAccount ) ) {
+						if( $gAccount->isValid() ) {
+							$subproject_content_id = $gAccount->getPreference( 'default_subproject_content_id' );
+						// special case where gAccount is not loaded yet
+						}elseif( isset( $gAccount->mContentId ) ){
+							$query = "SELECT pref_value FROM  `".BIT_DB_PREFIX."liberty_content_prefs` WHERE content_id = ? and pref_name = ?";
+							$bindVars = array( $gAccount->mContentId, 'default_subproject_content_id' );
+							$subproject_content_id = $gBitSystem->mDb->getOne( $query, $bindVars );
+						}
+					}
+					// we have a subproject id to get roles based on
+					if( !empty( $subproject_content_id ) ){
+						$query = 
+							"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
+							"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
+							"WHERE ( asd.`user_id` = ? OR asd.`user_id` = ? ) ".
+							"AND sd.`content_id` = ? ";
+						$bindVars = array($userId, ANONYMOUS_USER_ID, $subproject_content_id );
+						$groups = $pObject->mDb->getAssoc($query, $bindVars);
+					}
+				}
+				// mapped content
+				else{
 					$query = 
 						"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
 						"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
+						"INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` scd ON (sd.`content_id` = scd.`subproject_content_id` )".
 						"WHERE ( asd.`user_id` = ? OR asd.`user_id` = ? ) ".
-						"AND sd.`content_id` = ? ";
-					$bindVars = array($userId, ANONYMOUS_USER_ID, $subproject_content_id );
+						"AND scd.`content_id` = ?";
+					$bindVars = array($userId, ANONYMOUS_USER_ID, $pObject->mContentId);
 					$groups = $pObject->mDb->getAssoc($query, $bindVars);
 				}
-			}
-			// mapped content
-			else{
-				$query = 
-					"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
-					"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
-					"INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` scd ON (sd.`content_id` = scd.`subproject_content_id` )".
-					"WHERE ( asd.`user_id` = ? OR asd.`user_id` = ? ) ".
-					"AND scd.`content_id` = ?";
-				$bindVars = array($userId, ANONYMOUS_USER_ID, $pObject->mContentId);
-				$groups = $pObject->mDb->getAssoc($query, $bindVars);
-			}
 
-			// get permissions
-			if (!empty($groups)) {
-				$query = ""; $bindVars = array();
-				// valid content object
-				if( $pObject->isValid() ){
-					$query =
-						"SELECT ugp.`perm_name` as `hash_key`, 1 as `group_perm`, ugp.`perm_name`, ugp.`perm_value`, ugp.`group_id` ".
-						"FROM `".BIT_DB_PREFIX."users_group_permissions` ugp ".
-						"LEFT JOIN `".BIT_DB_PREFIX."liberty_content_permissions` lcp ON (lcp.`group_id`=ugp.`group_id` AND lcp.`content_id`=? AND ugp.`perm_name`=lcp.`perm_name`) ".
-						"WHERE lcp.`perm_name` IS NULL AND ugp.`group_id` IN ".
-						"( ".implode( ',',array_fill( 0, count( $groups ),'?' ) )." ) ";
-					$bindVars = array_merge(array($pObject->mContentId), $groups);
-				}
-				// new content
-				else{
-					// @TODO it appears this IN can be dropped and the list of groups achieved by joining to the account_security_data table directly
-					$query =
-						"SELECT ugp.`perm_name` as `hash_key`, 1 as `group_perm`, ugp.`perm_name`, ugp.`perm_value`, ugp.`group_id` ".
-						"FROM `".BIT_DB_PREFIX."users_permissions` up ".
-						"INNER JOIN `".BIT_DB_PREFIX."users_group_permissions` ugp ON ( ugp.`perm_name`=up.`perm_name` ) ".
-						"WHERE ugp.`group_id` IN ".
-						"( ".implode( ',',array_fill( 0, count( $groups ),'?' ) )." ) ";
-					$bindVars = $groups;
-				}
-				
-				$accessPerms = $pObject->mDb->getAssoc( $query, $bindVars );
-
-				if ( !empty($accessPerms) ) {
-					// Do accessPerms first so that per content rejections override.
-					if( !empty( $pParamHash['content_permissions'] ) ){
-						$pObject->mUserContentPerms = !empty( $pObject->mUserContentPerms )?array_merge($accessPerms, $pObject->mUserContentPerms):$accessPerms;
+				// get permissions
+				if (!empty($groups)) {
+					$query = ""; $bindVars = array();
+					// valid content object
+					if( $pObject->isValid() ){
+						$query =
+							"SELECT ugp.`perm_name` as `hash_key`, 1 as `group_perm`, ugp.`perm_name`, ugp.`perm_value`, ugp.`group_id` ".
+							"FROM `".BIT_DB_PREFIX."users_group_permissions` ugp ".
+							"LEFT JOIN `".BIT_DB_PREFIX."liberty_content_permissions` lcp ON (lcp.`group_id`=ugp.`group_id` AND lcp.`content_id`=? AND ugp.`perm_name`=lcp.`perm_name`) ".
+							"WHERE lcp.`perm_name` IS NULL AND ugp.`group_id` IN ".
+							"( ".implode( ',',array_fill( 0, count( $groups ),'?' ) )." ) ";
+						$bindVars = array_merge(array($pObject->mContentId), $groups);
 					}
-					if( !empty( $pParamHash['user_permissions'] ) ){
-						$gBitUser->mPerms = !empty( $gBitUser->mPerms )?array_merge( $accessPerms, $gBitUser->mPerms ):$accessPerms;
+					// new content
+					else{
+						// @TODO it appears this IN can be dropped and the list of groups achieved by joining to the account_security_data table directly
+						$query =
+							"SELECT ugp.`perm_name` as `hash_key`, 1 as `group_perm`, ugp.`perm_name`, ugp.`perm_value`, ugp.`group_id` ".
+							"FROM `".BIT_DB_PREFIX."users_permissions` up ".
+							"INNER JOIN `".BIT_DB_PREFIX."users_group_permissions` ugp ON ( ugp.`perm_name`=up.`perm_name` ) ".
+							"WHERE ugp.`group_id` IN ".
+							"( ".implode( ',',array_fill( 0, count( $groups ),'?' ) )." ) ";
+						$bindVars = $groups;
+					}
+					
+					$accessPerms = $pObject->mDb->getAssoc( $query, $bindVars );
+
+					if ( !empty($accessPerms) ) {
+						// Do accessPerms first so that per content rejections override.
+						if( !empty( $pParamHash['content_permissions'] ) ){
+							$pObject->mUserContentPerms = !empty( $pObject->mUserContentPerms )?array_merge($accessPerms, $pObject->mUserContentPerms):$accessPerms;
+						}
+						if( !empty( $pParamHash['user_permissions'] ) ){
+							$pParamHash['perms'] = !empty( $pParamHash['perms'] )?array_merge( $accessPerms, $pParamHash['perms'] ):$accessPerms;
+						}
 					}
 				}
 			}
-		}
 
 		/* =-=- CUSTOM END: account_security_content_user_perms -=-= */	}
 }
 function account_security_content_expunge( $pObject, $pParamHash ){
-	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
+	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) && $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 		$account_security = new AccountSecurity( $pObject->mContentId );
 		$account_security->setServiceContent( $pObject );  
 		if( !$account_security->expunge() ){

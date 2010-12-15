@@ -300,10 +300,25 @@ function subproject_content_content_list_sql( $pObject, $pParamHash ){
 		if( is_object( $gAccount ) && $gAccount->isValid() ) {
 			$ret = array();
 			$ret['select_sql'] = $ret['join_sql'] = $ret['where_sql'] = "";
-			$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` subproject_content_data  ON ( lc.`content_id`=subproject_content_data.`content_id` )";
-			$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_data` subproject_data ON (subproject_content_data.`subproject_content_id` = subproject_data.`content_id`)";
-			$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
-			$ret['bind_vars'] = array( $gAccount->mContentId );
+
+			// get all content types except bituser
+			if( $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
+				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` subproject_content_data  ON ( lc.`content_id`=subproject_content_data.`content_id` )";
+				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_data` subproject_data ON (subproject_content_data.`subproject_content_id` = subproject_data.`content_id`)";
+				$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
+				// limit by the account
+				$ret['bind_vars'] = array( $gAccount->mContentId );
+
+			// @TODO move this to new account user class and manage users internally!
+			// This is to solve need to jail lists in users pkg - hackish limit to gAccount
+			// for bituser we need special rules
+			}elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID ){
+				// limit to users in gAccount
+				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )"; 
+				$ret['where_sql'] .= " AND sc_asd.`content_id` = ?";
+				// limit by the account
+				$ret['bind_vars'] = array( $gAccount->mContentId );
+			}
 		}
 
 		/* =-=- CUSTOM END: subproject_content_content_list_sql -=-= */
@@ -313,7 +328,8 @@ function subproject_content_content_load_sql( $pObject, $pParamHash ){
 	return subproject_content_content_list_sql( $pObject, $pParamHash );
 }
 function subproject_content_content_edit( $pObject, $pParamHash ){
-	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+	// map content to a subproject but never bituser
+	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) && $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 		global $gBitSystem, $gBitSmarty, $gAccount, $gBitUser;
 
 		$subproject_content = new SubProjectContent( $pObject->mContentId );
@@ -374,7 +390,8 @@ function subproject_content_content_edit( $pObject, $pParamHash ){
 	}
 }
 function subproject_content_content_store( $pObject, $pParamHash ){
-	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+	// map content to a subproject but never bituser
+	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) && $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 		global $gBitSystem, $gBitSmarty, $gAccount, $gBitUser;
 
 		// get the subproject id to map too
@@ -402,7 +419,8 @@ function subproject_content_content_store( $pObject, $pParamHash ){
 	}
 }
 function subproject_content_content_expunge( $pObject, $pParamHash ){
-	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+	// expunge content from a subproject but never bituser
+	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) && $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 		$subproject_content = new SubProjectContent( $pObject->mContentId );
 		$subproject_content->setServiceContent( $pObject );  
 		if( !$subproject_content->expunge() ){
@@ -410,7 +428,7 @@ function subproject_content_content_expunge( $pObject, $pParamHash ){
 		}	}
 }
 function subproject_content_content_display( $pObject, $pParamHash ){
-	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) && $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 		global $gBitSmarty;
 		/* NOT NECESSARY - CONSIDER DROPING FROM API HANDLERS
 		if( $pObject->isValid() ) {
@@ -423,7 +441,7 @@ function subproject_content_content_display( $pObject, $pParamHash ){
 	}
 }
 function subproject_content_content_preview( $pObject, $pParamHash ){
-	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) && $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 		global $gBitSmarty;
 
 		// call edit service which loads any data necessary for form
