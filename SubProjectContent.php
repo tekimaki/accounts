@@ -296,9 +296,9 @@ function subproject_content_content_list_sql( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 		/* =-=- CUSTOM BEGIN: subproject_content_content_list_sql -=-= */
 		global $gAccount;
-
+		$ret = array();
 		if( is_object( $gAccount ) && $gAccount->isValid() ) {
-			$ret = array();
+			
 			$ret['select_sql'] = $ret['join_sql'] = $ret['where_sql'] = "";
 
 			// get all content types except bituser
