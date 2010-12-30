@@ -148,7 +148,8 @@ if( 	!empty( $_REQUEST[$requestType.'_name'] ) ||
 
 			// Display the plugin template
 			$pageTitleBase = $gContent->getField('title','Accounts') == $gBitSystem->getConfig('site_title')?'':$gContent->getField('title','Accounts').' ';
-			$gBitSystem->display( 'bitpackage:liberty/service_content_display_section.tpl', htmlentities($pageTitleBase.ucfirst($_REQUEST['section'])) , array( 'display_mode' => 'display' ));
+			$pageTitle = $pageTitleBase.' '.( !empty( $sectionHash['section_page_title'] )?$sectionHash['section_page_title']:ucfirst($_REQUEST['section']) );
+			$gBitSystem->display( 'bitpackage:liberty/service_content_display_section.tpl', $pageTitle, array( 'display_mode' => 'display' ));
 			die;
 		}
 	}
