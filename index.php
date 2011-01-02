@@ -166,7 +166,7 @@ if( 	!empty( $_REQUEST[$requestType.'_name'] ) ||
 	/* =-=- CUSTOM END: indexload -=-= */
 
 	// Display the template
-	$pageTitle = $gContent->getField('title','Accounts') == $gBitSystem->getConfig('site_title')?'Home Page':$gContent->getField('title','Accounts').' '.ucfirst($requestType);
+	$pageTitle = $gContent->getField('title','Accounts') == $gBitSystem->getConfig('site_title')?'Home':$gContent->getField('title','Accounts').' '.ucfirst($requestType);
 	$gBitSystem->display( 'bitpackage:accounts/display_'.$requestType.'.tpl', htmlentities($pageTitle) , array( 'display_mode' => 'display' ));
 
 } else if ( $gBitUser->hasPermission( 'p_accounts_admin' ) ) {
