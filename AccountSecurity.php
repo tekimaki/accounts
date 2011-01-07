@@ -349,7 +349,8 @@ function account_security_content_list_sql( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_list_sql -=-= */
 		global $gAccount, $gBitUser, $gBitSystem;
-
+		$ret = array();
+		
 		// Find the groups for this user
 		$groups = array_keys($gBitUser->mGroups);
 		// UserId alias for readability

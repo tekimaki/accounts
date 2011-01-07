@@ -297,17 +297,33 @@ function subproject_content_content_list_sql( $pObject, $pParamHash ){
 		/* =-=- CUSTOM BEGIN: subproject_content_content_list_sql -=-= */
 		global $gAccount;
 		$ret = array();
-		if( is_object( $gAccount ) && $gAccount->isValid() ) {
-			
-			$ret['select_sql'] = $ret['join_sql'] = $ret['where_sql'] = "";
-
+		
+		//Check if we are specifying for a account 
+		$account_content_id = false;
+		if( !empty( $pParamHash['connect_account_id'] ) ){
+			if( isset($_REQUEST['connect_account_id']) ){
+				//If connect_account_id is in the request, kick them out
+				$gBitSystem->setHttpStatus( 404 );
+				$gBitSystem->fatalError( "Sorry, there appears to be a invalid request." );
+			}else{
+				$account_content_id = $pParamHash['connect_account_id'];
+			}
+		}
+		
+		$ret['select_sql'] = $ret['join_sql'] = $ret['where_sql'] = "";
+		if( ( is_object( $gAccount ) && $gAccount->isValid() ) || !empty($account_content_id) ) {
+		
 			// get all content types except bituser
 			if( $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` subproject_content_data  ON ( lc.`content_id`=subproject_content_data.`content_id` )";
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_data` subproject_data ON (subproject_content_data.`subproject_content_id` = subproject_data.`content_id`)";
 				$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
 				// limit by the account
-				$ret['bind_vars'] = array( $gAccount->mContentId );
+				if( !empty( $account_content_id ) ){
+					$ret['bind_vars'] = array( $account_content_id );
+				}else{
+					$ret['bind_vars'] = array( $gAccount->mContentId );
+				}
 
 			// @TODO move this to new account user class and manage users internally!
 			// This is to solve need to jail lists in users pkg - hackish limit to gAccount
@@ -317,7 +333,11 @@ function subproject_content_content_list_sql( $pObject, $pParamHash ){
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )"; 
 				$ret['where_sql'] .= " AND sc_asd.`content_id` = ?";
 				// limit by the account
-				$ret['bind_vars'] = array( $gAccount->mContentId );
+				if( !empty( $account_content_id ) ){
+					$ret['bind_vars'] = array( $account_content_id );
+				}else{
+					$ret['bind_vars'] = array( $gAccount->mContentId );
+				}
 			}
 		}
 
