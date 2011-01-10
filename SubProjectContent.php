@@ -295,13 +295,13 @@ class SubProjectContent extends LibertyBase {
 function subproject_content_content_list_sql( $pObject, $pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 		/* =-=- CUSTOM BEGIN: subproject_content_content_list_sql -=-= */
-		global $gAccount;
+		global $gAccount, $gBitSystem;
 		$ret = array();
 		
 		//Check if we are specifying for a account 
 		$account_content_id = false;
 		if( !empty( $pParamHash['connect_account_id'] ) ){
-			if( isset($_REQUEST['connect_account_id']) ){
+			if( isset( $_REQUEST['connect_account_id'] ) ){
 				//If connect_account_id is in the request, kick them out
 				$gBitSystem->setHttpStatus( 404 );
 				$gBitSystem->fatalError( "Sorry, there appears to be a invalid request." );
@@ -311,18 +311,26 @@ function subproject_content_content_list_sql( $pObject, $pParamHash ){
 		}
 		
 		$ret['select_sql'] = $ret['join_sql'] = $ret['where_sql'] = "";
-		if( ( is_object( $gAccount ) && $gAccount->isValid() ) || !empty($account_content_id) ) {
+		if( ( is_object( $gAccount ) && $gAccount->isValid() ) || ( !empty( $account_content_id ) || isset( $pParamHash['connect_account_id'] ) ) ) {
 		
 			// get all content types except bituser
 			if( $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` subproject_content_data  ON ( lc.`content_id`=subproject_content_data.`content_id` )";
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_data` subproject_data ON (subproject_content_data.`subproject_content_id` = subproject_data.`content_id`)";
-				$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
+				
+				if( isset( $pParamHash['connect_account_id'] )){
+					$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."account_data` account_data ON (subproject_data.`account_content_id` = account_data.`content_id`)";
+					$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."liberty_content` account_info ON (account_data.`content_id` = account_info.`content_id`)";
+					$ret['select_sql'] .= " ,account_info.`title` AS account_title ";
+				}
+					
 				// limit by the account
 				if( !empty( $account_content_id ) ){
 					$ret['bind_vars'] = array( $account_content_id );
-				}else{
+					$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
+				}elseif ( !empty($gAccount->mContentId) && $gAccount->mContentId != -1){
 					$ret['bind_vars'] = array( $gAccount->mContentId );
+					$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
 				}
 
 			// @TODO move this to new account user class and manage users internally!
