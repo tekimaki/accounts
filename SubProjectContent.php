@@ -321,7 +321,7 @@ function subproject_content_content_list_sql( $pObject, $pParamHash ){
 				if( isset( $pParamHash['connect_account_id'] )){
 					$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."account_data` account_data ON (subproject_data.`account_content_id` = account_data.`content_id`)";
 					$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."liberty_content` account_info ON (account_data.`content_id` = account_info.`content_id`)";
-					$ret['select_sql'] .= " ,account_info.`title` AS account_title ";
+					$ret['select_sql'] .= " ,account_info.`title` AS account_title, account_info.`content_id` AS account_content_id ";
 				}
 					
 				// limit by the account
