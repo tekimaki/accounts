@@ -93,7 +93,7 @@ accounts:
       description:  Can view account entries
       level: basic
     p_account_list:
-      description: Can view lists of accounts
+      description:  Can view lists of account entries
       level: admin
     p_account_update:
       description: Can update any account entry
@@ -110,6 +110,9 @@ accounts:
     p_project_view:
       description:  Can view project entries
       level: basic
+    p_project_list:
+      description:  Can view lists of project entries
+      level: admin
     p_project_update:
       description: Can update any project entry
       level: admin
@@ -125,6 +128,9 @@ accounts:
     p_subproject_view:
       description:  Can view subproject entries
       level: basic
+    p_subproject_list:
+      description:  Can view lists of subproject entries
+      level: admin
     p_subproject_update:
       description: Can update any subproject entry
       level: admin

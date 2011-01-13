@@ -90,6 +90,7 @@ class BitAccount extends LibertyMime {
 		// Permission setup
 		$this->mCreateContentPerm  = 'p_account_create';
 		$this->mViewContentPerm	   = 'p_account_view';
+		$this->mListViewContentPerm	= 'p_account_list';
 		$this->mUpdateContentPerm  = 'p_account_update';
 		$this->mExpungeContentPerm = 'p_account_expunge';
 		$this->mAdminContentPerm   = 'p_accounts_admin';
@@ -285,20 +286,12 @@ class BitAccount extends LibertyMime {
 			$pParamHash['account']['account_store']['content_id'] = $pParamHash['account']['content_id'];
 		}
 
-		// Use $pParamHash here since it handles validation right
-		$this->validateFields($pParamHash);
-
 		if( !empty( $pParamHash['account']['data'] ) ) {
 			$pParamHash['account']['edit'] = $pParamHash['account']['data'];
 		}
 
-		// If title specified truncate to make sure not too long
-		// TODO: This shouldn't be required. LC should validate this.
-		if( !empty( $pParamHash['account']['title'] ) ) {
-			$pParamHash['account']['content_store']['title'] = substr( $pParamHash['account']['title'], 0, 160 );
-		} else if( empty( $pParamHash['account']['title'] ) ) { // else is error as must have title
-			$this->mErrors['title'] = tra('You must enter a title for this '.$this->getContentTypeName());
-		}
+		// Use $pParamHash here since it handles validation right
+		$this->validateFields($pParamHash);
 
 		// collapse the hash that is passed to parent class so that service data is passed through properly - need to do so before verify service call below
 		$hashCopy = $pParamHash;
@@ -557,12 +550,10 @@ class BitAccount extends LibertyMime {
 	 */
 	function previewFields(&$pParamHash) {
 		$this->prepVerify();
-		if(!empty($this->mVerification['account_data'])){
-			LibertyValidator::preview(
-			$this->mVerification['account_data'],
-				$pParamHash['account'],
-				$this->mInfo);
-		}
+		LibertyValidator::preview(
+		$this->mVerification['account_data'],
+			$pParamHash['account'],
+			$this->mInfo);
 	}
 
 	/**
@@ -573,13 +564,27 @@ class BitAccount extends LibertyMime {
 		LibertyValidator::validate(
 			$this->mVerification['account_data'],
 			$pParamHash['account'],
-			$this, $pParamHash['account_store']);
+			$this->mErrors, $pParamHash['account_store']);
 	}
 
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
 	function prepVerify() {
+	 	/* Validation for liberty_content - modify base settings */
+		if (empty($this->mVerification['liberty_content'])) {
+			LibertyContent::prepVerify();
+	 		/* Validation for liberty_content title */
+			$this->mVerification['liberty_content']['string']['title'] = array_merge( $this->mVerification['liberty_content']['string']['title'], array(
+				'name' => 'Account Name',
+				'required' => '1'
+			));
+	 		/* Validation for liberty_content data */
+			$this->mVerification['liberty_content']['string']['data'] = array_merge( $this->mVerification['liberty_content']['string']['data'], array(
+				'name' => 'About',
+			));
+		}
+
 		if (empty($this->mVerification['account_data'])) {
 
 
@@ -598,6 +603,7 @@ class BitAccount extends LibertyMime {
 				'type' => 'null',
 				'label' => 'Account Name',
 				'help' => '',
+				'required' => '1'
 			);
 	 		/* Schema for data */
 			$this->mSchema['account_data']['data'] = array(

@@ -62,10 +62,10 @@
 				{foreach item=dataItem from=$subprojectList name=subprojectlist}
 					<li class="{if $smarty.foreach.subprojectlist.last}last {/if}{cycle values="even,odd"}">
 						<div class="floaticon">
-							{if $gBitUser->hasPermission( 'p_accounts_subproject_update' )}
+							{if $gBitUser->hasPermission( 'p_subproject_update' )}
 								{smartlink ititle="Edit" ifile="edit_subproject.php" ibiticon="icons/accessories-text-editor" subproject_id=$dataItem.subproject_id}
 							{/if}
-							{if $gBitUser->hasPermission( 'p_accounts_subproject_expunge' )}
+							{if $gBitUser->hasPermission( 'p_subproject_expunge' )}
 								<input type="checkbox" name="checked[]" title="{$dataItem.title|escape}" value="{$dataItem.subproject_id}" />
 							{/if}
 						</div>
@@ -107,7 +107,7 @@
 				{/foreach}
 			</ul>
 
-			{if $gBitUser->hasPermission( 'p_accounts_subproject_expunge' )}
+			{if $gBitUser->hasPermission( 'p_subproject_expunge' )}
 				<div style="text-align:right;">
 					<script type="text/javascript">/* <![CDATA[ check / uncheck all */
 						document.write("<label for=\"switcher\">{tr}Select All{/tr}</label> ");

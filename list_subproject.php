@@ -36,7 +36,7 @@ $gBitSystem->verifyPackage( 'accounts' );
 require_once( ACCOUNTS_PKG_PATH.'lookup_subproject_inc.php' );
 
 // Now check permissions to access this page
-$gContent->verifyViewPermission();
+$gContent->verifyListViewPermission();
 
 // Remove subproject data if we don't want them anymore
 if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQUEST["submit_mult"] == "remove_subproject_data" ) {

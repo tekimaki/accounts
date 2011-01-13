@@ -23,9 +23,10 @@
 			{/if}
 		</h1>
 	</div>
-	{formfeedback success=$success}
+
 	<div class="body">
-		{formfeedback warning=$errors}
+		{formfeedback success=$success}
+		{formfeedback error=$errors.store}
 		{form enctype="multipart/form-data" id="editaccountform"}
 			{* =-=- CUSTOM BEGIN: input -=-= *}
 
@@ -54,17 +55,16 @@
 				{jstab title="Edit"}
 				{legend legend=$gContent->getContentTypeName() class="inlineLabels"}
 						<input type="hidden" name="account[account_id]" value="{$gContent->mInfo.account_id}" />
-						{formfeedback warning=$errors.store}
 
 						<div class="row" id="row_title">
-							{formfeedback warning=$errors.title}
-							{formlabel label="Account Name" for="title"}
+							{formlabel label="Account Name" for="title" required="y"}
 							{forminput}
+								{formfeedback error=$errors.title}
 								<input class="textInput" type="text" size="50" name="account[title]" id="title" value="{$gContent->mInfo.title|escape}" />
 							{/forminput}
 						</div>
  
-						{textarea label="About" name="account[edit]" help="A statement about the account."}{$gContent->mInfo.data}{/textarea}
+{textarea label="About" name="account[edit]" help="A statement about the account." error=$errors.data }{$gContent->mInfo.data}{/textarea}
 						{* any simple service edit options *}
 						{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_mini_tpl" formid="editaccountform"}
 

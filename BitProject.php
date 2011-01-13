@@ -85,6 +85,7 @@ class BitProject extends LibertyMime {
 		// Permission setup
 		$this->mCreateContentPerm  = 'p_project_create';
 		$this->mViewContentPerm	   = 'p_project_view';
+		$this->mListViewContentPerm	= 'p_project_list';
 		$this->mUpdateContentPerm  = 'p_project_update';
 		$this->mExpungeContentPerm = 'p_project_expunge';
 		$this->mAdminContentPerm   = 'p_accounts_admin';
@@ -283,20 +284,12 @@ class BitProject extends LibertyMime {
 			$pParamHash['project']['project_store']['content_id'] = $pParamHash['project']['content_id'];
 		}
 
-		// Use $pParamHash here since it handles validation right
-		$this->validateFields($pParamHash);
-
 		if( !empty( $pParamHash['project']['data'] ) ) {
 			$pParamHash['project']['edit'] = $pParamHash['project']['data'];
 		}
 
-		// If title specified truncate to make sure not too long
-		// TODO: This shouldn't be required. LC should validate this.
-		if( !empty( $pParamHash['project']['title'] ) ) {
-			$pParamHash['project']['content_store']['title'] = substr( $pParamHash['project']['title'], 0, 160 );
-		} else if( empty( $pParamHash['project']['title'] ) ) { // else is error as must have title
-			$this->mErrors['title'] = tra('You must enter a title for this '.$this->getContentTypeName());
-		}
+		// Use $pParamHash here since it handles validation right
+		$this->validateFields($pParamHash);
 
 		// collapse the hash that is passed to parent class so that service data is passed through properly - need to do so before verify service call below
 		$hashCopy = $pParamHash;
@@ -553,13 +546,27 @@ class BitProject extends LibertyMime {
 		LibertyValidator::validate(
 			$this->mVerification['project_data'],
 			$pParamHash['project'],
-			$this, $pParamHash['project_store']);
+			$this->mErrors, $pParamHash['project_store']);
 	}
 
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
 	function prepVerify() {
+	 	/* Validation for liberty_content - modify base settings */
+		if (empty($this->mVerification['liberty_content'])) {
+			LibertyContent::prepVerify();
+	 		/* Validation for liberty_content title */
+			$this->mVerification['liberty_content']['string']['title'] = array_merge( $this->mVerification['liberty_content']['string']['title'], array(
+				'name' => 'Project Name',
+				'required' => '1'
+			));
+	 		/* Validation for liberty_content data */
+			$this->mVerification['liberty_content']['string']['data'] = array_merge( $this->mVerification['liberty_content']['string']['data'], array(
+				'name' => 'Description',
+			));
+		}
+
 		if (empty($this->mVerification['project_data'])) {
 
 	 		/* Validation for is_default */
@@ -589,6 +596,7 @@ class BitProject extends LibertyMime {
 				'type' => 'null',
 				'label' => 'Project Name',
 				'help' => '',
+				'required' => '1'
 			);
 	 		/* Schema for data */
 			$this->mSchema['project_data']['data'] = array(
