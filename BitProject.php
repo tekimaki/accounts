@@ -248,7 +248,7 @@ class BitProject extends LibertyMime {
 			$this->mDb->CompleteTrans();
 			$this->load();
 		} else {
-			$this->mErrors['store'] = tra('Failed to save this').' project.';
+			$this->mErrors['store'] = tra('Failed to save this '.$this->getContentTypeName());
 		}
 		// Restore previous state for user abort
 		ignore_user_abort($abort);
