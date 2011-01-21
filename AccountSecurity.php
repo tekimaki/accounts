@@ -213,7 +213,7 @@ class AccountSecurity extends LibertyBase {
 			LibertyValidator::preview(
 				$this->mVerification['account_security_data'],
 				$pParamHash['account_security_data'],
-				$this, $pParamHash['account_security_store']);
+				$this->mInfo, $pParamHash['account_security_store']);
 		}
 	}
 
@@ -229,7 +229,7 @@ class AccountSecurity extends LibertyBase {
 				LibertyValidator::validate(
 					$this->mVerification['account_security_data'],
 					$data,
-					$this, $pParamHash['account_security_store'][$key]);
+					$this->mErrors, $pParamHash['account_security_store'][$key]);
 			}
 		}
 	}

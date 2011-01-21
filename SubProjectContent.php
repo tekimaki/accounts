@@ -187,7 +187,7 @@ class SubProjectContent extends LibertyBase {
 			LibertyValidator::preview(
 				$this->mVerification['subproject_content_data'],
 				$pParamHash['subproject_content_data'],
-				$this, $pParamHash['subproject_content_store']);
+				$this->mInfo, $pParamHash['subproject_content_store']);
 		}
 	}
 
@@ -203,7 +203,7 @@ class SubProjectContent extends LibertyBase {
 				LibertyValidator::validate(
 					$this->mVerification['subproject_content_data'],
 					$data,
-					$this, $pParamHash['subproject_content_store'][$key]);
+					$this->mErrors, $pParamHash['subproject_content_store'][$key]);
 			}
 		}
 	}
