@@ -422,16 +422,17 @@ function account_security_content_list_sql( $pObject, $pParamHash ){
 		/* =-=- CUSTOM END: account_security_content_list_sql -=-= */
 		return $ret;	}
 }
-function account_security_content_user_perms( $pObject, $pParamHash ){
+function account_security_content_user_perms( $pObject, &$pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_user_perms -=-= */
 			global $gBitUser, $gBitSystem, $gAccount;		
+
 			$membership_group_id = $gBitSystem->getConfig('account_membership_group_id', -1);
 			if (!empty($membership_group_id) ) {
 				$groups = array();
 
 				// Prevent null userId;
-				$userId = $gBitUser->mUserId;
+				$userId = ( !empty( $pParamHash['content_permissions_user_id'] ) && empty( $_REQUEST['content_permissions_user_id'] ) ) ? $pParamHash['content_permissions_user_id'] : $gBitUser->mUserId;
 				if( !is_numeric( $userId ) ) $userId = 0;
 
 				// Find the groups for this content and user
@@ -525,9 +526,8 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 					$accessPerms = $pObject->mDb->getAssoc( $query, $bindVars );
 
 					if ( !empty($accessPerms) ) {
-						// Do accessPerms first so that per content rejections override.
 						if( !empty( $pParamHash['content_permissions'] ) ){
-							$pObject->mUserContentPerms = !empty( $pObject->mUserContentPerms )?array_merge($accessPerms, $pObject->mUserContentPerms):$accessPerms;
+							$pParamHash['perms'] = $accessPerms;
 						}
 						if( !empty( $pParamHash['user_permissions'] ) ){
 							$pParamHash['perms'] = !empty( $pParamHash['perms'] )?array_merge( $accessPerms, $pParamHash['perms'] ):$accessPerms;
