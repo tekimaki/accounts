@@ -214,6 +214,7 @@ class BitAccount extends LibertyMime {
 		$abort = ignore_user_abort(FALSE);
 		// A flag to let the custom store block know if we updated or inserted.
 		$new = FALSE;
+		$pParamHash['new'] = &$new;
 		if( $this->verify( $pParamHash )
 			&& LibertyMime::store( $pParamHash['account'] ) ) {
 			$this->mDb->StartTrans();
@@ -549,7 +550,7 @@ class BitAccount extends LibertyMime {
 	 * previewFields prepares the fields in this type for preview
 	 */
 	function previewFields(&$pParamHash) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		LibertyValidator::preview(
 		$this->mVerification['account_data'],
 			$pParamHash['account'],
@@ -560,27 +561,30 @@ class BitAccount extends LibertyMime {
 	 * validateFields validates the fields in this type
 	 */
 	function validateFields(&$pParamHash) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		LibertyValidator::validate(
 			$this->mVerification['account_data'],
 			$pParamHash['account'],
-			$this->mErrors, $pParamHash['account_store']);
+			$this->mErrors, 
+			$pParamHash['account_store'],
+			$this);
 	}
 
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
-	function prepVerify() {
+	function prepVerify(&$pParamHash) {
 	 	/* Validation for liberty_content - modify base settings */
 		if (empty($this->mVerification['liberty_content'])) {
-			LibertyContent::prepVerify();
+			LibertyContent::prepVerify($pParamHash);
 	 		/* Validation for liberty_content title */
 			$this->mVerification['liberty_content']['string']['title'] = array_merge( $this->mVerification['liberty_content']['string']['title'], array(
 				'name' => 'Account Name',
 				'required' => '1'
 			));
 	 		/* Validation for liberty_content data */
-			$this->mVerification['liberty_content']['string']['data'] = array_merge( $this->mVerification['liberty_content']['string']['data'], array(
+			$format = !empty( $pParamHash['format_guid'] ) && $pParamHash['format_guid'] == 'bithtml' ? 'html' : 'string';
+			$this->mVerification['liberty_content'][$format]['data'] = array_merge( $this->mVerification['liberty_content'][$format]['data'], array(
 				'name' => 'About',
 			));
 		}
@@ -592,7 +596,8 @@ class BitAccount extends LibertyMime {
 	}
 
 	/**
-	 * prepVerify prepares the object for input verification
+	 * getSchema returns the data schema 
+	 * This feature is still under development
 	 */
 	public function getSchema() {
 		if (empty($this->mSchema['account_data'])) {

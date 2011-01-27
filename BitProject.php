@@ -209,6 +209,7 @@ class BitProject extends LibertyMime {
 		$abort = ignore_user_abort(FALSE);
 		// A flag to let the custom store block know if we updated or inserted.
 		$new = FALSE;
+		$pParamHash['new'] = &$new;
 		if( $this->verify( $pParamHash )
 			&& LibertyMime::store( $pParamHash['project'] ) ) {
 			$this->mDb->StartTrans();
@@ -531,7 +532,7 @@ class BitProject extends LibertyMime {
 	 * previewFields prepares the fields in this type for preview
 	 */
 	function previewFields(&$pParamHash) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		LibertyValidator::preview(
 		$this->mVerification['project_data'],
 			$pParamHash['project'],
@@ -542,27 +543,30 @@ class BitProject extends LibertyMime {
 	 * validateFields validates the fields in this type
 	 */
 	function validateFields(&$pParamHash) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		LibertyValidator::validate(
 			$this->mVerification['project_data'],
 			$pParamHash['project'],
-			$this->mErrors, $pParamHash['project_store']);
+			$this->mErrors, 
+			$pParamHash['project_store'],
+			$this);
 	}
 
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
-	function prepVerify() {
+	function prepVerify(&$pParamHash) {
 	 	/* Validation for liberty_content - modify base settings */
 		if (empty($this->mVerification['liberty_content'])) {
-			LibertyContent::prepVerify();
+			LibertyContent::prepVerify($pParamHash);
 	 		/* Validation for liberty_content title */
 			$this->mVerification['liberty_content']['string']['title'] = array_merge( $this->mVerification['liberty_content']['string']['title'], array(
 				'name' => 'Project Name',
 				'required' => '1'
 			));
 	 		/* Validation for liberty_content data */
-			$this->mVerification['liberty_content']['string']['data'] = array_merge( $this->mVerification['liberty_content']['string']['data'], array(
+			$format = !empty( $pParamHash['format_guid'] ) && $pParamHash['format_guid'] == 'bithtml' ? 'html' : 'string';
+			$this->mVerification['liberty_content'][$format]['data'] = array_merge( $this->mVerification['liberty_content'][$format]['data'], array(
 				'name' => 'Description',
 			));
 		}
@@ -585,7 +589,8 @@ class BitProject extends LibertyMime {
 	}
 
 	/**
-	 * prepVerify prepares the object for input verification
+	 * getSchema returns the data schema 
+	 * This feature is still under development
 	 */
 	public function getSchema() {
 		if (empty($this->mSchema['project_data'])) {
