@@ -182,12 +182,12 @@ class SubProjectContent extends LibertyBase {
 	 * preview prepares the fields in this type for preview
 	 */
 	 function previewFields( &$pParamHash ) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		if (!empty($pParamHash['subproject_content_data'])) {
 			LibertyValidator::preview(
 				$this->mVerification['subproject_content_data'],
 				$pParamHash['subproject_content_data'],
-				$this->mInfo, $pParamHash['subproject_content_store']);
+				$this->mInfo);
 		}
 	}
 
@@ -195,7 +195,7 @@ class SubProjectContent extends LibertyBase {
 	 * validateFields validates the fields in this type
 	 */
 	function validateFields( &$pParamHash ) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		if (!empty($pParamHash['subproject_content_data'])) {
 			foreach ($pParamHash['subproject_content_data'] as $key => $data) {
 				$pParamHash['subproject_content_store'][$key] = array();
@@ -203,7 +203,9 @@ class SubProjectContent extends LibertyBase {
 				LibertyValidator::validate(
 					$this->mVerification['subproject_content_data'],
 					$data,
-					$this->mErrors, $pParamHash['subproject_content_store'][$key]);
+					$this->mErrors, 
+					$pParamHash['subproject_content_store'][$key],
+					$this);
 			}
 		}
 	}
@@ -211,7 +213,7 @@ class SubProjectContent extends LibertyBase {
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
-	function prepVerify() {
+	function prepVerify(&$pParamHash) {
 		if (empty($this->mVerification['subproject_content_data'])) {
 
 	 		/* Validation for subproject_content_id */
@@ -292,7 +294,7 @@ class SubProjectContent extends LibertyBase {
 
 }
 
-function subproject_content_content_list_sql( $pObject, $pParamHash ){
+function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 		/* =-=- CUSTOM BEGIN: subproject_content_content_list_sql -=-= */
 		global $gAccount;

@@ -562,8 +562,7 @@ class BitSubProject extends LibertyMime {
 				'required' => '1'
 			));
 	 		/* Validation for liberty_content data */
-			$format = !empty( $pParamHash['format_guid'] ) && $pParamHash['format_guid'] == 'bithtml' ? 'html' : 'string';
-			$this->mVerification['liberty_content'][$format]['data'] = array_merge( $this->mVerification['liberty_content'][$format]['data'], array(
+			$this->mVerification['liberty_content']['string']['data'] = array_merge( $this->mVerification['liberty_content']['string']['data'], array(
 				'name' => 'Description',
 			));
 		}

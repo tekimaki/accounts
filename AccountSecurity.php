@@ -208,12 +208,12 @@ class AccountSecurity extends LibertyBase {
 	 * preview prepares the fields in this type for preview
 	 */
 	 function previewFields( &$pParamHash ) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		if (!empty($pParamHash['account_security_data'])) {
 			LibertyValidator::preview(
 				$this->mVerification['account_security_data'],
 				$pParamHash['account_security_data'],
-				$this->mInfo, $pParamHash['account_security_store']);
+				$this->mInfo);
 		}
 	}
 
@@ -221,7 +221,7 @@ class AccountSecurity extends LibertyBase {
 	 * validateFields validates the fields in this type
 	 */
 	function validateFields( &$pParamHash ) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		if (!empty($pParamHash['account_security_data'])) {
 			foreach ($pParamHash['account_security_data'] as $key => $data) {
 				$pParamHash['account_security_store'][$key] = array();
@@ -229,7 +229,9 @@ class AccountSecurity extends LibertyBase {
 				LibertyValidator::validate(
 					$this->mVerification['account_security_data'],
 					$data,
-					$this->mErrors, $pParamHash['account_security_store'][$key]);
+					$this->mErrors, 
+					$pParamHash['account_security_store'][$key],
+					$this);
 			}
 		}
 	}
@@ -237,7 +239,7 @@ class AccountSecurity extends LibertyBase {
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
-	function prepVerify() {
+	function prepVerify(&$pParamHash) {
 		if (empty($this->mVerification['account_security_data'])) {
 
 	 		/* Validation for group_id */
@@ -345,7 +347,7 @@ class AccountSecurity extends LibertyBase {
 
 }
 
-function account_security_content_list_sql( $pObject, $pParamHash ){
+function account_security_content_list_sql( $pObject, &$pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_list_sql -=-= */
 		global $gAccount, $gBitUser, $gBitSystem;
