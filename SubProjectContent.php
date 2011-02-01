@@ -299,8 +299,15 @@ function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 		/* =-=- CUSTOM BEGIN: subproject_content_content_list_sql -=-= */
 		global $gAccount;
 		$ret = array();
-		if( is_object( $gAccount ) && $gAccount->isValid() ) {
-			
+		$account_content_id = NULL;
+
+		if( !empty( $pParamHash['connect_account_id'] ) && empty( $_REQUEST['connect_account_id'] ) ){
+			$account_content_id = $pParamHash['connect_account_id'];
+		}elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
+			$account_content_id = $gAccount->mContentId;
+		}
+
+		if( $pObject->verifyId( $account_content_id ) ){ 
 			$ret['select_sql'] = $ret['join_sql'] = $ret['where_sql'] = "";
 
 			// get all content types except bituser
@@ -309,7 +316,7 @@ function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_data` subproject_data ON (subproject_content_data.`subproject_content_id` = subproject_data.`content_id`)";
 				$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
 				// limit by the account
-				$ret['bind_vars'] = array( $gAccount->mContentId );
+				$ret['bind_vars'] = array( $account_content_id );
 
 			// @TODO move this to new account user class and manage users internally!
 			// This is to solve need to jail lists in users pkg - hackish limit to gAccount
@@ -319,7 +326,7 @@ function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )"; 
 				$ret['where_sql'] .= " AND sc_asd.`content_id` = ?";
 				// limit by the account
-				$ret['bind_vars'] = array( $gAccount->mContentId );
+				$ret['bind_vars'] = array( $account_content_id );
 			}
 		}
 
