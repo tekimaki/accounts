@@ -539,7 +539,8 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 		/* =-=- CUSTOM END: account_security_content_user_perms -=-= */	}
 }
 function account_security_content_expunge( $pObject, $pParamHash ){
-	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) && $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
+		vd( 'in service');
+	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		$account_security = new AccountSecurity( $pObject->mContentId );
 		$account_security->setServiceContent( $pObject );  
 		if( !$account_security->expunge() ){
