@@ -41,6 +41,7 @@ require_once( LIBERTY_PKG_PATH . 'LibertyValidator.php' );
 require_once( USERS_PKG_PATH.'BitUser.php' );
 
 define( 'BITACCOUNT_DRAFT_STATUS_ID', -5 );
+define( 'BITACCOUNT_PROVISIONAL_LITE_STATUS_ID', 5 );
 define( 'BITACCOUNT_PROVISIONAL_STATUS_ID', 10 );
 define( 'BITACCOUNT_PUBLIC_STATUS_ID', 50 );
 
@@ -642,6 +643,7 @@ class BitAccount extends LibertyMime {
 		if( !$gBitUser->hasPermission( 'p_liberty_edit_all_status' )) {
 			$ret = array( 
 				BITACCOUNT_DRAFT_STATUS_ID => "Draft",
+				BITACCOUNT_PROVISIONAL_LITE_STATUS_ID => 'Provisional Lite',
 				BITACCOUNT_PROVISIONAL_STATUS_ID => "Provisional",
 				BITACCOUNT_PUBLIC_STATUS_ID => "Available",
 			);
@@ -650,6 +652,7 @@ class BitAccount extends LibertyMime {
 		else{
 			$ret = LibertyMime::getAvailableContentStatuses( $pUserMinimum, $pUserMaximum );
 			$ret[BITACCOUNT_DRAFT_STATUS_ID] = "Draft";
+			$ret[BITACCOUNT_PROVISIONAL_LITE_STATUS_ID] = "Provisional Lite";
 			$ret[BITACCOUNT_PROVISIONAL_STATUS_ID] = "Provisional";
 			$ret[BITACCOUNT_PUBLIC_STATUS_ID] = "Available";
 			ksort( $ret );
