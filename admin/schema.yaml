@@ -195,5 +195,6 @@ accounts:
           content_expunge: subproject_content_content_expunge
           content_display: subproject_content_content_display
           content_preview: subproject_content_content_preview
+          users_expunge: subproject_content_content_expunge
         tpl:
           content_edit_mini: "bitpackage:accounts/subproject_content_content_edit_mini_inc.tpl"
