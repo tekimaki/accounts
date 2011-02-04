@@ -110,6 +110,9 @@ accounts:
     p_project_view:
       description:  Can view project entries
       level: basic
+    p_project_list:
+      description:  Can view list of projects
+      level: basic
     p_project_update:
       description: Can update any project entry
       level: admin
@@ -124,6 +127,9 @@ accounts:
       level: admin
     p_subproject_view:
       description:  Can view subproject entries
+      level: basic
+    p_subproject_list:
+      description:  Can view list of subprojects
       level: basic
     p_subproject_update:
       description: Can update any subproject entry
