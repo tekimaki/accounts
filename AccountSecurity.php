@@ -393,6 +393,7 @@ function account_security_content_list_sql( $pObject, &$pParamHash ){
 								   )".		
 
 					// Check if a group is allowed by default
+					// @TODO this join can result in returning duplicate rows of content if multiple groups here have the same permission
 					" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_dflt ON (as_dflt.`perm_name` = as_lcpm.`perm_name` AND as_dflt.`group_id` IN (".implode(',', $groups) .") )".
 					// Check if subproject group is allowed
 					" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_ugpgc ON (as_ugpgc.`perm_name` = as_lcpm.`perm_name` AND as_ugpgc.`group_id` = as_asd.`group_id` )";
