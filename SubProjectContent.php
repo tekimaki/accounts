@@ -182,12 +182,12 @@ class SubProjectContent extends LibertyBase {
 	 * preview prepares the fields in this type for preview
 	 */
 	 function previewFields( &$pParamHash ) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		if (!empty($pParamHash['subproject_content_data'])) {
 			LibertyValidator::preview(
 				$this->mVerification['subproject_content_data'],
 				$pParamHash['subproject_content_data'],
-				$this, $pParamHash['subproject_content_store']);
+				$this->mInfo);
 		}
 	}
 
@@ -195,7 +195,7 @@ class SubProjectContent extends LibertyBase {
 	 * validateFields validates the fields in this type
 	 */
 	function validateFields( &$pParamHash ) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		if (!empty($pParamHash['subproject_content_data'])) {
 			foreach ($pParamHash['subproject_content_data'] as $key => $data) {
 				$pParamHash['subproject_content_store'][$key] = array();
@@ -203,7 +203,9 @@ class SubProjectContent extends LibertyBase {
 				LibertyValidator::validate(
 					$this->mVerification['subproject_content_data'],
 					$data,
-					$this, $pParamHash['subproject_content_store'][$key]);
+					$this->mErrors, 
+					$pParamHash['subproject_content_store'][$key],
+					$this);
 			}
 		}
 	}
@@ -211,7 +213,7 @@ class SubProjectContent extends LibertyBase {
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
-	function prepVerify() {
+	function prepVerify(&$pParamHash) {
 		if (empty($this->mVerification['subproject_content_data'])) {
 
 	 		/* Validation for subproject_content_id */
@@ -292,27 +294,22 @@ class SubProjectContent extends LibertyBase {
 
 }
 
-function subproject_content_content_list_sql( $pObject, $pParamHash ){
+function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 		/* =-=- CUSTOM BEGIN: subproject_content_content_list_sql -=-= */
 		global $gAccount, $gBitSystem;
 		$ret = array();
-		
-		//Check if we are specifying for a account 
-		$account_content_id = false;
-		if( !empty( $pParamHash['connect_account_id'] ) ){
-			if( isset( $_REQUEST['connect_account_id'] ) ){
-				//If connect_account_id is in the request, kick them out
-				$gBitSystem->setHttpStatus( 404 );
-				$gBitSystem->fatalError( "Sorry, there appears to be a invalid request." );
-			}else{
-				$account_content_id = $pParamHash['connect_account_id'];
-			}
+		$account_content_id = NULL;
+
+		if( !empty( $pParamHash['connect_account_id'] ) && empty( $_REQUEST['connect_account_id'] ) ){
+			$account_content_id = $pParamHash['connect_account_id'];
+		}elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
+			$account_content_id = $gAccount->mContentId;
 		}
-		
-		$ret['select_sql'] = $ret['join_sql'] = $ret['where_sql'] = "";
-		if( ( is_object( $gAccount ) && $gAccount->isValid() ) || ( !empty( $account_content_id ) || isset( $pParamHash['connect_account_id'] ) ) ) {
-		
+
+		if( $pObject->verifyId( $account_content_id ) ){ 
+			$ret['select_sql'] = $ret['join_sql'] = $ret['where_sql'] = "";
+
 			// get all content types except bituser
 			if( $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` subproject_content_data  ON ( lc.`content_id`=subproject_content_data.`content_id` )";
@@ -325,13 +322,7 @@ function subproject_content_content_list_sql( $pObject, $pParamHash ){
 				}
 					
 				// limit by the account
-				if( !empty( $account_content_id ) ){
-					$ret['bind_vars'] = array( $account_content_id );
-					$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
-				}elseif ( !empty($gAccount->mContentId) && $gAccount->mContentId != -1){
-					$ret['bind_vars'] = array( $gAccount->mContentId );
-					$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
-				}
+				$ret['bind_vars'] = array( $account_content_id );
 
 			// @TODO move this to new account user class and manage users internally!
 			// This is to solve need to jail lists in users pkg - hackish limit to gAccount
@@ -348,7 +339,8 @@ function subproject_content_content_list_sql( $pObject, $pParamHash ){
 				// limit to users in gAccount
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )"; 
 				$ret['where_sql'] .= " AND sc_asd.`content_id` = ?";
-				$ret['bind_vars'] = array( $gAccount->mContentId );
+				// limit by the account
+				$ret['bind_vars'] = array( $account_content_id );
 			}
 		}
 

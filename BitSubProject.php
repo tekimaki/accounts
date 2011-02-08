@@ -85,6 +85,7 @@ class BitSubProject extends LibertyMime {
 		// Permission setup
 		$this->mCreateContentPerm  = 'p_subproject_create';
 		$this->mViewContentPerm	   = 'p_subproject_view';
+		$this->mListViewContentPerm	= 'p_subproject_list';
 		$this->mUpdateContentPerm  = 'p_subproject_update';
 		$this->mExpungeContentPerm = 'p_subproject_expunge';
 		$this->mAdminContentPerm   = 'p_accounts_admin';
@@ -208,6 +209,7 @@ class BitSubProject extends LibertyMime {
 		$abort = ignore_user_abort(FALSE);
 		// A flag to let the custom store block know if we updated or inserted.
 		$new = FALSE;
+		$pParamHash['new'] = &$new;
 		if( $this->verify( $pParamHash )
 			&& LibertyMime::store( $pParamHash['subproject'] ) ) {
 			$this->mDb->StartTrans();
@@ -244,7 +246,7 @@ class BitSubProject extends LibertyMime {
 			$this->mDb->CompleteTrans();
 			$this->load();
 		} else {
-			$this->mErrors['store'] = tra('Failed to save this').' subproject.';
+			$this->mErrors['store'] = tra('Failed to save this '.$this->getContentTypeName());
 		}
 		// Restore previous state for user abort
 		ignore_user_abort($abort);
@@ -280,20 +282,12 @@ class BitSubProject extends LibertyMime {
 			$pParamHash['subproject']['subproject_store']['content_id'] = $pParamHash['subproject']['content_id'];
 		}
 
-		// Use $pParamHash here since it handles validation right
-		$this->validateFields($pParamHash);
-
 		if( !empty( $pParamHash['subproject']['data'] ) ) {
 			$pParamHash['subproject']['edit'] = $pParamHash['subproject']['data'];
 		}
 
-		// If title specified truncate to make sure not too long
-		// TODO: This shouldn't be required. LC should validate this.
-		if( !empty( $pParamHash['subproject']['title'] ) ) {
-			$pParamHash['subproject']['content_store']['title'] = substr( $pParamHash['subproject']['title'], 0, 160 );
-		} else if( empty( $pParamHash['subproject']['title'] ) ) { // else is error as must have title
-			$this->mErrors['title'] = tra('You must enter a title for this '.$this->getContentTypeName());
-		}
+		// Use $pParamHash here since it handles validation right
+		$this->validateFields($pParamHash);
 
 		// collapse the hash that is passed to parent class so that service data is passed through properly - need to do so before verify service call below
 		$hashCopy = $pParamHash;
@@ -535,7 +529,7 @@ class BitSubProject extends LibertyMime {
 	 * previewFields prepares the fields in this type for preview
 	 */
 	function previewFields(&$pParamHash) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		LibertyValidator::preview(
 		$this->mVerification['subproject_data'],
 			$pParamHash['subproject'],
@@ -546,17 +540,33 @@ class BitSubProject extends LibertyMime {
 	 * validateFields validates the fields in this type
 	 */
 	function validateFields(&$pParamHash) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		LibertyValidator::validate(
 			$this->mVerification['subproject_data'],
 			$pParamHash['subproject'],
-			$this, $pParamHash['subproject_store']);
+			$this->mErrors, 
+			$pParamHash['subproject_store'],
+			$this);
 	}
 
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
-	function prepVerify() {
+	function prepVerify(&$pParamHash) {
+	 	/* Validation for liberty_content - modify base settings */
+		if (empty($this->mVerification['liberty_content'])) {
+			LibertyContent::prepVerify($pParamHash);
+	 		/* Validation for liberty_content title */
+			$this->mVerification['liberty_content']['string']['title'] = array_merge( $this->mVerification['liberty_content']['string']['title'], array(
+				'name' => 'Sub-Project Name',
+				'required' => '1'
+			));
+	 		/* Validation for liberty_content data */
+			$this->mVerification['liberty_content']['string']['data'] = array_merge( $this->mVerification['liberty_content']['string']['data'], array(
+				'name' => 'Description',
+			));
+		}
+
 		if (empty($this->mVerification['subproject_data'])) {
 
 	 		/* Validation for account_content_id */
@@ -582,7 +592,8 @@ class BitSubProject extends LibertyMime {
 	}
 
 	/**
-	 * prepVerify prepares the object for input verification
+	 * getSchema returns the data schema 
+	 * This feature is still under development
 	 */
 	public function getSchema() {
 		if (empty($this->mSchema['subproject_data'])) {
@@ -593,6 +604,7 @@ class BitSubProject extends LibertyMime {
 				'type' => 'null',
 				'label' => 'Sub-Project Name',
 				'help' => '',
+				'required' => '1'
 			);
 	 		/* Schema for data */
 			$this->mSchema['subproject_data']['data'] = array(

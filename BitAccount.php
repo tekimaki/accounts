@@ -41,6 +41,7 @@ require_once( LIBERTY_PKG_PATH . 'LibertyValidator.php' );
 require_once( USERS_PKG_PATH.'BitUser.php' );
 
 define( 'BITACCOUNT_DRAFT_STATUS_ID', -5 );
+define( 'BITACCOUNT_PROVISIONAL_LITE_STATUS_ID', 5 );
 define( 'BITACCOUNT_PROVISIONAL_STATUS_ID', 10 );
 define( 'BITACCOUNT_PUBLIC_STATUS_ID', 50 );
 
@@ -90,6 +91,7 @@ class BitAccount extends LibertyMime {
 		// Permission setup
 		$this->mCreateContentPerm  = 'p_account_create';
 		$this->mViewContentPerm	   = 'p_account_view';
+		$this->mListViewContentPerm	= 'p_account_list';
 		$this->mUpdateContentPerm  = 'p_account_update';
 		$this->mExpungeContentPerm = 'p_account_expunge';
 		$this->mAdminContentPerm   = 'p_accounts_admin';
@@ -213,6 +215,7 @@ class BitAccount extends LibertyMime {
 		$abort = ignore_user_abort(FALSE);
 		// A flag to let the custom store block know if we updated or inserted.
 		$new = FALSE;
+		$pParamHash['new'] = &$new;
 		if( $this->verify( $pParamHash )
 			&& LibertyMime::store( $pParamHash['account'] ) ) {
 			$this->mDb->StartTrans();
@@ -249,7 +252,7 @@ class BitAccount extends LibertyMime {
 			$this->mDb->CompleteTrans();
 			$this->load();
 		} else {
-			$this->mErrors['store'] = tra('Failed to save this').' account.';
+			$this->mErrors['store'] = tra('Failed to save this '.$this->getContentTypeName());
 		}
 		// Restore previous state for user abort
 		ignore_user_abort($abort);
@@ -285,20 +288,12 @@ class BitAccount extends LibertyMime {
 			$pParamHash['account']['account_store']['content_id'] = $pParamHash['account']['content_id'];
 		}
 
-		// Use $pParamHash here since it handles validation right
-		$this->validateFields($pParamHash);
-
 		if( !empty( $pParamHash['account']['data'] ) ) {
 			$pParamHash['account']['edit'] = $pParamHash['account']['data'];
 		}
 
-		// If title specified truncate to make sure not too long
-		// TODO: This shouldn't be required. LC should validate this.
-		if( !empty( $pParamHash['account']['title'] ) ) {
-			$pParamHash['account']['content_store']['title'] = substr( $pParamHash['account']['title'], 0, 160 );
-		} else if( empty( $pParamHash['account']['title'] ) ) { // else is error as must have title
-			$this->mErrors['title'] = tra('You must enter a title for this '.$this->getContentTypeName());
-		}
+		// Use $pParamHash here since it handles validation right
+		$this->validateFields($pParamHash);
 
 		// collapse the hash that is passed to parent class so that service data is passed through properly - need to do so before verify service call below
 		$hashCopy = $pParamHash;
@@ -556,30 +551,44 @@ class BitAccount extends LibertyMime {
 	 * previewFields prepares the fields in this type for preview
 	 */
 	function previewFields(&$pParamHash) {
-		$this->prepVerify();
-		if(!empty($this->mVerification['account_data'])){
-			LibertyValidator::preview(
-			$this->mVerification['account_data'],
-				$pParamHash['account'],
-				$this->mInfo);
-		}
+		$this->prepVerify($pParamHash);
+		LibertyValidator::preview(
+		$this->mVerification['account_data'],
+			$pParamHash['account'],
+			$this->mInfo);
 	}
 
 	/**
 	 * validateFields validates the fields in this type
 	 */
 	function validateFields(&$pParamHash) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		LibertyValidator::validate(
 			$this->mVerification['account_data'],
 			$pParamHash['account'],
-			$this, $pParamHash['account_store']);
+			$this->mErrors, 
+			$pParamHash['account_store'],
+			$this);
 	}
 
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
-	function prepVerify() {
+	function prepVerify(&$pParamHash) {
+	 	/* Validation for liberty_content - modify base settings */
+		if (empty($this->mVerification['liberty_content'])) {
+			LibertyContent::prepVerify($pParamHash);
+	 		/* Validation for liberty_content title */
+			$this->mVerification['liberty_content']['string']['title'] = array_merge( $this->mVerification['liberty_content']['string']['title'], array(
+				'name' => 'Account Name',
+				'required' => '1'
+			));
+	 		/* Validation for liberty_content data */
+			$this->mVerification['liberty_content']['string']['data'] = array_merge( $this->mVerification['liberty_content']['string']['data'], array(
+				'name' => 'About',
+			));
+		}
+
 		if (empty($this->mVerification['account_data'])) {
 
 
@@ -587,7 +596,8 @@ class BitAccount extends LibertyMime {
 	}
 
 	/**
-	 * prepVerify prepares the object for input verification
+	 * getSchema returns the data schema 
+	 * This feature is still under development
 	 */
 	public function getSchema() {
 		if (empty($this->mSchema['account_data'])) {
@@ -598,6 +608,7 @@ class BitAccount extends LibertyMime {
 				'type' => 'null',
 				'label' => 'Account Name',
 				'help' => '',
+				'required' => '1'
 			);
 	 		/* Schema for data */
 			$this->mSchema['account_data']['data'] = array(
@@ -632,6 +643,7 @@ class BitAccount extends LibertyMime {
 		if( !$gBitUser->hasPermission( 'p_liberty_edit_all_status' )) {
 			$ret = array( 
 				BITACCOUNT_DRAFT_STATUS_ID => "Draft",
+				BITACCOUNT_PROVISIONAL_LITE_STATUS_ID => 'Provisional Lite',
 				BITACCOUNT_PROVISIONAL_STATUS_ID => "Provisional",
 				BITACCOUNT_PUBLIC_STATUS_ID => "Available",
 			);
@@ -640,6 +652,7 @@ class BitAccount extends LibertyMime {
 		else{
 			$ret = LibertyMime::getAvailableContentStatuses( $pUserMinimum, $pUserMaximum );
 			$ret[BITACCOUNT_DRAFT_STATUS_ID] = "Draft";
+			$ret[BITACCOUNT_PROVISIONAL_LITE_STATUS_ID] = "Provisional Lite";
 			$ret[BITACCOUNT_PROVISIONAL_STATUS_ID] = "Provisional";
 			$ret[BITACCOUNT_PUBLIC_STATUS_ID] = "Available";
 			ksort( $ret );

@@ -25,7 +25,8 @@
 	</div>
 
 	<div class="body">
-		{formfeedback warning=$errors}
+		{formfeedback success=$success}
+		{formfeedback error=$errors.store}
 		{form enctype="multipart/form-data" id="editprojectform"}
 			{* =-=- CUSTOM BEGIN: input -=-= *}
 
@@ -54,20 +55,19 @@
 				{jstab title="Edit"}
 				{legend legend=$gContent->getContentTypeName() class="inlineLabels"}
 						<input type="hidden" name="project[project_id]" value="{$gContent->mInfo.project_id}" />
-						{formfeedback warning=$errors.store}
 
 						<div class="row" id="row_title">
-							{formfeedback warning=$errors.title}
-							{formlabel label="Project Name" for="title"}
+							{formlabel label="Project Name" for="title" required="y"}
 							{forminput}
+								{formfeedback error=$errors.title}
 								<input class="textInput" type="text" size="50" name="project[title]" id="title" value="{$gContent->mInfo.title|escape}" />
 							{/forminput}
 						</div>
 						<div class="row" id="row_project_account_content_id" style="">
 							
-	{formfeedback warning=$errors.account_content_id}
 	{formlabel label="Account Name" for="account_content_id" required="y"}
 	{forminput}
+		{formfeedback error=$errors.account_content_id}
 
         			{html_options id="account_content_id" options=$account_content_id_options name="project[account_content_id]" selected=$gContent->getField('account_content_id')  }
     
@@ -75,7 +75,7 @@
 	{/forminput}
 						</div>
  
-						{textarea label="Description" name="project[edit]" help="A description of the project"}{$gContent->mInfo.data}{/textarea}
+{textarea label="Description" name="project[edit]" help="A description of the project" error=$errors.data }{$gContent->mInfo.data}{/textarea}
 						{* any simple service edit options *}
 						{include file="bitpackage:liberty/edit_services_inc.tpl" serviceFile="content_edit_mini_tpl" formid="editprojectform"}
 

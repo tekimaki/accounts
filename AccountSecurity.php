@@ -208,12 +208,12 @@ class AccountSecurity extends LibertyBase {
 	 * preview prepares the fields in this type for preview
 	 */
 	 function previewFields( &$pParamHash ) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		if (!empty($pParamHash['account_security_data'])) {
 			LibertyValidator::preview(
 				$this->mVerification['account_security_data'],
 				$pParamHash['account_security_data'],
-				$this, $pParamHash['account_security_store']);
+				$this->mInfo);
 		}
 	}
 
@@ -221,7 +221,7 @@ class AccountSecurity extends LibertyBase {
 	 * validateFields validates the fields in this type
 	 */
 	function validateFields( &$pParamHash ) {
-		$this->prepVerify();
+		$this->prepVerify($pParamHash);
 		if (!empty($pParamHash['account_security_data'])) {
 			foreach ($pParamHash['account_security_data'] as $key => $data) {
 				$pParamHash['account_security_store'][$key] = array();
@@ -229,7 +229,9 @@ class AccountSecurity extends LibertyBase {
 				LibertyValidator::validate(
 					$this->mVerification['account_security_data'],
 					$data,
-					$this, $pParamHash['account_security_store'][$key]);
+					$this->mErrors, 
+					$pParamHash['account_security_store'][$key],
+					$this);
 			}
 		}
 	}
@@ -237,7 +239,7 @@ class AccountSecurity extends LibertyBase {
 	/**
 	 * prepVerify prepares the object for input verification
 	 */
-	function prepVerify() {
+	function prepVerify(&$pParamHash) {
 		if (empty($this->mVerification['account_security_data'])) {
 
 	 		/* Validation for group_id */
@@ -345,7 +347,7 @@ class AccountSecurity extends LibertyBase {
 
 }
 
-function account_security_content_list_sql( $pObject, $pParamHash ){
+function account_security_content_list_sql( $pObject, &$pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_list_sql -=-= */
 		global $gAccount, $gBitUser, $gBitSystem;
@@ -392,6 +394,7 @@ function account_security_content_list_sql( $pObject, $pParamHash ){
 								   )".		
 
 					// Check if a group is allowed by default
+					// @TODO this join can result in returning duplicate rows of content if multiple groups here have the same permission
 					" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_dflt ON (as_dflt.`perm_name` = as_lcpm.`perm_name` AND as_dflt.`group_id` IN (".implode(',', $groups) .") )".
 					// Check if subproject group is allowed
 					" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_ugpgc ON (as_ugpgc.`perm_name` = as_lcpm.`perm_name` AND as_ugpgc.`group_id` = as_asd.`group_id` )";
@@ -423,16 +426,17 @@ function account_security_content_list_sql( $pObject, $pParamHash ){
 		/* =-=- CUSTOM END: account_security_content_list_sql -=-= */
 		return $ret;	}
 }
-function account_security_content_user_perms( $pObject, $pParamHash ){
+function account_security_content_user_perms( $pObject, &$pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_user_perms -=-= */
 			global $gBitUser, $gBitSystem, $gAccount;		
+
 			$membership_group_id = $gBitSystem->getConfig('account_membership_group_id', -1);
 			if (!empty($membership_group_id) ) {
 				$groups = array();
 
 				// Prevent null userId;
-				$userId = $gBitUser->mUserId;
+				$userId = ( !empty( $pParamHash['content_permissions_user_id'] ) && empty( $_REQUEST['content_permissions_user_id'] ) ) ? $pParamHash['content_permissions_user_id'] : $gBitUser->mUserId;
 				if( !is_numeric( $userId ) ) $userId = 0;
 
 				// Find the groups for this content and user
@@ -526,9 +530,8 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 					$accessPerms = $pObject->mDb->getAssoc( $query, $bindVars );
 
 					if ( !empty($accessPerms) ) {
-						// Do accessPerms first so that per content rejections override.
 						if( !empty( $pParamHash['content_permissions'] ) ){
-							$pObject->mUserContentPerms = !empty( $pObject->mUserContentPerms )?array_merge($accessPerms, $pObject->mUserContentPerms):$accessPerms;
+							$pParamHash['perms'] = $accessPerms;
 						}
 						if( !empty( $pParamHash['user_permissions'] ) ){
 							$pParamHash['perms'] = !empty( $pParamHash['perms'] )?array_merge( $accessPerms, $pParamHash['perms'] ):$accessPerms;
@@ -540,7 +543,7 @@ function account_security_content_user_perms( $pObject, $pParamHash ){
 		/* =-=- CUSTOM END: account_security_content_user_perms -=-= */	}
 }
 function account_security_content_expunge( $pObject, $pParamHash ){
-	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) && $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
+	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		$account_security = new AccountSecurity( $pObject->mContentId );
 		$account_security->setServiceContent( $pObject );  
 		if( !$account_security->expunge() ){
