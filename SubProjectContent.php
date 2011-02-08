@@ -297,7 +297,7 @@ class SubProjectContent extends LibertyBase {
 function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
 		/* =-=- CUSTOM BEGIN: subproject_content_content_list_sql -=-= */
-		global $gAccount, $gBitSystem;
+		global $gAccount;
 		$ret = array();
 		$account_content_id = NULL;
 
@@ -314,27 +314,13 @@ function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 			if( $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` subproject_content_data  ON ( lc.`content_id`=subproject_content_data.`content_id` )";
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."subproject_data` subproject_data ON (subproject_content_data.`subproject_content_id` = subproject_data.`content_id`)";
-				
-				if( isset( $pParamHash['connect_account_id'] )){
-					$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."account_data` account_data ON (subproject_data.`account_content_id` = account_data.`content_id`)";
-					$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."liberty_content` account_info ON (account_data.`content_id` = account_info.`content_id`)";
-					$ret['select_sql'] .= " ,account_info.`title` AS account_title, account_info.`content_id` AS account_content_id ";
-				}
-					
+				$ret['where_sql'] .= " AND subproject_data.`account_content_id` = ?";
 				// limit by the account
 				$ret['bind_vars'] = array( $account_content_id );
 
 			// @TODO move this to new account user class and manage users internally!
 			// This is to solve need to jail lists in users pkg - hackish limit to gAccount
 			// for bituser we need special rules
-			}elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID && isset( $pParamHash['connect_account_id'] ) ){
-				// limit to users in gAccount
-				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )"; 
-				// limit by the account
-				if( !empty( $account_content_id ) ){
-					$ret['where_sql'] .= " AND sc_asd.`content_id` = ?";
-					$ret['bind_vars'] = array( $account_content_id );
-				}
 			}elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID ){
 				// limit to users in gAccount
 				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )"; 
