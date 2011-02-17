@@ -410,17 +410,24 @@ function account_security_content_list_sql( $pObject, &$pParamHash ){
 			// object checking permission on is bituser we need special rules
 			}elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID && is_object( $gAccount ) && $gAccount->isValid()){
 				// modify the groups list with our account roles
-				$groups = array_merge( $groups, array( $gBitSystem->getConfig('accounts_account_admin_role'), $gBitSystem->getConfig('accounts_account_manager_role'), $gBitSystem->getConfig('accounts_account_member_role') ) ); 
+				$groups = array_merge( $groups, array( 
+					$gBitSystem->getConfig('accounts_account_admin_role'), 
+					$gBitSystem->getConfig('accounts_account_manager_role'), 
+					$gBitSystem->getConfig('accounts_account_member_role') ) 
+				); 
 				$ret['join_sql'] = 
 					// Find the permision name
-					" LEFT JOIN `".BIT_DB_PREFIX."liberty_secure_permissions_map` as_lcpm ON ( as_lcpm.`content_type_guid` = lc.`content_type_guid` AND as_lcpm.`perm_type` = 'view' )".
-					// Check if a group is allowed 
-					" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_ugp ON (as_ugp.`perm_name` = as_lcpm.`perm_name` AND as_ugp.`group_id` IN (".implode(',', $groups) .") )";
-
-				// Only where the permission is granted by default or by account
-				// TODO: Teach this to play nice with liberty_security
-				$ret['where_sql'] = " AND ( lc.`user_id` = ? OR as_ugp.`perm_name` IS NOT NULL )";
-				$ret['bind_vars'] = array( $userId );
+					// and check if a group is allowed
+					// subselect perms so we only get distinct perm ( prevents dupes based on user being in multiple groups with same perm ) 
+					// IN groups checks only where the permission is granted by default or by account
+					" INNER JOIN (
+							SELECT DISTINCT( as_lcpm.perm_name ), as_lcpm.content_type_guid
+							FROM `".BIT_DB_PREFIX."liberty_secure_permissions_map` as_lcpm 
+							INNER JOIN `".BIT_DB_PREFIX."users_group_permissions` as_ugp ON ( as_ugp.`perm_name` = as_lcpm.`perm_name` ) 
+							WHERE as_lcpm.`content_type_guid` = '".BITUSER_CONTENT_TYPE_GUID."'
+							AND as_lcpm.`perm_type` = 'view' 
+							AND as_ugp.group_id IN ( ".implode(',', $groups) .") 
+						) as_perms ON ( as_perms.`content_type_guid` = lc.`content_type_guid` )";
 			}
 
 		}
