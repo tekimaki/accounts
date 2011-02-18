@@ -303,7 +303,7 @@ function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 
 		if( !empty( $pParamHash['connect_account_id'] ) && empty( $_REQUEST['connect_account_id'] ) ){
 			$account_content_id = $pParamHash['connect_account_id'];
-		}elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
+		}elseif( is_object( $gAccount ) && !empty( $gAccount->mContentId ) ) {
 			$account_content_id = $gAccount->mContentId;
 		}
 
@@ -357,14 +357,14 @@ function subproject_content_content_load_sql( $pObject, $pParamHash ){
 				// @TODO move this to new account user class and manage users internally!
 				// this is to solve need to login admins and account members
 				// for bituser we need special rules
-				// limit to users in gAccount or users in the super administrators group (1)
+				// limit to users in gAccount or users in the super administrators group (1) or anonymous
 				$ret['join_sql'] .= " 
 					LEFT JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )
 					LEFT JOIN `".BIT_DB_PREFIX."users_groups_map` sc_ugm ON ( uu.`user_id` = sc_ugm.`user_id` )				 
 				"; 
-				$ret['where_sql'] .= " AND ( sc_asd.`content_id` = ? OR sc_ugm.`group_id` = ? )";
+				$ret['where_sql'] .= " AND ( sc_asd.`content_id` = ? OR sc_ugm.`group_id` = ? OR sc_ugm.`group_id` = ? )";
 				// limit by the account, or admin group
-				$ret['bind_vars'] = array( $account_content_id, 1 );
+				$ret['bind_vars'] = array( $account_content_id, 1, -1 );
 			}
 
 			return $ret;
