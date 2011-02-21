@@ -639,13 +639,17 @@ class BitAccount extends LibertyMime {
 	 */
 	function getAvailableContentStatuses( $pUserMinimum=-6, $pUserMaximum=51 ) {
 		global $gBitUser;
+		$ret = NULL;
 		// standard list of options
 		if( !$gBitUser->hasPermission( 'p_liberty_edit_all_status' )) {
-			$ret = array( 
-				BITACCOUNT_PROVISIONAL_LITE_STATUS_ID => 'Provisional Lite',
-				BITACCOUNT_PROVISIONAL_STATUS_ID => "Provisional",
-				BITACCOUNT_PUBLIC_STATUS_ID => "Full",
-			);
+			// must be above draft status to be able to set status - prevents confusion in edit panel
+			if( $this->getField('content_status_id') > BITACCOUNT_DRAFT_STATUS_ID ){
+				$ret = array( 
+					BITACCOUNT_PROVISIONAL_LITE_STATUS_ID => 'Provisional Lite',
+					BITACCOUNT_PROVISIONAL_STATUS_ID => "Provisional",
+					BITACCOUNT_PUBLIC_STATUS_ID => "Full",
+				);
+			}
 		}
 		// for admins modify the master list of options
 		else{
