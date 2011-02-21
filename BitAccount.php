@@ -645,7 +645,7 @@ class BitAccount extends LibertyMime {
 				BITACCOUNT_DRAFT_STATUS_ID => "Draft",
 				BITACCOUNT_PROVISIONAL_LITE_STATUS_ID => 'Provisional Lite',
 				BITACCOUNT_PROVISIONAL_STATUS_ID => "Provisional",
-				BITACCOUNT_PUBLIC_STATUS_ID => "Available",
+				BITACCOUNT_PUBLIC_STATUS_ID => "Full",
 			);
 		}
 		// for admins modify the master list of options
@@ -654,7 +654,7 @@ class BitAccount extends LibertyMime {
 			$ret[BITACCOUNT_DRAFT_STATUS_ID] = "Draft";
 			$ret[BITACCOUNT_PROVISIONAL_LITE_STATUS_ID] = "Provisional Lite";
 			$ret[BITACCOUNT_PROVISIONAL_STATUS_ID] = "Provisional";
-			$ret[BITACCOUNT_PUBLIC_STATUS_ID] = "Available";
+			$ret[BITACCOUNT_PUBLIC_STATUS_ID] = "Full";
 			ksort( $ret );
 		}
         return $ret;
