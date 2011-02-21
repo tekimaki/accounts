@@ -642,7 +642,6 @@ class BitAccount extends LibertyMime {
 		// standard list of options
 		if( !$gBitUser->hasPermission( 'p_liberty_edit_all_status' )) {
 			$ret = array( 
-				BITACCOUNT_DRAFT_STATUS_ID => "Draft",
 				BITACCOUNT_PROVISIONAL_LITE_STATUS_ID => 'Provisional Lite',
 				BITACCOUNT_PROVISIONAL_STATUS_ID => "Provisional",
 				BITACCOUNT_PUBLIC_STATUS_ID => "Full",
