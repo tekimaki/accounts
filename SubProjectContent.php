@@ -303,7 +303,7 @@ function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 
 		if( !empty( $pParamHash['connect_account_id'] ) && empty( $_REQUEST['connect_account_id'] ) ){
 			$account_content_id = $pParamHash['connect_account_id'];
-		}elseif( is_object( $gAccount ) && $gAccount->isValid() ) {
+		}elseif( is_object( $gAccount ) && !empty( $gAccount->mContentId ) ) {
 			$account_content_id = $gAccount->mContentId;
 		}
 
@@ -321,11 +321,13 @@ function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 			// @TODO move this to new account user class and manage users internally!
 			// This is to solve need to jail lists in users pkg - hackish limit to gAccount
 			// for bituser we need special rules
-			}elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID ){
-				// limit to users in gAccount
-				$ret['join_sql'] .= " INNER JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )"; 
-				$ret['where_sql'] .= " AND sc_asd.`content_id` = ?";
-				// limit by the account
+			 }elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID ){
+				// limit to users in gAccount or users in the super administrators group (1)
+				$ret['join_sql'] .= " 
+					INNER JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )
+				"; 
+				$ret['where_sql'] .= " AND sc_asd.`content_id` = ? ";
+				// limit by the account, or admin group
 				$ret['bind_vars'] = array( $account_content_id );
 			}
 		}
@@ -334,7 +336,41 @@ function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 		return $ret;	}
 }
 function subproject_content_content_load_sql( $pObject, $pParamHash ){
-	return subproject_content_content_list_sql( $pObject, $pParamHash );
+	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+		/* =-=- CUSTOM BEGIN: subproject_content_content_load_sql -=-= */
+		if( $pObject->mContentTypeGuid != BITUSER_CONTENT_TYPE_GUID ){
+			return subproject_content_content_list_sql( $pObject, $pParamHash );
+		}elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID ){
+			global $gAccount;
+			$ret = array();
+			$account_content_id = NULL;
+
+			if( !empty( $pParamHash['connect_account_id'] ) && empty( $_REQUEST['connect_account_id'] ) ){
+				$account_content_id = $pParamHash['connect_account_id'];
+			}elseif( is_object( $gAccount ) && !empty( $gAccount->mContentId ) ) {
+				$account_content_id = $gAccount->mContentId;
+			}
+
+			if( $pObject->verifyId( $account_content_id ) ){ 
+				$ret['select_sql'] = $ret['join_sql'] = $ret['where_sql'] = "";
+
+				// @TODO move this to new account user class and manage users internally!
+				// this is to solve need to login admins and account members
+				// for bituser we need special rules
+				// limit to users in gAccount or users in the super administrators group (1) or anonymous
+				$ret['join_sql'] .= " 
+					LEFT JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )
+					LEFT JOIN `".BIT_DB_PREFIX."users_groups_map` sc_ugm ON ( uu.`user_id` = sc_ugm.`user_id` )				 
+				"; 
+				$ret['where_sql'] .= " AND ( sc_asd.`content_id` = ? OR sc_ugm.`group_id` = ? OR sc_ugm.`group_id` = ? )";
+				// limit by the account, or admin group
+				$ret['bind_vars'] = array( $account_content_id, 1, -1 );
+			}
+
+			return $ret;
+		}
+		/* =-=- CUSTOM END: subproject_content_content_load_sql -=-= */
+	}
 }
 function subproject_content_content_edit( $pObject, $pParamHash ){
 	// map content to a subproject but never bituser

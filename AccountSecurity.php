@@ -351,8 +351,9 @@ function account_security_content_list_sql( $pObject, &$pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
 		/* =-=- CUSTOM BEGIN: account_security_content_list_sql -=-= */
 		global $gAccount, $gBitUser, $gBitSystem;
+
 		$ret = array();
-		
+
 		// Find the groups for this user
 		$groups = array_keys($gBitUser->mGroups);
 		// UserId alias for readability
@@ -409,22 +410,30 @@ function account_security_content_list_sql( $pObject, &$pParamHash ){
 			// object checking permission on is bituser we need special rules
 			}elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID && is_object( $gAccount ) && $gAccount->isValid()){
 				// modify the groups list with our account roles
-				$groups = array_merge( $groups, array( $gBitSystem->getConfig('accounts_account_admin_role'), $gBitSystem->getConfig('accounts_account_manager_role'), $gBitSystem->getConfig('accounts_account_member_role') ) ); 
+				$groups = array_merge( $groups, array( 
+					$gBitSystem->getConfig('accounts_account_admin_role'), 
+					$gBitSystem->getConfig('accounts_account_manager_role'), 
+					$gBitSystem->getConfig('accounts_account_member_role') ) 
+				); 
 				$ret['join_sql'] = 
 					// Find the permision name
-					" LEFT JOIN `".BIT_DB_PREFIX."liberty_secure_permissions_map` as_lcpm ON ( as_lcpm.`content_type_guid` = lc.`content_type_guid` AND as_lcpm.`perm_type` = 'view' )".
-					// Check if a group is allowed 
-					" LEFT JOIN `".BIT_DB_PREFIX."users_group_permissions` as_ugp ON (as_ugp.`perm_name` = as_lcpm.`perm_name` AND as_ugp.`group_id` IN (".implode(',', $groups) .") )";
-
-				// Only where the permission is granted by default or by account
-				// TODO: Teach this to play nice with liberty_security
-				$ret['where_sql'] = " AND ( lc.`user_id` = ? OR as_ugp.`perm_name` IS NOT NULL )";
-				$ret['bind_vars'] = array( $userId );
+					// and check if a group is allowed
+					// subselect perms so we only get distinct perm ( prevents dupes based on user being in multiple groups with same perm ) 
+					// IN groups checks only where the permission is granted by default or by account
+					" INNER JOIN (
+							SELECT DISTINCT( as_lcpm.perm_name ), as_lcpm.content_type_guid
+							FROM `".BIT_DB_PREFIX."liberty_secure_permissions_map` as_lcpm 
+							INNER JOIN `".BIT_DB_PREFIX."users_group_permissions` as_ugp ON ( as_ugp.`perm_name` = as_lcpm.`perm_name` ) 
+							WHERE as_lcpm.`content_type_guid` = '".BITUSER_CONTENT_TYPE_GUID."'
+							AND as_lcpm.`perm_type` = 'view' 
+							AND as_ugp.group_id IN ( ".implode(',', $groups) .") 
+						) as_perms ON ( as_perms.`content_type_guid` = lc.`content_type_guid` )";
 			}
 
 		}
 		/* =-=- CUSTOM END: account_security_content_list_sql -=-= */
-		return $ret;	}
+		return $ret;
+	}
 }
 function account_security_content_user_perms( $pObject, &$pParamHash ){
 	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
@@ -433,7 +442,7 @@ function account_security_content_user_perms( $pObject, &$pParamHash ){
 
 			$membership_group_id = $gBitSystem->getConfig('account_membership_group_id', -1);
 			if (!empty($membership_group_id) ) {
-				$groups = array();
+				$groupsQuery = "";
 
 				// Prevent null userId;
 				$userId = ( !empty( $pParamHash['content_permissions_user_id'] ) && empty( $_REQUEST['content_permissions_user_id'] ) ) ? $pParamHash['content_permissions_user_id'] : $gBitUser->mUserId;
@@ -450,13 +459,12 @@ function account_security_content_user_perms( $pObject, &$pParamHash ){
 					// For now we're only checking if the user to be edited is in gAccount
 					if( is_object( $gAccount ) ) {
 						if( $pObject->isValid() ){
-							$query = 
-								"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
+							$groupsQuery = 
+								"SELECT asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
 								"INNER JOIN `".BIT_DB_PREFIX."account_security_data` asd2 ON ( asd.`content_id` = asd2.`content_id` ) ".
 								"WHERE ( asd2.`user_id` = ? AND asd2.`content_id` = ? ) ".
 								"AND ( asd.`user_id` = ? OR asd.`user_id` = ? )";
 							$bindVars = array( $pObject->mUserId, $gAccount->mContentId, $userId, ANONYMOUS_USER_ID );
-							$groups = $pObject->mDb->getAssoc($query, $bindVars);
 						}else{
 						}
 					}
@@ -481,39 +489,36 @@ function account_security_content_user_perms( $pObject, &$pParamHash ){
 					}
 					// we have a subproject id to get roles based on
 					if( !empty( $subproject_content_id ) ){
-						$query = 
-							"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
+						$groupsQuery = 
+							"SELECT asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
 							"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
 							"WHERE ( asd.`user_id` = ? OR asd.`user_id` = ? ) ".
 							"AND sd.`content_id` = ? ";
 						$bindVars = array($userId, ANONYMOUS_USER_ID, $subproject_content_id );
-						$groups = $pObject->mDb->getAssoc($query, $bindVars);
 					}
 				}
 				// mapped content
 				else{
-					$query = 
-						"SELECT asd.`content_id`, asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
+					$groupsQuery = 
+						"SELECT asd.`group_id` FROM `".BIT_DB_PREFIX."account_security_data` asd ".
 						"INNER JOIN `".BIT_DB_PREFIX."subproject_data` sd ON (asd.`content_id` = sd.`content_id` OR asd.`content_id` = sd.`account_content_id` OR asd.`content_id` = sd.`project_content_id`) ".
 						"INNER JOIN `".BIT_DB_PREFIX."subproject_content_data` scd ON (sd.`content_id` = scd.`subproject_content_id` )".
 						"WHERE ( asd.`user_id` = ? OR asd.`user_id` = ? ) ".
 						"AND scd.`content_id` = ?";
 					$bindVars = array($userId, ANONYMOUS_USER_ID, $pObject->mContentId);
-					$groups = $pObject->mDb->getAssoc($query, $bindVars);
 				}
 
 				// get permissions
-				if (!empty($groups)) {
-					$query = ""; $bindVars = array();
+				if (!empty($groupsQuery)) {
+					// $query = ""; $bindVars = array();
 					// valid content object
 					if( $pObject->isValid() ){
 						$query =
 							"SELECT ugp.`perm_name` as `hash_key`, 1 as `group_perm`, ugp.`perm_name`, ugp.`perm_value`, ugp.`group_id` ".
 							"FROM `".BIT_DB_PREFIX."users_group_permissions` ugp ".
 							"LEFT JOIN `".BIT_DB_PREFIX."liberty_content_permissions` lcp ON (lcp.`group_id`=ugp.`group_id` AND lcp.`content_id`=? AND ugp.`perm_name`=lcp.`perm_name`) ".
-							"WHERE lcp.`perm_name` IS NULL AND ugp.`group_id` IN ".
-							"( ".implode( ',',array_fill( 0, count( $groups ),'?' ) )." ) ";
-						$bindVars = array_merge(array($pObject->mContentId), $groups);
+							"WHERE lcp.`perm_name` IS NULL AND ( ugp.`group_id` IN ( $groupsQuery ) )";
+						$bindVars = array_merge( array( $pObject->mContentId ), $bindVars );
 					}
 					// new content
 					else{
@@ -522,9 +527,7 @@ function account_security_content_user_perms( $pObject, &$pParamHash ){
 							"SELECT ugp.`perm_name` as `hash_key`, 1 as `group_perm`, ugp.`perm_name`, ugp.`perm_value`, ugp.`group_id` ".
 							"FROM `".BIT_DB_PREFIX."users_permissions` up ".
 							"INNER JOIN `".BIT_DB_PREFIX."users_group_permissions` ugp ON ( ugp.`perm_name`=up.`perm_name` ) ".
-							"WHERE ugp.`group_id` IN ".
-							"( ".implode( ',',array_fill( 0, count( $groups ),'?' ) )." ) ";
-						$bindVars = $groups;
+							"WHERE ugp.`group_id` IN ( $groupsQuery ) ";
 					}
 					
 					$accessPerms = $pObject->mDb->getAssoc( $query, $bindVars );
