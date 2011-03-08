@@ -321,7 +321,7 @@ function subproject_content_content_list_sql( $pObject, &$pParamHash ){
 			// @TODO move this to new account user class and manage users internally!
 			// This is to solve need to jail lists in users pkg - hackish limit to gAccount
 			// for bituser we need special rules
-			 }elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID ){
+			 }elseif( $pObject->mContentTypeGuid == BITUSER_CONTENT_TYPE_GUID && is_object( $gAccount ) && $gAccount->isValid() ){
 				// limit to users in gAccount or users in the super administrators group (1)
 				$ret['join_sql'] .= " 
 					INNER JOIN `".BIT_DB_PREFIX."account_security_data` sc_asd ON ( uu.`user_id` = sc_asd.`user_id` )
