@@ -301,6 +301,11 @@ class BitAccount extends LibertyMime {
 
 
 		/* =-=- CUSTOM BEGIN: verify -=-= */
+		// @TODO make this a pref in akismet package
+		// bypass the akismet store filter
+		// accounts need to be associated with the akismet service 
+		// for user expunge
+		$pParamHash['account']['account_store']['bypass_akismet_store'] = TRUE;
 
 		/* =-=- CUSTOM END: verify -=-= */
 
