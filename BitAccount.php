@@ -305,7 +305,8 @@ class BitAccount extends LibertyMime {
 		// bypass the akismet store filter
 		// accounts need to be associated with the akismet service 
 		// for user expunge
-		$pParamHash['account']['account_store']['bypass_akismet_store'] = TRUE;
+		// this totally sucks, dont try this at home
+		$pParamHash['account']['bypass_akismet_store'] = TRUE;
 
 		/* =-=- CUSTOM END: verify -=-= */
 
