@@ -348,7 +348,7 @@ class AccountSecurity extends LibertyBase {
 }
 
 function account_security_content_list_sql( $pObject, &$pParamHash ){
-	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) ){
+	if( $pObject->hasService( LIBERTY_SERVICE_ACCOUNT_SECURITY ) || get_class( $pObject ) == 'LibertyContent' ){
 		/* =-=- CUSTOM BEGIN: account_security_content_list_sql -=-= */
 		global $gAccount, $gBitUser, $gBitSystem;
 

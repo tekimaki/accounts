@@ -295,7 +295,7 @@ class SubProjectContent extends LibertyBase {
 }
 
 function subproject_content_content_list_sql( $pObject, &$pParamHash ){
-	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) ){
+	if( $pObject->hasService( LIBERTY_SERVICE_SUBPROJECT_CONTENT ) || get_class( $pObject ) == 'LibertyContent' ){
 		/* =-=- CUSTOM BEGIN: subproject_content_content_list_sql -=-= */
 		global $gAccount;
 		$ret = array();
