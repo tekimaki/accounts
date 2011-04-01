@@ -334,6 +334,21 @@ class BitAccount extends LibertyMime {
 
 
 			/* =-=- CUSTOM BEGIN: expunge -=-= */
+			require_once(ACCOUNTS_PKG_PATH.'BitProject.php');
+			$Project = new BitProject();
+			$listHash = array( 
+				'include_defaults' => TRUE,
+				'account_content_id' => $this->mContentId 
+			);
+			if( $projects = $Project->getList( $listHash ) ) 
+			{
+				foreach( $projects as $project )
+				{
+					$Project->mContentId = $project['content_id'];
+					$Project->load();
+					$Project->expunge();
+				}
+			}
 
 			/* =-=- CUSTOM END: expunge -=-= */
 
@@ -345,8 +360,8 @@ class BitAccount extends LibertyMime {
 			}
 			$this->mDb->CompleteTrans();
 			// If deleting the default/home account record then unset this.
-			if( $ret && $gBitSystem->getConfig( 'account_home_id' ) == $this->mAccountId ) {
-				$gBitSystem->storeConfig( 'account_home_id', 0, ACCOUNT_PKG_NAME );
+			if( $ret && $gBitSystem->getConfig( 'accounts_account_home_id' ) == $this->mContentId ) {
+				$gBitSystem->storeConfig( 'accounts_account_home_id', 0, ACCOUNT_PKG_NAME );
 			}
 		}
 		return $ret;

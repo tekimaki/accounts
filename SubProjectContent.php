@@ -166,6 +166,10 @@ class SubProjectContent extends LibertyBase {
 		}
 
 		/* =-=- CUSTOM BEGIN: getList -=-= */
+		if( !empty( $pParamHash['subproject_content_id'] ) && $this->verifyId( $pParamHash['subproject_content_id'] ) ){ 
+			$bindVars[] = $pParamHash['subproject_content_id'];
+			$whereSql = " AND `subproject_content_data`.subproject_content_id = ?"; 
+		}
 
 		/* =-=- CUSTOM END: getList -=-= */
 
@@ -173,7 +177,7 @@ class SubProjectContent extends LibertyBase {
 			$whereSql = preg_replace( '/^[\s]*AND\b/i', 'WHERE ', $whereSql );
 		}
 
-		$query = "SELECT  `subproject_content_id` FROM `subproject_content_data`".$whereSql;
+		$query = "SELECT * FROM `subproject_content_data`".$whereSql;
 		$ret = $this->mDb->getArray( $query, $bindVars );
 		return $ret;
 	}

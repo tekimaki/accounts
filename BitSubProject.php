@@ -322,6 +322,34 @@ class BitSubProject extends LibertyMime {
 
 
 			/* =-=- CUSTOM BEGIN: expunge -=-= */
+			// expunge all content mapped to the subproject
+			require_once(ACCOUNTS_PKG_PATH.'SubProjectContent.php');
+			$SubProjectContent = new SubProjectContent();
+            $listHash = array(
+                'include_defaults' => TRUE,
+                'subproject_content_id' => $this->mContentId
+            );
+            if( $contents = $SubProjectContent->getList( $listHash ) )
+            {
+                foreach( $contents as $content )
+                {
+					// since expunge is always a nested process
+					// some content mapped to the subproject 
+					// may have already been expunged via the
+					// expunge of another content object in this list 
+					if( $Content = LibertyBase::getLibertyObject( $content['content_id'] ) ){
+						$Content->load();
+						$Content->expunge();
+					}
+                }
+            }
+
+			/*
+			$expungeHash = array( 
+				'subproject_content_id' => $this->mContentId 
+			);
+			$SubProjectContent->expunge( $expungeHash );
+			*/
 
 			/* =-=- CUSTOM END: expunge -=-= */
 
@@ -333,8 +361,8 @@ class BitSubProject extends LibertyMime {
 			}
 			$this->mDb->CompleteTrans();
 			// If deleting the default/home subproject record then unset this.
-			if( $ret && $gBitSystem->getConfig( 'subproject_home_id' ) == $this->mSubprojectId ) {
-				$gBitSystem->storeConfig( 'subproject_home_id', 0, SUBPROJECT_PKG_NAME );
+			if( $ret && $gBitSystem->getConfig( 'accounts_subproject_home_id' ) == $this->mContentId ) {
+				$gBitSystem->storeConfig( 'accounts_subproject_home_id', 0, SUBPROJECT_PKG_NAME );
 			}
 		}
 		return $ret;
@@ -375,6 +403,13 @@ class BitSubProject extends LibertyMime {
 
 		if (empty($pParamHash['include_defaults'])) {
 			$whereSql .= " AND subproject.is_default = 0";
+		}
+
+		// limit list by project
+		if( !empty( $pParamHash['project_content_id'] ) && $this->verifyId( $pParamHash['project_content_id'] ) )
+		{
+			$whereSql .= " AND subproject.project_content_id = ?";
+			$bindVars[] = $pParamHash['project_content_id'];
 		}
 
 		/* =-=- CUSTOM END: getList -=-= */
@@ -455,7 +490,7 @@ class BitSubProject extends LibertyMime {
 		global $gAccount;
 		if ($gAccount == $this) {
 			$ret = '/';
-		} else {
+		} elseif( !empty( $this->mAccountId ) ){
 			if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' )) {
 				$ret = ACCOUNTS_PKG_URL.$this->mAccountId;
 			} else {

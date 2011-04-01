@@ -40,7 +40,7 @@
 					{forminput}
 						<select name="accounts_account_home_id" id="homeAccount">
 							{section name=ix loop=$account_data}
-								<option value="{$account_data[ix].account_id|escape}" {if $account_data[ix].account_id eq $accounts_account_home_id}selected="selected"{/if}>{$account_data[ix].title|escape|truncate:20:"...":true}</option>
+								<option value="{$account_data[ix].content_id|escape}" {if $account_data[ix].content_id eq $accounts_account_home_id}selected="selected"{/if}>{$account_data[ix].title|escape|truncate:20:"...":true}</option>
 							{sectionelse}
 								<option>{tr}No records found{/tr}</option>
 							{/section}
@@ -54,7 +54,7 @@
 					{forminput}
 						<select name="accounts_project_home_id" id="homeProject">
 							{section name=ix loop=$project_data}
-								<option value="{$project_data[ix].project_id|escape}" {if $project_data[ix].project_id eq $accounts_project_home_id}selected="selected"{/if}>{$project_data[ix].title|escape|truncate:20:"...":true}</option>
+								<option value="{$project_data[ix].content_id|escape}" {if $project_data[ix].content_id eq $accounts_project_home_id}selected="selected"{/if}>{$project_data[ix].title|escape|truncate:20:"...":true}</option>
 							{sectionelse}
 								<option>{tr}No records found{/tr}</option>
 							{/section}
@@ -68,7 +68,7 @@
 					{forminput}
 						<select name="accounts_subproject_home_id" id="homeSubproject">
 							{section name=ix loop=$subproject_data}
-								<option value="{$subproject_data[ix].subproject_id|escape}" {if $subproject_data[ix].subproject_id eq $accounts_subproject_home_id}selected="selected"{/if}>{$subproject_data[ix].title|escape|truncate:20:"...":true}</option>
+								<option value="{$subproject_data[ix].content_id|escape}" {if $subproject_data[ix].content_id eq $accounts_subproject_home_id}selected="selected"{/if}>{$subproject_data[ix].title|escape|truncate:20:"...":true}</option>
 							{sectionelse}
 								<option>{tr}No records found{/tr}</option>
 							{/section}
